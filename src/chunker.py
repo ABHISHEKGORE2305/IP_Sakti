@@ -1,253 +1,322 @@
-from typing import List, Dict
+import re
+
+from legal_structure import (
+    classify_legal_line,
+    build_legal_reference,
+)
 
 
-def split_into_paragraphs(text: str) -> List[str]:
-    """
-    Split extracted text into paragraphs.
-    """
+def split_into_paragraphs(text: str):
 
-    paragraphs = text.split("\n\n")
+    lines = text.splitlines()
 
-    return [
-        paragraph.strip()
-        for paragraph in paragraphs
-        if paragraph.strip()
-    ]
+    paragraphs = []
+
+    current = []
+
+    for line in lines:
+
+        line = line.strip()
+
+        if not line:
+
+            if current:
+                paragraphs.append(
+                    "\n".join(current)
+                )
+
+                current = []
+
+            continue
+
+        current.append(line)
+
+    if current:
+        paragraphs.append(
+            "\n".join(current)
+        )
+
+    return paragraphs
+
+
+def add_legal_metadata(
+    text: str,
+    section=None,
+    clause=None,
+):
+
+    legal_reference = build_legal_reference(
+        section=section,
+        clause=clause,
+    )
+
+    return {
+        "section": section,
+        "clause": clause,
+        "legal_reference": legal_reference,
+    }
 
 
 def create_chunks(
-    pages: List[Dict],
-    chunk_size: int = 1000,
+    pages: list[dict],
+    chunk_size: int = 1200,
     chunk_overlap: int = 200,
-) -> List[Dict]:
+):
 
     chunks = []
 
+    current_section = None
+    current_clause = None
+
+    in_schedule = False
+
+    legal_parsing_enabled = False
+
+    chunk_counter = 0
+
     for page in pages:
 
-        paragraphs = split_into_paragraphs(
-            page["text"]
-        )
+        page_number = page["page"]
+        source = page["source"]
 
-        current_paragraphs = []
-        current_length = 0
+        lines = page["text"].splitlines()
 
-        for paragraph in paragraphs:
+        current_text = []
 
-            paragraph_length = len(paragraph)
+        for raw_line in lines:
 
-            # ----------------------------------
-            # Add paragraph to current chunk
-            # ----------------------------------
+            line = raw_line.strip()
 
-            if (
-                current_length
-                + paragraph_length
-                + 2
-                <= chunk_size
-            ):
+            if not line:
+                continue
 
-                current_paragraphs.append(
-                    paragraph
-                )
+            # -------------------------------------------------
+            # ENABLE LEGAL PARSING ONLY AFTER TABLE OF CONTENTS
+            # -------------------------------------------------
+            #
+            # Pages 1-6 of the Patents Act PDF are confirmed
+            # (by direct inspection) to be the ARRANGEMENT OF
+            # SECTIONS / Table of Contents. The actual statute
+            # starts on page 7. We must not run any legal
+            # classification against the TOC, otherwise TOC
+            # lines like "3. What are not inventions." and the
+            # TOC entry "THE SCHEDULE." are mistaken for the
+            # real section heading / the real Schedule.
 
-                current_length += (
-                    paragraph_length + 2
-                )
+            if page_number >= 7:
+
+                legal_parsing_enabled = True
+
+            # -------------------------------------------------
+            # BEFORE LEGAL PARSING
+            # -------------------------------------------------
+
+            if not legal_parsing_enabled:
+
+                current_text.append(line)
 
                 continue
 
-            # ----------------------------------
-            # Save current chunk
-            # ----------------------------------
+            # -------------------------------------------------
+            # SCHEDULE DETECTION
+            # -------------------------------------------------
+            #
+            # Only after legal parsing has started. Match a
+            # standalone uppercase "THE SCHEDULE" heading line
+            # (optionally followed by a period) - NOT prose
+            # such as "... specified in the Schedule." which
+            # otherwise triggered schedule mode one page early.
 
-            if current_paragraphs:
-
-                chunk_text = "\n\n".join(
-                    current_paragraphs
-                )
-
-                chunk_number = len(chunks) + 1
-
-                chunks.append({
-                    "chunk_id": (
-                        f"{page['document_id']}_"
-                        f"{chunk_number:06d}"
-                    ),
-
-                    "text": chunk_text,
-
-                    "page": page["page"],
-
-                    "source": page["source"],
-
-                    "document_id": page["document_id"],
-
-                    "document": page.get(
-                        "document"
-                    ),
-
-                    "document_type": page.get(
-                        "document_type"
-                    ),
-
-                    "jurisdiction": page.get(
-                        "jurisdiction"
-                    ),
-
-                    "language": page.get(
-                        "language"
-                    ),
-                })
-
-            # ----------------------------------
-            # Create overlap
-            # ----------------------------------
-
-            overlap_paragraphs = []
-            overlap_length = 0
-
-            for previous in reversed(
-                current_paragraphs
+            if re.match(
+                r"^THE\s+SCHEDULE\b\.?\s*$",
+                line,
             ):
 
-                if (
-                    overlap_length
-                    + len(previous)
-                    <= chunk_overlap
-                ):
+                in_schedule = True
 
-                    overlap_paragraphs.insert(
-                        0,
-                        previous
-                    )
+                current_section = None
+                current_clause = None
 
-                    overlap_length += (
-                        len(previous) + 2
-                    )
+                current_text.append(line)
 
-                else:
-                    break
+                continue
 
-            current_paragraphs = (
-                overlap_paragraphs
-                + [paragraph]
-            )
+            # -------------------------------------------------
+            # LEGAL CLASSIFICATION
+            # -------------------------------------------------
 
-            current_length = sum(
-                len(p) + 2
-                for p in current_paragraphs
-            )
+            classification = classify_legal_line(line)
 
-        # ----------------------------------
-        # Save final chunk
-        # ----------------------------------
+            line_type = classification["type"]
 
-        if current_paragraphs:
+            # -------------------------------------------------
+            # NEW SECTION
+            # -------------------------------------------------
 
-            chunk_text = "\n\n".join(
-                current_paragraphs
-            )
+            if (
+                line_type == "section"
+                and not in_schedule
+            ):
 
-            chunk_number = len(chunks) + 1
+                if current_text:
 
-            chunks.append({
-                "chunk_id": (
-                    f"{page['document_id']}_"
-                    f"{chunk_number:06d}"
-                ),
+                    text = " ".join(
+                        current_text
+                    ).strip()
 
-                "text": chunk_text,
+                    if text:
 
-                "page": page["page"],
+                        chunk_counter += 1
 
-                "source": page["source"],
+                        metadata = add_legal_metadata(
+                            text=text,
+                            section=current_section,
+                            clause=current_clause,
+                        )
 
-                "document_id": page["document_id"],
+                        chunks.append({
 
-                "document": page.get(
-                    "document"
-                ),
+                            "chunk_id": (
+                                f"{page['document_id']}_"
+                                f"{chunk_counter:06d}"
+                            ),
 
-                "document_type": page.get(
-                    "document_type"
-                ),
+                            "text": text,
 
-                "jurisdiction": page.get(
-                    "jurisdiction"
-                ),
+                            "page": page_number,
 
-                "language": page.get(
-                    "language"
-                ),
-            })
+                            "source": source,
+
+                            "document_id": (
+                                page["document_id"]
+                            ),
+
+                            "document": page.get(
+                                "document",
+                                page["document_id"]
+                            ),
+
+                            **metadata,
+                        })
+
+                    current_text = []
+
+                current_section = (
+                    classification["section"]
+                )
+
+                current_clause = None
+
+                current_text.append(line)
+
+                continue
+
+            # -------------------------------------------------
+            # NEW CLAUSE
+            # -------------------------------------------------
+
+            if line_type == "clause":
+
+                if current_text:
+
+                    text = " ".join(
+                        current_text
+                    ).strip()
+
+                    if text:
+
+                        chunk_counter += 1
+
+                        metadata = add_legal_metadata(
+                            text=text,
+                            section=current_section,
+                            clause=current_clause,
+                        )
+
+                        chunks.append({
+
+                            "chunk_id": (
+                                f"{page['document_id']}_"
+                                f"{chunk_counter:06d}"
+                            ),
+
+                            "text": text,
+
+                            "page": page_number,
+
+                            "source": source,
+
+                            "document_id": (
+                                page["document_id"]
+                            ),
+
+                            "document": page.get(
+                                "document",
+                                page["document_id"]
+                            ),
+
+                            **metadata,
+                        })
+
+                    current_text = []
+
+                current_clause = (
+                    classification["clause"]
+                )
+
+                current_text.append(line)
+
+                continue
+
+            # -------------------------------------------------
+            # NORMAL TEXT
+            # -------------------------------------------------
+
+            current_text.append(line)
+
+        # -----------------------------------------------------
+        # END OF PAGE
+        # -----------------------------------------------------
+
+        if current_text:
+
+            text = " ".join(
+                current_text
+            ).strip()
+
+            if text:
+
+                chunk_counter += 1
+
+                metadata = add_legal_metadata(
+                    text=text,
+                    section=current_section,
+                    clause=current_clause,
+                )
+
+                chunks.append({
+
+                    "chunk_id": (
+                        f"{page['document_id']}_"
+                        f"{chunk_counter:06d}"
+                    ),
+
+                    "text": text,
+
+                    "page": page_number,
+
+                    "source": source,
+
+                    "document_id": (
+                        page["document_id"]
+                    ),
+
+                    "document": page.get(
+                        "document",
+                        page["document_id"]
+                    ),
+
+                    **metadata,
+                })
 
     return chunks
-
-
-# --------------------------------
-# Test
-# --------------------------------
-
-if __name__ == "__main__":
-
-    from document_loader import load_pdf
-
-    metadata = {
-        "document": "An Overview of Ayurveda",
-        "document_type": "ayurvedic_reference",
-        "jurisdiction": "India",
-        "language": "en",
-    }
-
-    pages = load_pdf(
-        "data/raw/An_Overview_of_Ayurveda.pdf",
-        metadata=metadata,
-    )
-
-    chunks = create_chunks(
-        pages,
-        chunk_size=1000,
-        chunk_overlap=200,
-    )
-
-    print(
-        f"\nCreated {len(chunks)} chunks"
-    )
-
-    for chunk in chunks[:5]:
-
-        print("\n")
-        print("=" * 70)
-
-        print(
-            f"Chunk ID: {chunk['chunk_id']}"
-        )
-
-        print(
-            f"Page: {chunk['page']}"
-        )
-
-        print(
-            f"Document: {chunk['document']}"
-        )
-
-        print(
-            f"Document Type: {chunk['document_type']}"
-        )
-
-        print(
-            f"Jurisdiction: {chunk['jurisdiction']}"
-        )
-
-        print(
-            f"Language: {chunk['language']}"
-        )
-
-        print(
-            f"Characters: {len(chunk['text'])}"
-        )
-
-        print("=" * 70)
-
-        print(chunk["text"])

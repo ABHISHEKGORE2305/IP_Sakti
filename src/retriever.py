@@ -123,6 +123,16 @@ class AyurvedicRetriever:
                         "section"
                     ),
 
+                "rule":
+                    payload.get(
+                        "rule"
+                    ),
+
+                "legal_reference":
+                    payload.get(
+                        "legal_reference"
+                    ),  
+
                 "language":
                     payload.get(
                         "language"

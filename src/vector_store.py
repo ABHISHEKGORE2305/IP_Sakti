@@ -131,6 +131,12 @@ class QdrantVectorStore:
                     "section":
                         chunk.get("section"),
 
+                    "rule":
+                        chunk.get("rule"),
+
+                    "legal_reference":
+                        chunk.get("legal_reference"),
+
                     "language":
                         chunk.get("language"),
                 },

@@ -113,6 +113,16 @@ class BM25Retriever:
                         "section"
                     ),
 
+                "rule":
+                    chunk.get(
+                        "rule"
+                    ),
+
+                "legal_reference":
+                    chunk.get(
+                        "legal_reference"
+                    ),  
+
                 "language":
                     chunk.get(
                         "language"
