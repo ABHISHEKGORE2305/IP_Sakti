@@ -76,13 +76,39 @@ function addUserMessage(text) {
 }
 
 function showLoader() {
+  const stages = [
+    "Embedding query with BAAI/bge-m3",
+    "Searching dense vectors in Qdrant",
+    "Running BM25 sparse retrieval",
+    "Fusing candidates with reciprocal rank fusion",
+    "Re-ranking with cross-encoder bge-reranker-v2-m3",
+    "Applying statutory-reference boosts",
+    "Assembling grounded context window",
+    "Generating answer with citations",
+  ];
+  const STEP_MS = 3000; // 7 transitions -> ~21s before settling on the last stage
+
   const el = document.createElement("div");
   el.className = "msg-loader";
   el.id = "activeLoader";
-  el.innerHTML = `<span class="spinner"></span><span>Searching statutory sources<span class="loader-dots"></span></span>`;
+  el.innerHTML = `<span class="spinner"></span><span class="loader-stage">${stages[0]}<span class="loader-dots"></span></span>`;
   chatMessages.appendChild(el);
   scrollChat();
-  return el;
+
+  const stageEl = el.querySelector(".loader-stage");
+  let i = 0;
+  const timer = setInterval(() => {
+    i = Math.min(i + 1, stages.length - 1);
+    if (stageEl) stageEl.innerHTML = `${stages[i]}<span class="loader-dots"></span>`;
+    if (i === stages.length - 1) clearInterval(timer);
+  }, STEP_MS);
+
+  return {
+    remove: () => {
+      clearInterval(timer);
+      el.remove();
+    },
+  };
 }
 
 let responseSeq = 0;
