@@ -3,17 +3,13 @@ from qdrant_client import QdrantClient
 from embedding_model import EmbeddingModel
 
 
-class MedicalRetriever:
+class AyurvedicRetriever:
 
     def __init__(
         self,
         qdrant_url: str = "http://localhost:6333",
         collection_name: str = "medical_documents",
     ):
-
-        # --------------------------------
-        # Connect to Qdrant
-        # --------------------------------
 
         self.client = QdrantClient(
             url=qdrant_url
@@ -22,11 +18,6 @@ class MedicalRetriever:
         self.collection_name = (
             collection_name
         )
-
-
-        # --------------------------------
-        # Load embedding model
-        # --------------------------------
 
         self.embedding_model = (
             EmbeddingModel()
@@ -43,7 +34,9 @@ class MedicalRetriever:
         top_k: int = 5,
     ):
 
-        # Convert question to embedding
+        # --------------------------------
+        # Convert query into embedding
+        # --------------------------------
 
         query_vector = (
             self.embedding_model.embed_text(
@@ -52,115 +45,88 @@ class MedicalRetriever:
         )
 
 
+        # --------------------------------
         # Search Qdrant
+        # --------------------------------
 
         results = self.client.query_points(
 
-            collection_name=self.collection_name,
+            collection_name=(
+                self.collection_name
+            ),
 
             query=query_vector,
 
             limit=top_k,
 
             with_payload=True,
-
         ).points
 
 
+        # --------------------------------
         # Format results
+        # --------------------------------
 
         formatted_results = []
 
-
         for result in results:
+
+            payload = result.payload
 
             formatted_results.append({
 
-                "score": result.score,
+                "score":
+                    result.score,
 
-                "text": result.payload[
-                    "text"
-                ],
+                "chunk_id":
+                    payload.get(
+                        "chunk_id"
+                    ),
 
-                "source": result.payload[
-                    "source"
-                ],
+                "text":
+                    payload.get(
+                        "text"
+                    ),
 
-                "page": result.payload[
-                    "page"
-                ],
+                "source":
+                    payload.get(
+                        "source"
+                    ),
 
-                "document_id": result.payload[
-                    "document_id"
-                ],
+                "page":
+                    payload.get(
+                        "page"
+                    ),
 
+                "document_id":
+                    payload.get(
+                        "document_id"
+                    ),
+
+                "document":
+                    payload.get(
+                        "document"
+                    ),
+
+                "document_type":
+                    payload.get(
+                        "document_type"
+                    ),
+
+                "jurisdiction":
+                    payload.get(
+                        "jurisdiction"
+                    ),
+
+                "section":
+                    payload.get(
+                        "section"
+                    ),
+
+                "language":
+                    payload.get(
+                        "language"
+                    ),
             })
 
-
         return formatted_results
-
-
-# --------------------------------
-# Test
-# --------------------------------
-
-if __name__ == "__main__":
-
-    retriever = MedicalRetriever()
-
-
-    question = (
-        "history of ayurveda"
-    )
-
-
-    results = retriever.search(
-        question,
-        top_k=5,
-    )
-
-
-    print(
-        f"\nQuestion: {question}"
-    )
-
-
-    print(
-        f"\nRetrieved "
-        f"{len(results)} chunks\n"
-    )
-
-
-    for i, result in enumerate(
-        results,
-        start=1
-    ):
-
-        print("=" * 80)
-
-        print(
-            f"Result #{i}"
-        )
-
-        print(
-            f"Score: "
-            f"{result['score']:.4f}"
-        )
-
-        print(
-            f"Source: "
-            f"{result['source']}"
-        )
-
-        print(
-            f"Page: "
-            f"{result['page']}"
-        )
-
-        print("\nText:")
-
-        print(
-            result["text"]
-        )
-
-        print()

@@ -2,6 +2,7 @@ from pathlib import Path
 import pymupdf
 import re
 
+
 def clean_text(text: str) -> str:
 
     # Replace multiple spaces/tabs
@@ -16,7 +17,10 @@ def clean_text(text: str) -> str:
     return text
 
 
-def load_pdf(pdf_path: str):
+def load_pdf(
+    pdf_path: str,
+    metadata: dict | None = None,
+):
 
     pdf_path = Path(pdf_path)
 
@@ -38,21 +42,37 @@ def load_pdf(pdf_path: str):
         if not text:
             continue
 
-        pages.append({
+        # Basic page metadata
+        page_data = {
             "text": text,
             "page": page_number + 1,
             "source": pdf_path.name,
             "document_id": pdf_path.stem,
-        })
+        }
+
+        # Add document-level metadata
+        if metadata:
+            page_data.update(metadata)
+
+        pages.append(page_data)
 
     document.close()
 
     return pages
 
+
 if __name__ == "__main__":
 
+    metadata = {
+        "document": "An Overview of Ayurveda",
+        "document_type": "reference",
+        "jurisdiction": "India",
+        "language": "en",
+    }
+
     pages = load_pdf(
-        "data/raw/An_Overview_of_Ayurveda.pdf"
+        "data/raw/An_Overview_of_Ayurveda.pdf",
+        metadata=metadata,
     )
 
     print(f"Loaded {len(pages)} pages")
@@ -62,8 +82,11 @@ if __name__ == "__main__":
         print("\n--------------------")
 
         print("Page:", page["page"])
-
         print("Source:", page["source"])
+        print("Document:", page.get("document"))
+        print("Document Type:", page.get("document_type"))
+        print("Jurisdiction:", page.get("jurisdiction"))
+        print("Language:", page.get("language"))
 
-        print("Text:")
+        print("\nText:")
         print(page["text"][:1000])

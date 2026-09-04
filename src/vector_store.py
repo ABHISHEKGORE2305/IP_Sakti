@@ -1,3 +1,5 @@
+import uuid
+
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
     Distance,
@@ -59,6 +61,21 @@ class QdrantVectorStore:
 
 
     # --------------------------------
+    # Generate deterministic Qdrant ID
+    # --------------------------------
+
+    @staticmethod
+    def generate_point_id(chunk_id: str) -> str:
+
+        return str(
+            uuid.uuid5(
+                uuid.NAMESPACE_DNS,
+                chunk_id,
+            )
+        )
+
+
+    # --------------------------------
     # Insert chunks
     # --------------------------------
 
@@ -72,22 +89,50 @@ class QdrantVectorStore:
 
         for chunk in chunks:
 
+            point_id = self.generate_point_id(
+                chunk["chunk_id"]
+            )
+
             point = PointStruct(
 
-                id=chunk["chunk_id"],
+                # Qdrant requires UUID or integer
+                id=point_id,
 
+                # 1024-dimensional embedding
                 vector=chunk["vector"],
 
+                # Chunk metadata
                 payload={
-                    "text": chunk["text"],
 
-                    "source": chunk["source"],
+                    "chunk_id":
+                        chunk["chunk_id"],
 
-                    "page": chunk["page"],
+                    "text":
+                        chunk["text"],
 
-                    "document_id": chunk[
-                        "document_id"
-                    ],
+                    "source":
+                        chunk["source"],
+
+                    "page":
+                        chunk["page"],
+
+                    "document_id":
+                        chunk["document_id"],
+
+                    "document":
+                        chunk.get("document"),
+
+                    "document_type":
+                        chunk.get("document_type"),
+
+                    "jurisdiction":
+                        chunk.get("jurisdiction"),
+
+                    "section":
+                        chunk.get("section"),
+
+                    "language":
+                        chunk.get("language"),
                 },
             )
 

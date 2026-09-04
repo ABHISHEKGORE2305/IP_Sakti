@@ -1,150 +1,151 @@
+from pathlib import Path
+import json
+
 from document_loader import load_pdf
 from chunker import create_chunks
 from embedding_model import EmbeddingModel
 from vector_store import QdrantVectorStore
-import json
+from document_config import DOCUMENTS
 
 
-# --------------------------------
-# Configuration
-# --------------------------------
+RAW_DIR = Path("data/raw")
+PROCESSED_DIR = Path("data/processed")
 
-PDF_PATH = (
-    "data/raw/An_Overview_of_Ayurveda.pdf"
-
-)
+COLLECTION_NAME = "medical_documents"
 
 
-# --------------------------------
-# Step 1: Load PDF
-# --------------------------------
-
-print("\n[1/4] Loading PDF...")
-
-pages = load_pdf(
-    PDF_PATH
-)
-
-print(
-    f"Loaded {len(pages)} pages"
-)
+print("\n" + "=" * 80)
+print("MULTI-DOCUMENT RAG INGESTION")
+print("=" * 80)
 
 
-# --------------------------------
-# Step 2: Create chunks
-# --------------------------------
+# --------------------------------------------------
+# 1. Load all documents
+# --------------------------------------------------
 
-print("\n[2/4] Creating chunks...")
+all_chunks = []
 
-chunks = create_chunks(
-    pages,
+print("\n[1/4] Loading documents...")
 
-    chunk_size=1000,
+for document_config in DOCUMENTS:
 
-    chunk_overlap=200,
-)
+    pdf_path = RAW_DIR / document_config["filename"]
 
-print(
-    f"Created {len(chunks)} chunks"
-)
+    print("\n" + "-" * 60)
+    print(f"Document: {document_config['document']}")
+    print(f"File: {pdf_path}")
+
+    if not pdf_path.exists():
+        print(f"WARNING: File not found: {pdf_path}")
+        continue
+
+    pages = load_pdf(
+        str(pdf_path),
+        metadata=document_config,
+    )
+
+    print(f"Pages loaded: {len(pages)}")
 
 
-# --------------------------------
-# Step 3: Generate embeddings
-# --------------------------------
+    # --------------------------------------------------
+    # 2. Create chunks
+    # --------------------------------------------------
 
-print("\n[3/4] Generating embeddings...")
+    chunks = create_chunks(
+        pages,
+        chunk_size=1000,
+        chunk_overlap=200,
+    )
+
+    print(f"Chunks created: {len(chunks)}")
+
+    all_chunks.extend(chunks)
+
+
+print("\n" + "=" * 80)
+print(f"TOTAL CHUNKS: {len(all_chunks)}")
+print("=" * 80)
+
+
+# --------------------------------------------------
+# 3. Generate embeddings
+# --------------------------------------------------
+
+print("\n[2/4] Generating embeddings...")
 
 embedding_model = EmbeddingModel()
 
-
 texts = [
     chunk["text"]
-    for chunk in chunks
+    for chunk in all_chunks
 ]
-
 
 vectors = embedding_model.embed_documents(
     texts
 )
 
-
-# Attach vectors to chunks
-
 for chunk, vector in zip(
-    chunks,
-    vectors
+    all_chunks,
+    vectors,
 ):
-
     chunk["vector"] = vector
 
+print("Embeddings generated successfully!")
 
-print(
-    "Embeddings generated"
+
+# --------------------------------------------------
+# 4. Save processed chunks
+# --------------------------------------------------
+
+print("\n[3/4] Saving processed chunks...")
+
+PROCESSED_DIR.mkdir(
+    parents=True,
+    exist_ok=True,
 )
 
-# --------------------------------
-# Save chunks for BM25
-# --------------------------------
-bm25_chunks = []
-
-for chunk in chunks:
-
-    bm25_chunks.append({
-
-        "chunk_id":
-            chunk["chunk_id"],
-
-        "text":
-            chunk["text"],
-
-        "source":
-            chunk["source"],
-
-        "page":
-            chunk["page"],
-
-        "document_id":
-            chunk["document_id"],
-    })
+chunks_path = (
+    PROCESSED_DIR / "chunks.json"
+)
 
 with open(
-    "data/processed/chunks.json",
+    chunks_path,
     "w",
     encoding="utf-8",
 ) as file:
 
     json.dump(
-        chunks,
+        all_chunks,
         file,
         ensure_ascii=False,
         indent=2,
     )
 
+print(f"Saved to: {chunks_path}")
 
-print(
-    "Saved chunks to "
-    "data/processed/chunks.json"
-)
 
-# --------------------------------
-# Step 4: Upload to Qdrant
-# --------------------------------
+# --------------------------------------------------
+# 5. Upload to Qdrant
+# --------------------------------------------------
 
 print("\n[4/4] Uploading to Qdrant...")
 
 vector_store = QdrantVectorStore(
     url="http://localhost:6333",
-
-    collection_name="medical_documents",
-
+    collection_name=COLLECTION_NAME,
     vector_size=1024,
 )
 
-
 vector_store.add_chunks(
-    chunks
+    all_chunks
 )
 
 
-print("\nINGESTION COMPLETE!")
+print("\n" + "=" * 80)
+print("MULTI-DOCUMENT INGESTION COMPLETE!")
+print("=" * 80)
+
+print(f"Documents configured: {len(DOCUMENTS)}")
+print(f"Chunks indexed: {len(all_chunks)}")
+print(f"Qdrant collection: {COLLECTION_NAME}")
+print("=" * 80)

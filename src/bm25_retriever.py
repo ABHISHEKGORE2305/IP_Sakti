@@ -10,37 +10,41 @@ class BM25Retriever:
 
         self.chunks = chunks
 
-        # -------------------------------
+        # --------------------------------
         # Tokenize documents
-        # -------------------------------
+        # --------------------------------
 
         self.tokenized_documents = [
-            self.tokenize(chunk["text"])
+            self.tokenize(
+                chunk["text"]
+            )
             for chunk in chunks
         ]
 
-        # -------------------------------
-        # Build BM25 index
-        # -------------------------------
+        # --------------------------------
+        # Create BM25 index
+        # --------------------------------
 
         self.bm25 = BM25Okapi(
             self.tokenized_documents
         )
 
 
-    # -----------------------------------
-    # Tokenizer
-    # -----------------------------------
+    # --------------------------------
+    # Tokenization
+    # --------------------------------
 
     @staticmethod
-    def tokenize(text: str):
+    def tokenize(
+        text: str
+    ):
 
         return text.lower().split()
 
 
-    # -----------------------------------
+    # --------------------------------
     # Search
-    # -----------------------------------
+    # --------------------------------
 
     def search(
         self,
@@ -71,19 +75,49 @@ class BM25Retriever:
 
             results.append({
 
-                "score": float(
-                    scores[index]
-                ),
+                "score":
+                    float(scores[index]),
 
-                "text": chunk["text"],
+                "chunk_id":
+                    chunk["chunk_id"],
 
-                "source": chunk["source"],
+                "text":
+                    chunk["text"],
 
-                "page": chunk["page"],
+                "source":
+                    chunk["source"],
+
+                "page":
+                    chunk["page"],
 
                 "document_id":
                     chunk["document_id"],
 
+                "document":
+                    chunk.get(
+                        "document"
+                    ),
+
+                "document_type":
+                    chunk.get(
+                        "document_type"
+                    ),
+
+                "jurisdiction":
+                    chunk.get(
+                        "jurisdiction"
+                    ),
+
+                "section":
+                    chunk.get(
+                        "section"
+                    ),
+
+                "language":
+                    chunk.get(
+                        "language"
+                    ),
             })
+
 
         return results

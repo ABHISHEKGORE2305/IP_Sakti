@@ -1,41 +1,48 @@
 import json
 
-from retriever import MedicalRetriever
+from retriever import AyurvedicRetriever
 from bm25_retriever import BM25Retriever
 
 
-class HybridRetriever:
+class AyurvedicHybridRetriever:
 
-    def __init__(self):
-
-        # --------------------------------
-        # Dense retriever
-        # --------------------------------
-
-        self.dense_retriever = (
-            MedicalRetriever()
-        )
-
+    def __init__(
+        self,
+        chunks_path: str = (
+            "data/processed/chunks.json"
+        ),
+        qdrant_url: str = "http://localhost:6333",
+        collection_name: str = "medical_documents",
+    ):
 
         # --------------------------------
-        # Load chunks
+        # Load chunks for BM25
         # --------------------------------
 
         with open(
-            "data/processed/chunks.json",
+            chunks_path,
             "r",
             encoding="utf-8",
         ) as file:
 
-            chunks = json.load(file)
+            self.chunks = json.load(file)
 
 
         # --------------------------------
-        # BM25 retriever
+        # Initialize retrievers
         # --------------------------------
+
+        self.dense_retriever = (
+            AyurvedicRetriever(
+                qdrant_url=qdrant_url,
+                collection_name=collection_name,
+            )
+        )
 
         self.bm25_retriever = (
-            BM25Retriever(chunks)
+            BM25Retriever(
+                self.chunks
+            )
         )
 
 
@@ -50,49 +57,57 @@ class HybridRetriever:
     ):
 
         fused_scores = {}
-
         result_data = {}
-
 
         for results in result_lists:
 
             for rank, result in enumerate(
                 results,
-                start=1
+                start=1,
             ):
 
-                key = (
-                    result["document_id"],
-                    result["page"],
-                    result["text"],
-                )
+                chunk_id = result[
+                    "chunk_id"
+                ]
 
-
-                fused_scores[key] = (
-                    fused_scores.get(key, 0)
+                fused_scores[chunk_id] = (
+                    fused_scores.get(
+                        chunk_id,
+                        0,
+                    )
                     + 1 / (k + rank)
                 )
 
+                result_data[
+                    chunk_id
+                ] = result
 
-                result_data[key] = result
 
+        # --------------------------------
+        # Sort by RRF score
+        # --------------------------------
 
-        ranked_keys = sorted(
+        ranked_chunk_ids = sorted(
             fused_scores,
             key=fused_scores.get,
             reverse=True,
         )
 
 
+        # --------------------------------
+        # Build final results
+        # --------------------------------
+
         final_results = []
 
+        for chunk_id in ranked_chunk_ids:
 
-        for key in ranked_keys:
-
-            result = result_data[key].copy()
+            result = result_data[
+                chunk_id
+            ].copy()
 
             result["rrf_score"] = (
-                fused_scores[key]
+                fused_scores[chunk_id]
             )
 
             final_results.append(
@@ -111,23 +126,36 @@ class HybridRetriever:
         self,
         query: str,
         top_k: int = 5,
+        candidate_k: int = 20,
     ):
+
+        # --------------------------------
+        # Dense retrieval
+        # --------------------------------
 
         dense_results = (
             self.dense_retriever.search(
                 query,
-                top_k=20,
+                top_k=candidate_k,
             )
         )
 
+
+        # --------------------------------
+        # BM25 retrieval
+        # --------------------------------
 
         bm25_results = (
             self.bm25_retriever.search(
                 query,
-                top_k=20,
+                top_k=candidate_k,
             )
         )
 
+
+        # --------------------------------
+        # RRF fusion
+        # --------------------------------
 
         fused_results = (
             self.reciprocal_rank_fusion(
@@ -140,63 +168,3 @@ class HybridRetriever:
 
 
         return fused_results[:top_k]
-
-
-# --------------------------------
-# Test
-# --------------------------------
-
-if __name__ == "__main__":
-
-    retriever = HybridRetriever()
-
-
-    query = (
-        "tell me about origin of ayurveda"
-    )
- 
-
-    results = retriever.search(
-        query,
-        top_k=5,
-    )
-
-
-    print(
-        f"\nQuery: {query}\n"
-    )
-
-
-    for i, result in enumerate(
-        results,
-        start=1
-    ):
-
-        print("=" * 80)
-
-        print(
-            f"Result #{i}"
-        )
-
-        print(
-            f"RRF Score: "
-            f"{result['rrf_score']:.5f}"
-        )
-
-        print(
-            f"Source: "
-            f"{result['source']}"
-        )
-
-        print(
-            f"Page: "
-            f"{result['page']}"
-        )
-
-        print("\nText:")
-
-        print(
-            result["text"]
-        )
-
-        print()

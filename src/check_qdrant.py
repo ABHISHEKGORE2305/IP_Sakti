@@ -1,75 +1,109 @@
 from qdrant_client import QdrantClient
 
 
-client = QdrantClient(
-    url="http://localhost:6333"
-)
-
-
+QDRANT_URL = "http://localhost:6333"
 COLLECTION_NAME = "medical_documents"
+
+
+client = QdrantClient(
+    url=QDRANT_URL
+)
 
 
 # --------------------------------
 # Collection information
 # --------------------------------
 
+print("\n==============================")
+print("QDRANT COLLECTION")
+print("==============================")
+
 info = client.get_collection(
     COLLECTION_NAME
 )
 
-
-print("\nCollection information:")
+print(
+    f"Collection: {COLLECTION_NAME}"
+)
 
 print(
-    "Vectors:",
-    info.points_count
+    f"Points stored: {info.points_count}"
 )
 
 
 # --------------------------------
-# Retrieve stored points
+# Retrieve sample points
 # --------------------------------
 
-results = client.scroll(
+print("\n==============================")
+print("SAMPLE POINTS")
+print("==============================")
+
+
+points = client.scroll(
     collection_name=COLLECTION_NAME,
-
     limit=3,
-
     with_payload=True,
-
     with_vectors=False,
-)
-
-
-points = results[0]
-
-
-print("\nStored documents:\n")
+)[0]
 
 
 for point in points:
 
-    print("=" * 70)
-
-    print("ID:", point.id)
+    print("\n------------------------------")
 
     print(
-        "Source:",
-        point.payload["source"]
+        "Qdrant ID:",
+        point.id
     )
 
     print(
-        "Page:",
-        point.payload["page"]
+        "Chunk ID:",
+        point.payload.get("chunk_id")
     )
 
     print(
         "Document:",
-        point.payload["document_id"]
+        point.payload.get("document")
     )
-
-    print("\nText:")
 
     print(
-        point.payload["text"][:500]
+        "Document Type:",
+        point.payload.get("document_type")
     )
+
+    print(
+        "Jurisdiction:",
+        point.payload.get("jurisdiction")
+    )
+
+    print(
+        "Page:",
+        point.payload.get("page")
+    )
+
+    print(
+        "Language:",
+        point.payload.get("language")
+    )
+
+    print(
+        "Section:",
+        point.payload.get("section")
+    )
+
+    text = point.payload.get(
+        "text",
+        ""
+    )
+
+    print(
+        "Text:",
+        text[:300],
+        "..."
+    )
+
+
+print("\n==============================")
+print("VERIFICATION COMPLETE")
+print("==============================")
