@@ -27,6 +27,9 @@ class ContextBuilder:
                 f"SOURCE {index}\n"
                 f"Document: {result.get('document')}\n"
                 f"Page: {result.get('page')}\n"
+                f"Legal Reference: {result.get('legal_reference')}\n"
+                f"Section: {result.get('section')}\n"
+                f"Rule: {result.get('rule')}\n"
                 f"Chunk ID: {result.get('chunk_id')}\n"
                 f"\n"
                 f"{text}\n"
@@ -49,6 +52,10 @@ class ContextBuilder:
                 "source": result.get("source"),
                 "page": result.get("page"),
                 "section": result.get("section"),
+                "rule": result.get("rule"),
+                "legal_reference": result.get(
+                    "legal_reference"
+                ),
                 "reranker_score": result.get(
                     "reranker_score"
                 ),
