@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ayurveda &amp; Indian Patent Law — RAG Assistant</title>
+  <meta name="description" content="A retrieval-grounded assistant for Indian patent law, Ayurvedic inventions and traditional knowledge. Answers cite the statutory sources they were built from." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="landing.css" />
+</head>
+<body>
+
+  <header class="nav">
+    <span class="nav-brand">Ayurveda &amp; Indian Patent Law</span>
+    <div class="nav-right">
+      <span class="status-pill" id="statusPill">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusLabel">Checking backend…</span>
+      </span>
+      <a href="index.html" class="btn-primary">Open the assistant →</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <section class="hero">
+      <h1>Retrieval-grounded answers on Indian patent law &amp; Ayurveda</h1>
+      <p class="lead">
+        Ask about the Patents Act, patentability of traditional knowledge, or Ayurvedic
+        formulations. Every answer is generated only from a fixed corpus of official
+        documents and lists the exact statutory sources it used.
+      </p>
+      <div class="hero-actions">
+        <a href="index.html" class="btn-primary">Open the assistant</a>
+        <a href="#demo" class="btn-secondary">Try a question below</a>
+      </div>
+    </section>
+
+    <section class="pipeline">
+      <h2>How it answers</h2>
+      <ol>
+        <li><strong>Retrieve</strong> — dense (BGE-M3) + BM25 search over 7 official documents</li>
+        <li><strong>Fuse &amp; rerank</strong> — reciprocal-rank fusion, then a cross-encoder reranker</li>
+        <li><strong>Boost</strong> — explicit references like "Section 3(p)" pull the statute to the top</li>
+        <li><strong>Generate</strong> — the model answers only from the retrieved text, with citations</li>
+      </ol>
+    </section>
+
+    <section class="corpus">
+      <h2>Knowledge base</h2>
+      <ul>
+        <li>The Patents Act, 1970 <span>statute</span></li>
+        <li>The Patents Rules, 2003 <span>rules</span></li>
+        <li>Pharmaceuticals Examination Guidelines <span>guidance</span></li>
+        <li>TK &amp; Biological Material Guidelines <span>guidance</span></li>
+        <li>Manual of Patent Office Practice &amp; Procedure <span>manual</span></li>
+        <li>TKDL Factsheet <span>reference</span></li>
+        <li>An Overview of Ayurveda <span>reference</span></li>
+      </ul>
+    </section>
+
+    <section class="demo" id="demo">
+      <h2>Quick demo</h2>
+      <div class="demo-chips">
+        <button onclick="landingAsk('What is Section 3(p) of the Patents Act?')">What is Section 3(p)?</button>
+        <button onclick="landingAsk('Can traditional knowledge be patented in India?')">Can traditional knowledge be patented?</button>
+        <button onclick="landingAsk('What is inventive step under the Patents Act?')">What is inventive step?</button>
+      </div>
+      <div class="demo-input">
+        <input type="text" id="demoInput" placeholder="Ask a question…" autocomplete="off" />
+        <button id="demoSend" onclick="landingAsk()">Ask</button>
+      </div>
+      <div class="demo-output" id="demoOutput">
+        <p class="demo-placeholder">The answer and its statutory sources will appear here. Open the full assistant for the complete experience.</p>
+      </div>
+      <p class="demo-note">Informational only, grounded in retrieved statutory sources. Not legal advice.</p>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <span>Ayurveda &amp; Indian Patent Law — RAG Assistant</span>
+    <a href="index.html">Open the assistant →</a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="landing.js"></script>
+</body>
+</html>

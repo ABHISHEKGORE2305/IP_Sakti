@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ayurveda &amp; Indian Patent Law — RAG Assistant</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="app-title">
+      <span class="app-title-main">Ayurveda &amp; Indian Patent Law</span>
+      <span class="app-title-sub">Retrieval-grounded legal research assistant</span>
+    </div>
+    <div class="header-right">
+      <span class="status-pill" id="statusPill" title="Backend status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusLabel">Checking backend…</span>
+      </span>
+      <button id="exportBtn" class="btn-ghost" title="Download this conversation as Markdown">Export chat</button>
+    </div>
+  </header>
+
+  <div class="app-layout">
+
+    <!-- ================= LEFT: EXAMPLES + CORPUS ================= -->
+    <aside class="sidebar-left">
+      <div class="panel">
+        <div class="panel-header">Example questions</div>
+        <div class="panel-body">
+          <button class="example-btn" onclick="sendQuickPrompt('What is Section 3(p) of the Patents Act?')">What is Section 3(p) of the Patents Act?</button>
+          <button class="example-btn" onclick="sendQuickPrompt('What does Section 3(d) of the Patents Act say?')">What does Section 3(d) say?</button>
+          <button class="example-btn" onclick="sendQuickPrompt('Can traditional knowledge be patented in India?')">Can traditional knowledge be patented?</button>
+          <button class="example-btn" onclick="sendQuickPrompt('Can an Ayurvedic formulation made from known ingredients be patented?')">Formulation from known ingredients</button>
+          <button class="example-btn" onclick="sendQuickPrompt('Can I patent a new process for preparing an Ayurvedic medicine?')">A new preparation process</button>
+          <button class="example-btn" onclick="sendQuickPrompt('What is inventive step under the Patents Act?')">What is inventive step?</button>
+          <button class="example-btn" onclick="sendQuickPrompt('What are the requirements for filing a patent in India?')">Requirements for filing a patent</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">Knowledge base</div>
+        <div class="panel-body">
+          <ul class="kb-list">
+            <li><span>The Patents Act, 1970</span><em>statute</em></li>
+            <li><span>The Patents Rules, 2003</span><em>rules</em></li>
+            <li><span>Pharmaceuticals Examination Guidelines</span><em>guidance</em></li>
+            <li><span>TK &amp; Biological Material Guidelines</span><em>guidance</em></li>
+            <li><span>Manual of Patent Office Practice</span><em>manual</em></li>
+            <li><span>TKDL Factsheet</span><em>reference</em></li>
+            <li><span>An Overview of Ayurveda</span><em>reference</em></li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ================= CENTER: CHAT ================= -->
+    <main class="chat-panel panel">
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg msg-bot">
+          <div class="msg-body">
+            <p>Ask a question about Indian patent law, Ayurvedic inventions, or traditional knowledge.</p>
+            <p class="msg-note">Answers are generated only from retrieved statutory sources. Click any answer to see the sources it used in the right panel.</p>
+          </div>
+        </div>
+      </div>
+
+      <form id="chatForm" class="chat-input">
+        <input type="text" id="chatInput" placeholder="Ask a question…" autocomplete="off" required />
+        <button type="submit" id="sendBtn">Ask</button>
+      </form>
+    </main>
+
+    <!-- ================= RIGHT: SOURCES ================= -->
+    <aside class="sidebar-right panel">
+      <div class="panel-header">
+        Sources
+        <span class="src-count" id="srcCount"></span>
+      </div>
+      <div class="panel-body" id="sourcesBody">
+        <p class="sources-empty" id="sourcesEmpty">
+          Ask a question, then click any answer in the chat to see the statutory sources it was grounded in.
+        </p>
+        <div id="sourcesList" class="sources-list hidden"></div>
+      </div>
+    </aside>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
