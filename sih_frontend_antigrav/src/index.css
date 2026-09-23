@@ -1,0 +1,230 @@
+/* ============================================================
+   AYURX DESIGN SYSTEM — index.css
+   ============================================================ */
+
+/* Google Fonts already loaded in index.html */
+
+/* ─── CSS Custom Properties ─────────────────────────────── */
+:root {
+  /* Background */
+  --bg-primary: #0b1510;
+  --bg-secondary: #111d14;
+  --bg-card: rgba(15, 28, 18, 0.85);
+  --bg-card-hover: rgba(20, 38, 24, 0.92);
+
+  /* Accents */
+  --gold: #b8963e;
+  --gold-light: #d4ab5a;
+  --gold-muted: rgba(184, 150, 62, 0.35);
+  --gold-glow: rgba(184, 150, 62, 0.12);
+
+  /* Text */
+  --text-primary: #f0ebe0;
+  --text-secondary: #c8bfa8;
+  --text-muted: #8a7d68;
+  --text-gold: #c9a84c;
+
+  /* Parchment / Warm Beige */
+  --parchment: #e8dfc8;
+  --parchment-dark: #c4b898;
+
+  /* Borders */
+  --border-gold: rgba(184, 150, 62, 0.25);
+  --border-subtle: rgba(160, 205, 158, 0.12); /* Subtle dark-sage */
+
+  /* Shadows */
+  --shadow-card: 0 8px 40px rgba(0, 0, 0, 0.45);
+  --shadow-gold: 0 0 20px rgba(184, 150, 62, 0.18);
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-devanagari: 'Yatra One', 'Rozha One', 'Noto Sans Devanagari', serif;
+  --font-script: 'Great Vibes', 'Alex Brush', 'Pinyon Script', cursive;
+  --font-serif: 'Cormorant Garamond', serif;
+
+  /* Spacing */
+  --section-pad-y: clamp(70px, 7vw, 100px);
+  --section-pad-x: clamp(20px, 6vw, 80px);
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* Transitions */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+/* ─── Reset ────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img, video, canvas {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* ─── Utility Classes ──────────────────────────────────── */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--section-pad-x);
+}
+
+.section {
+  padding: var(--section-pad-y) 0;
+  position: relative;
+}
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-gold);
+  margin-bottom: 18px;
+}
+
+.section-label::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.section-heading {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 500;
+  line-height: 1.22;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.section-subheading {
+  font-size: clamp(0.95rem, 1.5vw, 1.08rem);
+  color: var(--text-secondary);
+  max-width: 580px;
+  line-height: 1.7;
+  margin-top: 16px;
+}
+
+/* ─── Gold Divider ─────────────────────────────────────── */
+.gold-divider {
+  width: 48px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  margin: 0;
+}
+
+/* ─── CTA Button ───────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 28px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-gold);
+  background: rgba(184, 150, 62, 0.1);
+  color: var(--text-gold);
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  transition: all 0.35s var(--ease-out);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 24px rgba(184, 150, 62, 0.08), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.btn-primary:hover {
+  background: rgba(184, 150, 62, 0.18);
+  border-color: rgba(184, 150, 62, 0.55);
+  box-shadow: 0 0 32px rgba(184, 150, 62, 0.2);
+  transform: translateY(-1px);
+}
+
+.btn-primary:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+.btn-arrow {
+  transition: transform 0.3s var(--ease-out);
+  font-size: 1rem;
+}
+
+/* ─── Cards ────────────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 32px 28px;
+  transition: all 0.35s var(--ease-out);
+  backdrop-filter: blur(8px);
+}
+
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(160, 205, 158, 0.25);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card);
+}
+
+/* ─── Reduced Motion ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Scrollbar ────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gold-muted);
+  border-radius: 2px;
+}

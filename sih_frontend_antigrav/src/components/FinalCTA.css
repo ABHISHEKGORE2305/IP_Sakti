@@ -1,0 +1,90 @@
+/* FinalCTA.css */
+.finalcta-section {
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Radial warm glow */
+.finalcta-section__bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 55% 50% at 50% 60%, rgba(90, 55, 12, 0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 40% at 50% 100%, rgba(10, 40, 20, 0.55) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.finalcta-section__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.finalcta-section__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 640px;
+}
+
+/* Decorative top divider line */
+.finalcta-section__content::before {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin-bottom: 24px;
+  opacity: 0.6;
+}
+
+.finalcta-section__heading {
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.finalcta-section__heading em {
+  font-style: italic;
+  color: var(--gold-light);
+}
+
+.finalcta-section__sub {
+  text-align: center;
+  margin-bottom: 36px;
+  max-width: 480px;
+}
+
+.finalcta-section__cta {
+  font-size: 0.95rem;
+  padding: 15px 36px;
+  margin-bottom: 64px;
+}
+
+/* Ghost logo echo */
+.finalcta-section__logo-echo {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  opacity: 0.04;
+  user-select: none;
+  pointer-events: none;
+}
+
+.finalcta-section__logo-echo .logo-devanagari {
+  font-family: var(--font-devanagari);
+  font-size: 6rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.finalcta-section__logo-echo .logo-x {
+  font-family: var(--font-script);
+  font-size: 8.5rem;
+  color: var(--gold);
+  line-height: 1;
+  top: 12px;
+  position: relative;
+}

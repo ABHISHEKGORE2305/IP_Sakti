@@ -1,0 +1,273 @@
+/* HowItWorks.css */
+.how-section {
+  background: var(--bg-secondary);
+}
+
+.how-section__header {
+  max-width: 640px;
+  margin-bottom: 64px;
+}
+
+/* ── Step Flow ── */
+.how-section__flow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  position: relative;
+  margin-bottom: 48px;
+}
+
+/* Connecting track */
+.how-section__track {
+  position: absolute;
+  top: 40px;
+  left: calc(12.5% + 20px);
+  right: calc(12.5% + 20px);
+  height: 1px;
+  background: var(--border-gold);
+  z-index: 0;
+}
+
+.how-section__track-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+  transform-origin: left;
+}
+
+/* Each step */
+.how-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 16px;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.how-step:hover { transform: translateY(-4px); }
+
+/* Icon */
+.how-step__icon-wrap {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.how-step__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
+}
+
+.how-step--active .how-step__icon,
+.how-step:hover .how-step__icon {
+  border-color: var(--gold);
+  background: rgba(184, 150, 62, 0.12);
+  color: var(--text-gold);
+  box-shadow: 0 0 20px rgba(184, 150, 62, 0.2);
+}
+
+.how-step__number {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--gold);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-gold);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.how-step__title {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  transition: color 0.3s ease;
+}
+
+.how-step--active .how-step__title { color: var(--text-gold); }
+
+.how-step__desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* Arrow connector */
+.how-step__arrow {
+  position: absolute;
+  top: 18px;
+  right: -10px;
+  font-size: 1rem;
+  color: var(--gold-muted);
+  pointer-events: none;
+}
+
+/* Detail panel & Showcase */
+.how-section__showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.how-section__detail {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px 28px;
+  background: linear-gradient(135deg, rgba(15, 28, 20, 0.92) 0%, rgba(10, 22, 15, 0.96) 100%);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color 0.3s ease;
+}
+
+.how-section__detail:hover {
+  border-color: var(--border-gold);
+}
+
+.how-section__detail-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.how-section__detail-num {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.how-section__detail-title {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.how-section__detail-desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.how-section__detail-tags {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.how-tag {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(184, 150, 62, 0.1);
+  border: 1px solid rgba(184, 150, 62, 0.25);
+  color: var(--text-gold);
+}
+
+/* Visual Card with ayurved1.png */
+.how-section__visual-card {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 28px;
+  align-items: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(17, 29, 20, 0.9) 0%, rgba(11, 21, 16, 0.95) 100%);
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.3s ease;
+}
+
+.how-section__visual-card:hover {
+  border-color: var(--border-gold);
+}
+
+.how-section__visual-media {
+  width: 100%;
+  height: 200px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid rgba(184, 150, 62, 0.2);
+  background: #09150d;
+}
+
+.how-section__visual-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 10px;
+  display: block;
+}
+
+.how-section__visual-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.how-section__visual-badge {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+
+.how-section__visual-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.how-section__visual-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .how-section__flow {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px 0;
+  }
+  .how-section__track { display: none; }
+  .how-step__arrow { display: none; }
+  .how-section__visual-card {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .how-section__visual-media {
+    height: 180px;
+  }
+}
+
+@media (max-width: 540px) {
+  .how-section__flow {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .how-section__detail { padding: 18px 20px; }
+}
