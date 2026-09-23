@@ -1,0 +1,11 @@
+{
+  "name": "ip-sakti",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix sih_frontend_antigrav run dev",
+    "build": "npm --prefix sih_frontend_antigrav run build",
+    "lint": "npm --prefix sih_frontend_antigrav run lint",
+    "preview": "npm --prefix sih_frontend_antigrav run preview"
+  }
+}

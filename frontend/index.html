@@ -1,96 +1,286 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ayurveda &amp; Indian Patent Law — RAG Assistant</title>
+  <title>AyurX — Ayurvedic AI Assistant</title>
+  <meta name="description" content="AyurX — Evidence-based Ayurvedic AI assistant grounded in classical texts and scientific sources." />
+  <meta name="theme-color" content="#0b1510" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Great+Vibes&family=Inter:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+  />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <header class="app-header">
-    <div class="app-title">
-      <span class="app-title-main">Ayurveda &amp; Indian Patent Law</span>
-      <span class="app-title-sub">Retrieval-grounded legal research assistant</span>
+  <!-- ═══════════════ LEFT SIDEBAR ═══════════════ -->
+  <aside class="sidebar" id="sidebar" aria-label="Navigation sidebar">
+
+    <!-- Logo + export -->
+    <div class="sidebar__header">
+      <a href="/" class="sidebar__logo" aria-label="Back to AyurX home">
+        <span class="sidebar__logo-dev">आयुर</span><span class="sidebar__logo-x">X</span>
+      </a>
+      <button class="sidebar__icon-btn" id="exportBtn" title="Export conversation as Markdown" aria-label="Export conversation">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+        </svg>
+      </button>
     </div>
-    <div class="header-right">
-      <span class="status-pill" id="statusPill" title="Backend status">
-        <span class="status-dot" id="statusDot"></span>
-        <span id="statusLabel">Checking backend…</span>
-      </span>
-      <button id="exportBtn" class="btn-ghost" title="Download this conversation as Markdown">Export chat</button>
+
+    <!-- New Chat -->
+    <button class="sidebar__new-chat" onclick="window.location.reload()" aria-label="Start a new chat">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      New Chat
+    </button>
+
+    <!-- Chat history (visual / functional suggestion links) -->
+    <nav class="sidebar__history" aria-label="Chat history">
+
+      <div class="sidebar__section">
+        <p class="sidebar__section-label">Today</p>
+        <ul class="sidebar__items">
+          <li>
+            <button class="sidebar__item sidebar__item--active" onclick="sendQuickPrompt('What are the benefits of turmeric for inflammation?')">
+              <svg class="sidebar__item-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Turmeric for inflammation
+            </button>
+          </li>
+          <li>
+            <button class="sidebar__item" onclick="sendQuickPrompt('What is the Ayurvedic diet for PCOS?')">
+              <svg class="sidebar__item-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Ayurvedic diet for PCOS
+            </button>
+          </li>
+          <li>
+            <button class="sidebar__item" onclick="sendQuickPrompt('What is the difference between Vata, Pitta and Kapha?')">
+              <svg class="sidebar__item-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Difference between Vata …
+            </button>
+          </li>
+          <li>
+            <button class="sidebar__item" onclick="sendQuickPrompt('Which herbs help with better sleep in Ayurveda?')">
+              <svg class="sidebar__item-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Herbs for better sleep
+            </button>
+          </li>
+          <li>
+            <button class="sidebar__item" onclick="sendQuickPrompt('Is Ashwagandha safe for daily use?')">
+              <svg class="sidebar__item-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Is Ashwagandha safe?
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar__section">
+        <p class="sidebar__section-label">Yesterday</p>
+        <ul class="sidebar__items">
+          <li>
+            <button class="sidebar__item" onclick="sendQuickPrompt('What are the benefits of Panchakarma therapy?')">
+              <svg class="sidebar__item-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Panchakarma benefits
+            </button>
+          </li>
+          <li>
+            <button class="sidebar__item" onclick="sendQuickPrompt('How does Ayurveda approach gut health?')">
+              <svg class="sidebar__item-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Ayurveda for gut health
+            </button>
+          </li>
+          <li>
+            <button class="sidebar__item" onclick="sendQuickPrompt('What is the correct Triphala dosage?')">
+              <svg class="sidebar__item-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Triphala dosage
+            </button>
+          </li>
+          <li>
+            <button class="sidebar__item" onclick="sendQuickPrompt('What does Ayurveda say about skin care?')">
+              <svg class="sidebar__item-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Skin care in Ayurveda
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar__section">
+        <p class="sidebar__section-label">Past 7 Days</p>
+        <ul class="sidebar__items">
+          <li>
+            <button class="sidebar__item" onclick="sendQuickPrompt('What is the Ayurvedic view on stress and anxiety?')">
+              <svg class="sidebar__item-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Ayurvedic view on stress
+            </button>
+          </li>
+          <li>
+            <button class="sidebar__item" onclick="sendQuickPrompt('Compare Brahmi and Shankhpushpi for memory and cognition.')">
+              <svg class="sidebar__item-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Brahmi vs Shankhpushpi
+            </button>
+          </li>
+          <li>
+            <button class="sidebar__item" onclick="sendQuickPrompt('What Ayurvedic herbs help boost immunity?')">
+              <svg class="sidebar__item-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Diet for immunity
+            </button>
+          </li>
+          <li>
+            <button class="sidebar__item" onclick="sendQuickPrompt('Explain the concept of doshas in simple terms.')">
+              <svg class="sidebar__item-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Explain doshas simply
+            </button>
+          </li>
+        </ul>
+      </div>
+
+    </nav>
+
+    <!-- User profile -->
+    <div class="sidebar__user">
+      <div class="sidebar__avatar" aria-hidden="true">D</div>
+      <div class="sidebar__user-info">
+        <span class="sidebar__user-name">Dishita</span>
+        <span class="sidebar__user-email">dishita@email.com</span>
+      </div>
+      <button class="sidebar__icon-btn sidebar__user-more" aria-label="User options">⋯</button>
     </div>
-  </header>
 
-  <div class="app-layout">
+  </aside>
 
-    <!-- ================= LEFT: EXAMPLES + CORPUS ================= -->
-    <aside class="sidebar-left">
-      <div class="panel">
-        <div class="panel-header">Example questions</div>
-        <div class="panel-body">
-          <button class="example-btn" onclick="sendQuickPrompt('What is Section 3(p) of the Patents Act?')">What is Section 3(p) of the Patents Act?</button>
-          <button class="example-btn" onclick="sendQuickPrompt('What does Section 3(d) of the Patents Act say?')">What does Section 3(d) say?</button>
-          <button class="example-btn" onclick="sendQuickPrompt('Can traditional knowledge be patented in India?')">Can traditional knowledge be patented?</button>
-          <button class="example-btn" onclick="sendQuickPrompt('Can an Ayurvedic formulation made from known ingredients be patented?')">Formulation from known ingredients</button>
-          <button class="example-btn" onclick="sendQuickPrompt('Can I patent a new process for preparing an Ayurvedic medicine?')">A new preparation process</button>
-          <button class="example-btn" onclick="sendQuickPrompt('What is inventive step under the Patents Act?')">What is inventive step?</button>
-          <button class="example-btn" onclick="sendQuickPrompt('What are the requirements for filing a patent in India?')">Requirements for filing a patent</button>
+  <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+  <div class="main-wrap">
+
+    <!-- Top navigation bar -->
+    <header class="topbar" role="banner">
+      <nav class="topbar__nav" aria-label="Content navigation">
+        <a href="#" class="topbar__link topbar__link--active">Ayurveda</a>
+        <a href="#" class="topbar__link">Sources</a>
+        <a href="#" class="topbar__link">Use Cases</a>
+      </nav>
+      <div class="topbar__right">
+        <span class="status-pill" id="statusPill" title="Backend status">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusLabel">Checking…</span>
+        </span>
+        <div class="topbar__avatar" aria-label="User account">D</div>
+      </div>
+    </header>
+
+    <!-- Chat body -->
+    <div class="chat-body">
+
+      <!-- Botanical background decoration -->
+      <div class="chat-bg-deco" aria-hidden="true"></div>
+
+      <!-- Empty / welcome state — hidden once a user message appears -->
+      <div class="chat-empty" id="chatEmpty" aria-label="Welcome screen">
+        <!-- Gold leaf icon -->
+        <div class="chat-empty__icon" aria-hidden="true">
+          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M30 52 C30 52 10 42 10 24 C10 13.5 18.5 5 29 5 C39.5 5 48 13.5 48 24 C48 42 28 52 28 52" stroke="#c9a84c" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <path d="M30 52 L30 28" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"/>
+            <path d="M30 28 C30 28 20 22 20 14" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <path d="M30 28 C30 28 40 22 40 14" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <path d="M30 36 C30 36 22 31 22 24" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.6"/>
+            <path d="M30 36 C30 36 38 31 38 24" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.6"/>
+          </svg>
         </div>
-      </div>
 
-      <div class="panel">
-        <div class="panel-header">Knowledge base</div>
-        <div class="panel-body">
-          <ul class="kb-list">
-            <li><span>The Patents Act, 1970</span><em>statute</em></li>
-            <li><span>The Patents Rules, 2003</span><em>rules</em></li>
-            <li><span>Pharmaceuticals Examination Guidelines</span><em>guidance</em></li>
-            <li><span>TK &amp; Biological Material Guidelines</span><em>guidance</em></li>
-            <li><span>Manual of Patent Office Practice</span><em>manual</em></li>
-            <li><span>TKDL Factsheet</span><em>reference</em></li>
-            <li><span>An Overview of Ayurveda</span><em>reference</em></li>
-          </ul>
-        </div>
-      </div>
-    </aside>
-
-    <!-- ================= CENTER: CHAT ================= -->
-    <main class="chat-panel panel">
-      <div class="chat-messages" id="chatMessages">
-        <div class="msg msg-bot">
-          <div class="msg-body">
-            <p>Ask a question about Indian patent law, Ayurvedic inventions, or traditional knowledge.</p>
-            <p class="msg-note">Answers are generated only from retrieved statutory sources. Click any answer to see the sources it used in the right panel.</p>
-          </div>
-        </div>
-      </div>
-
-      <form id="chatForm" class="chat-input">
-        <input type="text" id="chatInput" placeholder="Ask a question…" autocomplete="off" required />
-        <button type="submit" id="sendBtn">Ask</button>
-      </form>
-    </main>
-
-    <!-- ================= RIGHT: SOURCES ================= -->
-    <aside class="sidebar-right panel">
-      <div class="panel-header">
-        Sources
-        <span class="src-count" id="srcCount"></span>
-      </div>
-      <div class="panel-body" id="sourcesBody">
-        <p class="sources-empty" id="sourcesEmpty">
-          Ask a question, then click any answer in the chat to see the statutory sources it was grounded in.
+        <h1 class="chat-empty__heading">How can I help you today?</h1>
+        <p class="chat-empty__sub">
+          Ask anything about Ayurveda — from herbs and treatments<br />
+          to lifestyle, diet, and classical text references.
         </p>
-        <div id="sourcesList" class="sources-list hidden"></div>
-      </div>
-    </aside>
 
-  </div>
+        <!-- Suggestion pills — all call the existing sendQuickPrompt handler -->
+        <div class="suggestion-grid" role="group" aria-label="Suggested questions">
+          <button class="suggestion-pill" onclick="sendQuickPrompt('What are the benefits of Ashwagandha?')">Benefits of Ashwagandha</button>
+          <button class="suggestion-pill" onclick="sendQuickPrompt('What is the Ayurvedic diet for PCOS?')">Diet for PCOS (Ayurvedic view)</button>
+          <button class="suggestion-pill" onclick="sendQuickPrompt('Explain Vata, Pitta and Kapha doshas.')">Explain Vata, Pitta, Kapha</button>
+          <button class="suggestion-pill" onclick="sendQuickPrompt('What are natural remedies for better sleep in Ayurveda?')">Natural remedies for better sleep</button>
+          <button class="suggestion-pill" onclick="sendQuickPrompt('What is the Ayurvedic approach to gut health?')">Ayurvedic approach to gut health</button>
+        </div>
+      </div>
+
+      <!-- Messages — populated by app.js -->
+      <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Chat messages"></div>
+
+    </div><!-- /.chat-body -->
+
+    <!-- Input area -->
+    <div class="input-wrap">
+      <form id="chatForm" class="input-card" autocomplete="off" aria-label="Send a message">
+        <input
+          type="text"
+          id="chatInput"
+          class="chat-input-field"
+          placeholder="Ask your Ayurvedic query…"
+          autocomplete="off"
+          aria-label="Type your question"
+          required
+        />
+        <div class="input-toolbar">
+          <!-- Attachment (visual) -->
+          <button type="button" class="toolbar-btn" title="Attach file" aria-label="Attach file (coming soon)" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+            </svg>
+          </button>
+
+          <!-- Search sources toggle (visual) -->
+          <label class="search-toggle-label" for="searchSourcesCheck" title="Toggle source search">
+            <input type="checkbox" id="searchSourcesCheck" class="search-toggle-check" />
+            <span class="search-toggle-track" aria-hidden="true"><span class="search-toggle-thumb"></span></span>
+            <span class="search-toggle-text">Search sources</span>
+          </label>
+
+          <span class="toolbar-spacer" aria-hidden="true"></span>
+
+          <!-- Microphone (visual) -->
+          <button type="button" class="toolbar-btn" title="Voice input" aria-label="Voice input (coming soon)" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </button>
+
+          <!-- Send button — ID required by app.js -->
+          <button type="submit" id="sendBtn" class="send-btn" aria-label="Send message">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
+            </svg>
+          </button>
+        </div>
+      </form>
+      <p class="input-disclaimer">
+        <strong>आयुर X</strong> provides evidence-aware information from authentic Ayurvedic sources.
+        This is not a substitute for professional medical advice.
+      </p>
+    </div><!-- /.input-wrap -->
+
+  </div><!-- /.main-wrap -->
+
+  <!-- ═══════════════ RIGHT SOURCES SIDEBAR ═══════════════ -->
+  <aside class="sources-sidebar" id="sourcesSidebar" aria-label="Retrieved sources">
+    <div class="sources-sidebar__header">
+      Sources
+      <span class="src-count" id="srcCount"></span>
+    </div>
+    <div class="sources-sidebar__body" id="sourcesBody">
+      <p class="sources-empty" id="sourcesEmpty">
+        Ask a question, then click any answer to see the statutory sources it was grounded in.
+      </p>
+      <div id="sourcesList" class="sources-list hidden"></div>
+    </div>
+  </aside>
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="app.js"></script>
