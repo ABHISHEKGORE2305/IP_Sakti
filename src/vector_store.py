@@ -17,13 +17,15 @@ class QdrantVectorStore:
         url: str = config.QDRANT_URL,
         collection_name: str = config.COLLECTION_NAME,
         vector_size: int = config.VECTOR_SIZE,
+        api_key: str | None = config.QDRANT_API_KEY,
     ):
 
         self.collection_name = collection_name
         self.vector_size = vector_size
 
         self.client = QdrantClient(
-            url=url
+            url=url,
+            api_key=api_key,
         )
 
         self._create_collection_if_needed()

@@ -5,10 +5,13 @@ every consumer still accepts constructor/call overrides, so tests and
 one-off scripts can override without touching this file.
 """
 
+import os
+
 # --------------------------------------------------------------------
 # Qdrant
 # --------------------------------------------------------------------
-QDRANT_URL = "http://localhost:6333"
+QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY", None)
 COLLECTION_NAME = "medical_documents"
 VECTOR_SIZE = 1024
 
@@ -51,5 +54,6 @@ RERANK_STEEPNESS = 12.0
 # API server
 # --------------------------------------------------------------------
 API_HOST = "0.0.0.0"
-API_PORT = 8000
-CORS_ALLOW_ORIGINS = ["*"]
+API_PORT = int(os.getenv("PORT", "8000"))
+_frontend_url = os.getenv("FRONTEND_URL")
+CORS_ALLOW_ORIGINS = [_frontend_url] if _frontend_url else ["*"]
