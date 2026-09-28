@@ -1,0 +1,35 @@
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Node
+node_modules/
+sih_frontend_antigrav/dist/
+
+# Local Qdrant database (no longer needed after cloud migration)
+qdrant_storage/
+
+# Raw source PDFs (not needed at runtime, only processed chunks are used)
+data/raw/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

@@ -1,0 +1,38 @@
+# Ignore everything not needed at runtime to keep the Docker image small
+
+# Git
+.git/
+.gitignore
+
+# Environment secrets (MUST NOT be baked into the image)
+.env
+.env.local
+
+# Raw source PDFs (only processed chunks.json is needed)
+data/raw/
+
+# Local Qdrant database
+qdrant_storage/
+
+# Frontend folders (deployed separately on Vercel)
+frontend/
+sih_frontend_antigrav/
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Node
+node_modules/
+
+# Documentation and plans
+*.md
+deployment_plans/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
