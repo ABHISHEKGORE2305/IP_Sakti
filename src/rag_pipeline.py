@@ -78,7 +78,7 @@ class AyurvedicIPRAG:
                 "query": query,
                 "answer": (
                     "Retrieval is unavailable right now. Please check that "
-                    "Qdrant is running on http://localhost:6333."
+                    "the Qdrant vector database is reachable."
                 ),
                 "sources": [],
                 "retrieved": [],
