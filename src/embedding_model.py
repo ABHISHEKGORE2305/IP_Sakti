@@ -1,7 +1,9 @@
 from sentence_transformers import SentenceTransformer
 
+import config
 
-MODEL_NAME = "BAAI/bge-m3"
+
+MODEL_NAME = config.EMBEDDING_MODEL_NAME
 
 
 class EmbeddingModel:

@@ -55,6 +55,51 @@
   /* Transitions */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+
+  /* ─ App shell tokens (Sprint 5: /app) ─ */
+  --emerald: #2f9e6e;
+  --emerald-light: #4cc38f;
+  --emerald-muted: rgba(47, 158, 110, 0.32);
+  --emerald-glow: rgba(47, 158, 110, 0.14);
+  --app-bg: var(--bg-primary);
+  --app-bg-elevated: var(--bg-secondary);
+  --app-surface: rgba(15, 28, 18, 0.72);
+  --app-surface-hover: rgba(20, 38, 24, 0.85);
+  --app-border: var(--border-subtle);
+  --app-text: var(--text-primary);
+  --app-text-secondary: var(--text-secondary);
+  --app-text-muted: var(--text-muted);
+  --risk-high: #e0645a;
+  --risk-medium: #d4ab5a;
+  --risk-low: #4cc38f;
+}
+
+/* ─── Light theme override (Sprint 5 dark/light toggle) ─── */
+[data-theme='light'] {
+  --bg-primary: #f6f3ea;
+  --bg-secondary: #ece6d6;
+  --bg-card: rgba(255, 255, 255, 0.78);
+  --bg-card-hover: rgba(255, 255, 255, 0.92);
+
+  --text-primary: #1c2a1e;
+  --text-secondary: #46503f;
+  --text-muted: #767061;
+  --text-gold: #8a6a1f;
+
+  --border-gold: rgba(138, 106, 31, 0.28);
+  --border-subtle: rgba(47, 158, 110, 0.18);
+
+  --shadow-card: 0 8px 32px rgba(30, 40, 25, 0.1);
+  --shadow-gold: 0 0 16px rgba(138, 106, 31, 0.12);
+
+  --app-bg: var(--bg-primary);
+  --app-bg-elevated: var(--bg-secondary);
+  --app-surface: rgba(255, 255, 255, 0.7);
+  --app-surface-hover: rgba(255, 255, 255, 0.9);
+  --app-border: var(--border-subtle);
+  --app-text: var(--text-primary);
+  --app-text-secondary: var(--text-secondary);
+  --app-text-muted: var(--text-muted);
 }
 
 /* ─── Reset ────────────────────────────────────────────── */

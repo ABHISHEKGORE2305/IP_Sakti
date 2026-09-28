@@ -6,12 +6,13 @@ from chunker import create_chunks
 from embedding_model import EmbeddingModel
 from vector_store import QdrantVectorStore
 from document_config import DOCUMENTS
+import config
 
 
 RAW_DIR = Path("data/raw")
 PROCESSED_DIR = Path("data/processed")
 
-COLLECTION_NAME = "medical_documents"
+COLLECTION_NAME = config.COLLECTION_NAME
 
 
 print("\n" + "=" * 80)
@@ -131,9 +132,9 @@ print(f"Saved to: {chunks_path}")
 print("\n[4/4] Uploading to Qdrant...")
 
 vector_store = QdrantVectorStore(
-    url="http://localhost:6333",
+    url=config.QDRANT_URL,
     collection_name=COLLECTION_NAME,
-    vector_size=1024,
+    vector_size=config.VECTOR_SIZE,
 )
 
 vector_store.add_chunks(

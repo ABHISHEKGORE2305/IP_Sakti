@@ -1,14 +1,15 @@
 from qdrant_client import QdrantClient
 
 from embedding_model import EmbeddingModel
+import config
 
 
 class AyurvedicRetriever:
 
     def __init__(
         self,
-        qdrant_url: str = "http://localhost:6333",
-        collection_name: str = "medical_documents",
+        qdrant_url: str = config.QDRANT_URL,
+        collection_name: str = config.COLLECTION_NAME,
     ):
 
         self.client = QdrantClient(
@@ -136,6 +137,11 @@ class AyurvedicRetriever:
                 "language":
                     payload.get(
                         "language"
+                    ),
+
+                "authority_weight":
+                    payload.get(
+                        "authority_weight"
                     ),
             })
 

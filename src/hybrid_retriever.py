@@ -2,17 +2,19 @@ import json
 
 from retriever import AyurvedicRetriever
 from bm25_retriever import BM25Retriever
+import config
+
+
+DEFAULT_AUTHORITY_WEIGHT = config.DEFAULT_AUTHORITY_WEIGHT
 
 
 class AyurvedicHybridRetriever:
 
     def __init__(
         self,
-        chunks_path: str = (
-            "data/processed/chunks.json"
-        ),
-        qdrant_url: str = "http://localhost:6333",
-        collection_name: str = "medical_documents",
+        chunks_path: str = config.CHUNKS_PATH,
+        qdrant_url: str = config.QDRANT_URL,
+        collection_name: str = config.COLLECTION_NAME,
     ):
 
         # --------------------------------
@@ -53,8 +55,18 @@ class AyurvedicHybridRetriever:
     @staticmethod
     def reciprocal_rank_fusion(
         result_lists,
-        k: int = 60,
+        k: int = config.RRF_K,
     ):
+        """
+        Authority-weighted RRF:
+
+            Score(d) = sum_m [ 1 / (k + Rank_m(d)) ] * Authority(d)
+
+        Authority(d) is the source document's authority_weight
+        (statute=1.0 down to reference material=0.5), so a
+        statute ranked #3 by both retrievers outranks an
+        educational overview ranked #1 by both.
+        """
 
         fused_scores = {}
         result_data = {}
@@ -70,12 +82,17 @@ class AyurvedicHybridRetriever:
                     "chunk_id"
                 ]
 
+                authority = (
+                    result.get("authority_weight")
+                    or DEFAULT_AUTHORITY_WEIGHT
+                )
+
                 fused_scores[chunk_id] = (
                     fused_scores.get(
                         chunk_id,
                         0,
                     )
-                    + 1 / (k + rank)
+                    + (1 / (k + rank)) * authority
                 )
 
                 result_data[
@@ -125,8 +142,8 @@ class AyurvedicHybridRetriever:
     def search(
         self,
         query: str,
-        top_k: int = 5,
-        candidate_k: int = 20,
+        top_k: int = config.TOP_K,
+        candidate_k: int = config.CANDIDATE_K,
     ):
 
         # --------------------------------

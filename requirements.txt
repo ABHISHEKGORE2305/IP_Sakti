@@ -6,3 +6,5 @@ rank-bm25
 google-genai
 fastapi
 uvicorn
+langgraph
+langchain-core

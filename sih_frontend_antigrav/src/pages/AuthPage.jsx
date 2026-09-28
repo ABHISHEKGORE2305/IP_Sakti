@@ -1,12 +1,13 @@
 // src/pages/AuthPage.jsx
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, User, ArrowRight, Leaf, BookOpen, ShieldCheck } from 'lucide-react';
 import authBgImg from '../assets/ayurvedic-reference.jpg';
 import './AuthPage.css';
 
-// After mock auth success, go to the existing static chatbot
-const CHATBOT_URL = '/frontend/index.html';
+// After mock auth success, go to the Sprint 5 guided-wizard app
+const APP_ROUTE = '/app';
 
 const FEATURES = [
   {
@@ -27,6 +28,7 @@ const FEATURES = [
 ];
 
 export default function AuthPage() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
   const [showPwd, setShowPwd] = useState(false);
   const [showConfirmPwd, setShowConfirmPwd] = useState(false);
@@ -75,7 +77,7 @@ export default function AuthPage() {
     setLoading(true);
     // Mock auth — accept any non-empty credentials, redirect after brief delay
     setTimeout(() => {
-      window.location.href = CHATBOT_URL;
+      navigate(APP_ROUTE);
     }, 800);
   };
 

@@ -43,17 +43,46 @@ def add_legal_metadata(
     text: str,
     section=None,
     clause=None,
+    is_rules=False,
 ):
+    """
+    is_rules: True for "rules"-type documents (e.g. The Patents Rules,
+    2003), so numbered provisions are labelled "Rule N" and stored
+    under the "rule" field, not "Section N" / "section" - otherwise a
+    Rules document's own numbering gets mislabelled as statute
+    sections.
+    """
+
+    kind = "Rule" if is_rules else "Section"
 
     legal_reference = build_legal_reference(
         section=section,
         clause=clause,
+        kind=kind,
     )
+
+    if is_rules:
+        return {
+            "rule": section,
+            "clause": clause,
+            "legal_reference": legal_reference,
+        }
 
     return {
         "section": section,
         "clause": clause,
         "legal_reference": legal_reference,
+    }
+
+
+def document_metadata(page: dict) -> dict:
+    """Document-level fields carried onto every chunk from that page."""
+
+    return {
+        "document_type": page.get("document_type"),
+        "jurisdiction": page.get("jurisdiction"),
+        "language": page.get("language"),
+        "authority_weight": page.get("authority_weight"),
     }
 
 
@@ -78,6 +107,7 @@ def create_chunks(
 
         page_number = page["page"]
         source = page["source"]
+        toc_skip_pages = page.get("toc_skip_pages", 0) or 0
 
         lines = page["text"].splitlines()
 
@@ -94,16 +124,19 @@ def create_chunks(
             # ENABLE LEGAL PARSING ONLY AFTER TABLE OF CONTENTS
             # -------------------------------------------------
             #
-            # Pages 1-6 of the Patents Act PDF are confirmed
-            # (by direct inspection) to be the ARRANGEMENT OF
-            # SECTIONS / Table of Contents. The actual statute
-            # starts on page 7. We must not run any legal
-            # classification against the TOC, otherwise TOC
-            # lines like "3. What are not inventions." and the
-            # TOC entry "THE SCHEDULE." are mistaken for the
-            # real section heading / the real Schedule.
+            # Some source PDFs (confirmed by inspection: the Patents
+            # Act, 1970) open with an ARRANGEMENT OF SECTIONS / Table
+            # of Contents whose lines - e.g. "3. What are not
+            # inventions." or "THE SCHEDULE." - would otherwise be
+            # mistaken for a real section heading / the real Schedule.
+            # `toc_skip_pages` (per-document metadata, default 0) is
+            # how many leading pages to treat as front matter before
+            # legal classification begins. Defaulting to 0 means every
+            # other document is parsed from page 1, rather than
+            # silently inheriting a page-7 cutoff that only made sense
+            # for that one PDF.
 
-            if page_number >= 7:
+            if page_number > toc_skip_pages:
 
                 legal_parsing_enabled = True
 
@@ -172,6 +205,7 @@ def create_chunks(
                             text=text,
                             section=current_section,
                             clause=current_clause,
+                            is_rules=(page.get("document_type") == "rules"),
                         )
 
                         chunks.append({
@@ -197,6 +231,7 @@ def create_chunks(
                             ),
 
                             **metadata,
+                            **document_metadata(page),
                         })
 
                     current_text = []
@@ -231,6 +266,7 @@ def create_chunks(
                             text=text,
                             section=current_section,
                             clause=current_clause,
+                            is_rules=(page.get("document_type") == "rules"),
                         )
 
                         chunks.append({
@@ -256,6 +292,7 @@ def create_chunks(
                             ),
 
                             **metadata,
+                            **document_metadata(page),
                         })
 
                     current_text = []
@@ -292,6 +329,7 @@ def create_chunks(
                     text=text,
                     section=current_section,
                     clause=current_clause,
+                    is_rules=(page.get("document_type") == "rules"),
                 )
 
                 chunks.append({
@@ -317,6 +355,7 @@ def create_chunks(
                     ),
 
                     **metadata,
+                    **document_metadata(page),
                 })
 
     return chunks

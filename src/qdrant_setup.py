@@ -1,12 +1,14 @@
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
 
+import config
 
-QDRANT_URL = "http://localhost:6333"
 
-COLLECTION_NAME = "medical_documents"
+QDRANT_URL = config.QDRANT_URL
 
-VECTOR_SIZE = 1024
+COLLECTION_NAME = config.COLLECTION_NAME
+
+VECTOR_SIZE = config.VECTOR_SIZE
 
 
 # --------------------------------

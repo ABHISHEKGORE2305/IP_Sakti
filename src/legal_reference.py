@@ -112,6 +112,16 @@ def match_reference(ref: dict, chunk: dict) -> str | None:
     if _normalise(chunk_label) == _normalise(ref["label"]):
         return "exact"
 
+    # The corpus tracks only the final clause letter (e.g. "Section
+    # 2(j)"), while a query may cite the full path including the
+    # subsection number (e.g. "Section 2(1)(j)"). Treat those as the
+    # same provision.
+    alpha_tokens = [t for t in ref["tokens"] if t.isalpha()]
+    if alpha_tokens:
+        short_label = f"{ref['kind']} {ref['number']}({alpha_tokens[-1]})"
+        if _normalise(chunk_label) == _normalise(short_label):
+            return "exact"
+
     # same section/rule number, e.g. query "Section 3(p)" vs chunk
     # "Section 3" or "Section 3(d)"
     chunk_number = None
