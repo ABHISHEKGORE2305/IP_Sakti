@@ -56,4 +56,9 @@ RERANK_STEEPNESS = 12.0
 API_HOST = "0.0.0.0"
 API_PORT = int(os.getenv("PORT", "8000"))
 _frontend_url = os.getenv("FRONTEND_URL")
-CORS_ALLOW_ORIGINS = [_frontend_url] if _frontend_url else ["*"]
+if _frontend_url and _frontend_url.strip():
+    # Browsers send Origin headers without trailing slashes. 
+    # If the user accidentally included one in their HF secret, this strips it to prevent CORS errors.
+    CORS_ALLOW_ORIGINS = [_frontend_url.strip().rstrip("/")]
+else:
+    CORS_ALLOW_ORIGINS = ["*"]
