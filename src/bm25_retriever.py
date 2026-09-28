@@ -127,6 +127,11 @@ class BM25Retriever:
                     chunk.get(
                         "language"
                     ),
+
+                "authority_weight":
+                    chunk.get(
+                        "authority_weight"
+                    ),
             })
 
 

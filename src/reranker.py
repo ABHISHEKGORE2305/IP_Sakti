@@ -1,7 +1,9 @@
 from sentence_transformers import CrossEncoder
 
+import config
 
-MODEL_NAME = "BAAI/bge-reranker-v2-m3"
+
+MODEL_NAME = config.RERANKER_MODEL_NAME
 
 
 class AyurvedicIPReranker:

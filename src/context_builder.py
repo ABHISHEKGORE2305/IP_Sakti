@@ -23,13 +23,18 @@ class ContextBuilder:
 
             text = result["text"]
 
+            legal_reference = (
+                result.get("legal_reference")
+                or (f"Section {result['section']}" if result.get("section") else None)
+                or (f"Rule {result['rule']}" if result.get("rule") else None)
+                or "Not applicable"
+            )
+
             source_block = (
                 f"SOURCE {index}\n"
                 f"Document: {result.get('document')}\n"
                 f"Page: {result.get('page')}\n"
-                f"Legal Reference: {result.get('legal_reference')}\n"
-                f"Section: {result.get('section')}\n"
-                f"Rule: {result.get('rule')}\n"
+                f"Legal Reference: {legal_reference}\n"
                 f"Chunk ID: {result.get('chunk_id')}\n"
                 f"\n"
                 f"{text}\n"

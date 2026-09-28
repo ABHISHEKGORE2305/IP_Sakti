@@ -1,22 +1,23 @@
 from hybrid_retriever import AyurvedicHybridRetriever
 from reranker import AyurvedicIPReranker
 from legal_reference import extract_legal_references, match_reference
+import config
 
 
 # Score bonuses added on top of the cross-encoder score when the query
 # names an explicit provision. Only applied in that case.
-EXACT_REFERENCE_BONUS = 2.0
-SAME_SECTION_BONUS = 0.6
-STATUTORY_SOURCE_BONUS = 0.5
+EXACT_REFERENCE_BONUS = config.EXACT_REFERENCE_BONUS
+SAME_SECTION_BONUS = config.SAME_SECTION_BONUS
+STATUTORY_SOURCE_BONUS = config.STATUTORY_SOURCE_BONUS
 
 
 class AyurvedicIPRetriever:
 
     def __init__(
         self,
-        chunks_path: str = "data/processed/chunks.json",
-        qdrant_url: str = "http://localhost:6333",
-        collection_name: str = "medical_documents",
+        chunks_path: str = config.CHUNKS_PATH,
+        qdrant_url: str = config.QDRANT_URL,
+        collection_name: str = config.COLLECTION_NAME,
     ):
 
         print("\nInitializing hybrid retriever...")
@@ -112,8 +113,8 @@ class AyurvedicIPRetriever:
     def search(
         self,
         query: str,
-        top_k: int = 5,
-        candidate_k: int = 20,
+        top_k: int = config.TOP_K,
+        candidate_k: int = config.CANDIDATE_K,
     ):
 
         references = extract_legal_references(query)

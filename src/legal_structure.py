@@ -38,9 +38,16 @@ _AMENDMENT_BODY = re.compile(
     r"\bomitted by\b|"
     r"\bby Act\s+\d+\s+of\s+\d{4}\b|"
     r"\bins\. by\b|"
-    r"\bsubs?\.? by\b",
+    r"\bsubs?\.? by\b|"
+    r"\bvide notification\b",
     re.IGNORECASE,
 )
+
+# Commencement-date footnotes, e.g.
+#   1. 1-4-1978, vide notification No. S.O. 799, dated 10-3-1978, ...
+# The leading token is a date, not a section title - genuine section
+# headings never start this way.
+_DATE_LEADING = re.compile(r"^\d{1,2}-\d{1,2}-\d{4}\b")
 
 
 def strip_amendment_marker(line: str) -> str:
@@ -101,6 +108,9 @@ def detect_section_heading(line: str):
     if _AMENDMENT_BODY.search(title):
         return None
 
+    if _DATE_LEADING.match(title):
+        return None
+
     if len(title) < 5:
         return None
 
@@ -159,22 +169,24 @@ def detect_subsection(line: str):
 
 def build_legal_reference(
     section=None,
-    clause=None
+    clause=None,
+    kind="Section",
 ):
     """
     Build references such as:
 
         Section 3
         Section 3(p)
+        Rule 6(a)          (kind="Rule", for Rules-type documents)
     """
 
     if section is None:
         return None
 
     if clause:
-        return f"Section {section}({clause})"
+        return f"{kind} {section}({clause})"
 
-    return f"Section {section}"
+    return f"{kind} {section}"
 
 
 def classify_legal_line(line: str):

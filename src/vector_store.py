@@ -7,14 +7,16 @@ from qdrant_client.models import (
     PointStruct,
 )
 
+import config
+
 
 class QdrantVectorStore:
 
     def __init__(
         self,
-        url: str = "http://localhost:6333",
-        collection_name: str = "medical_documents",
-        vector_size: int = 1024,
+        url: str = config.QDRANT_URL,
+        collection_name: str = config.COLLECTION_NAME,
+        vector_size: int = config.VECTOR_SIZE,
     ):
 
         self.collection_name = collection_name
@@ -139,6 +141,9 @@ class QdrantVectorStore:
 
                     "language":
                         chunk.get("language"),
+
+                    "authority_weight":
+                        chunk.get("authority_weight"),
                 },
             )
 

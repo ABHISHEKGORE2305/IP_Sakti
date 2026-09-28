@@ -12,6 +12,7 @@ from final_retriever import AyurvedicIPRetriever
 from context_builder import ContextBuilder
 from llm import GeminiLLM, LLMError
 from prompt import SYSTEM_PROMPT
+import config
 
 
 INSUFFICIENT_CONTEXT_MESSAGE = (
@@ -24,9 +25,9 @@ class AyurvedicIPRAG:
 
     def __init__(
         self,
-        top_k: int = 6,
-        candidate_k: int = 20,
-        max_context_chars: int = 12000,
+        top_k: int = config.TOP_K,
+        candidate_k: int = config.CANDIDATE_K,
+        max_context_chars: int = config.MAX_CONTEXT_CHARS,
     ):
 
         print("\nInitializing RAG system...")

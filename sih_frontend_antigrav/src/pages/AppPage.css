@@ -1,0 +1,36 @@
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--app-bg);
+  color: var(--app-text);
+}
+
+.app-shell__main {
+  flex: 1;
+  min-width: 0;
+  padding: clamp(20px, 3vw, 48px);
+  display: flex;
+  justify-content: center;
+}
+
+.app-shell__menu-btn {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 50;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  color: var(--app-text);
+  font-size: 1.1rem;
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 900px) {
+  .app-shell__menu-btn {
+    display: block;
+  }
+}

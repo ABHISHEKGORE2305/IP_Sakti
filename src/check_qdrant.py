@@ -1,8 +1,10 @@
 from qdrant_client import QdrantClient
 
+import config
 
-QDRANT_URL = "http://localhost:6333"
-COLLECTION_NAME = "medical_documents"
+
+QDRANT_URL = config.QDRANT_URL
+COLLECTION_NAME = config.COLLECTION_NAME
 
 
 client = QdrantClient(
