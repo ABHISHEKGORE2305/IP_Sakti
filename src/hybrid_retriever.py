@@ -23,13 +23,12 @@ class AyurvedicHybridRetriever:
         # Load chunks for BM25
         # --------------------------------
 
-        with open(
-            chunks_path,
-            "r",
-            encoding="utf-8",
-        ) as file:
-
-            self.chunks = json.load(file)
+        try:
+            with open(chunks_path, "r", encoding="utf-8") as file:
+                self.chunks = json.load(file)
+        except FileNotFoundError:
+            print(f"[hybrid_retriever] {chunks_path} not found — BM25 disabled, using Qdrant only.")
+            self.chunks = []
 
         # Periodically-fetched web sources (src/ingest_web.py) live in a
         # separate file so the PDF pipeline's ingest.py never touches

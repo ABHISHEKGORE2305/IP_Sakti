@@ -31,7 +31,11 @@ CrossEncoder('BAAI/bge-reranker-v2-m3')"
 
 # --- Stage 4: Application code (rebuilt on every code change, but fast) ---
 COPY src/ ./src/
-COPY data/ ./data/
+
+# Create the data directory structure so the app can write runtime files
+# (e.g. web chunks, eval results, SQLite db). chunks.json is served via
+# Qdrant Cloud — BM25 gracefully degrades if the file is absent.
+RUN mkdir -p data/processed
 
 # Tell Python where to find our modules (e.g. import config, import llm)
 ENV PYTHONPATH=/app/src
