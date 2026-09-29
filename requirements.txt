@@ -9,6 +9,7 @@ fastapi
 uvicorn
 langgraph
 langchain-core
+typing_extensions
 requests
 beautifulsoup4
 lxml
