@@ -2,24 +2,51 @@
 // Renders the Phase 5.4 case brief, exports it (PDF/Markdown/JSON), and
 // offers on-demand translation (POST /api/translate) + text-to-speech.
 
-import { ChevronLeft, FileDown, FileJson, FileText, Languages, Volume2 } from 'lucide-react';
+import { ChevronLeft, FileDown, FileJson, FileText, Languages, Leaf, Send, Volume2 } from 'lucide-react';
 import { useState } from 'react';
-import { translateText } from '../../../lib/api';
+import { escalateCase, translateText } from '../../../lib/api';
 import {
   buildCaseBriefMarkdown,
+  downloadAbsChecklist,
   downloadJson,
   downloadMarkdown,
+  printAbsChecklist,
   printCaseBrief,
 } from '../../../lib/caseBrief';
 import { LANGUAGES } from '../../../lib/wizardConfig';
+import Markdown from '../Markdown';
 
 export default function StepAction({ wizardState, result, language, onBack }) {
   const [translated, setTranslated] = useState(null);
   const [translating, setTranslating] = useState(false);
   const [translateError, setTranslateError] = useState(null);
+  const [replyTo, setReplyTo] = useState('');
+  const [escalating, setEscalating] = useState(false);
+  const [escalateStatus, setEscalateStatus] = useState(null); // { ok: bool, message: string }
 
   const brief = buildCaseBriefMarkdown(wizardState, result);
   const languageLabel = LANGUAGES.find((l) => l.code === language)?.label || 'English';
+
+  const handleEscalate = async () => {
+    setEscalating(true);
+    setEscalateStatus(null);
+    try {
+      const res = await escalateCase({
+        caseBriefMarkdown: brief,
+        query: wizardState?.query,
+        replyTo: replyTo || undefined,
+      });
+      if (res.sent) {
+        setEscalateStatus({ ok: true, message: 'Sent to your IP facilitator.' });
+      } else {
+        setEscalateStatus({ ok: false, message: res.error || 'Escalation failed.' });
+      }
+    } catch (err) {
+      setEscalateStatus({ ok: false, message: String(err) });
+    } finally {
+      setEscalating(false);
+    }
+  };
 
   const handleTranslate = async () => {
     if (!result?.final_answer) return;
@@ -92,7 +119,7 @@ export default function StepAction({ wizardState, result, language, onBack }) {
       {translateError && <div className="step__error">{translateError}</div>}
       {translated && (
         <div className="analysis-answer" style={{ marginBottom: 20 }}>
-          {translated}
+          <Markdown>{translated}</Markdown>
         </div>
       )}
 
@@ -110,6 +137,45 @@ export default function StepAction({ wizardState, result, language, onBack }) {
           <FileJson size={14} /> Export JSON
         </button>
       </div>
+
+      {result?.engine_results?.abs_compliance && (
+        <>
+          <label className="step__label">ABS compliance checklist</label>
+          <p className="step__subheading" style={{ marginTop: -4 }}>
+            A dedicated export of just the biodiversity/ABS obligations and their citations
+            (winning_features.md item 7) — separate from the general case brief above.
+          </p>
+          <div className="action-plan__export-row">
+            <button className="step__btn step__btn--ghost" onClick={() => printAbsChecklist(result)}>
+              <Leaf size={14} /> Export ABS Checklist PDF
+            </button>
+            <button className="step__btn step__btn--ghost" onClick={() => downloadAbsChecklist(result)}>
+              <FileText size={14} /> Export ABS Checklist Markdown
+            </button>
+          </div>
+        </>
+      )}
+
+      <label className="step__label">Escalate to IP Facilitator</label>
+      <p className="step__subheading" style={{ marginTop: -4 }}>
+        Emails this case brief to the IP facilitator for human review.
+      </p>
+      <div className="action-plan__translate-row">
+        <input
+          type="email"
+          className="step__input"
+          placeholder="Your email (optional, for facilitator to reply to)"
+          value={replyTo}
+          onChange={(e) => setReplyTo(e.target.value)}
+          style={{ flex: '1 1 260px', minWidth: 200 }}
+        />
+        <button className="step__btn step__btn--primary" onClick={handleEscalate} disabled={escalating}>
+          <Send size={14} /> {escalating ? 'Sending…' : 'Escalate'}
+        </button>
+      </div>
+      {escalateStatus && (
+        <div className={escalateStatus.ok ? 'step__success' : 'step__error'}>{escalateStatus.message}</div>
+      )}
 
       <div className="step__actions">
         <button className="step__btn step__btn--ghost" onClick={onBack}>

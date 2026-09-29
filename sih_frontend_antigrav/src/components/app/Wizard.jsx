@@ -19,7 +19,9 @@ export default function Wizard({ jurisdiction, onJurisdictionChange, language })
   const [stepIndex, setStepIndex] = useState(0);
 
   const [classificationResult, setClassificationResult] = useState(null);
+  const [classificationInputs, setClassificationInputs] = useState(null);
   const [classifying, setClassifying] = useState(false);
+  const [persona, setPersona] = useState(null);
 
   const [query, setQuery] = useState('');
   const [forcedAgent, setForcedAgent] = useState(null);
@@ -40,10 +42,12 @@ export default function Wizard({ jurisdiction, onJurisdictionChange, language })
 
   const runClassification = async (inputs) => {
     setClassifying(true);
+    setClassificationInputs(inputs);
     try {
       const res = await runAgent({
         query: 'Classify this product',
         jurisdiction,
+        persona,
         classificationInputs: inputs,
       });
       setClassificationResult(res);
@@ -62,6 +66,7 @@ export default function Wizard({ jurisdiction, onJurisdictionChange, language })
       const res = await runAgent({
         query,
         jurisdiction,
+        persona,
         forcedAgent,
         targetMarket,
         marketInputs,
@@ -91,6 +96,8 @@ export default function Wizard({ jurisdiction, onJurisdictionChange, language })
       jurisdiction={jurisdiction}
       onChange={onJurisdictionChange}
       onNext={next}
+      persona={persona}
+      onPersonaChange={setPersona}
     />,
     <StepClassification
       key="classification"
@@ -134,7 +141,16 @@ export default function Wizard({ jurisdiction, onJurisdictionChange, language })
       onNext={next}
       onRetry={runAnalysis}
     />,
-    <StepSources key="sources" result={result} onBack={back} onNext={next} />,
+    <StepSources
+      key="sources"
+      result={result}
+      onBack={back}
+      onNext={next}
+      jurisdiction={jurisdiction}
+      classificationInputs={classificationInputs}
+      classificationResult={classificationResult}
+      absInputs={absInputs}
+    />,
     <StepAction
       key="action"
       wizardState={wizardStateForExport}

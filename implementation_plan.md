@@ -651,6 +651,269 @@ All fixes are covered by new assertions in `src/test_engines.py`/`src/test_agent
 
 ---
 
-## 8. Conclusion
+## 8. Sprint 7 — left_to_do.md Gap Closure (2026-09-28)
+
+Went back to the original spec (`left_to_do.md`) item-by-item rather than
+just this plan's own checklist, since it's the superset document. Most of
+its 25 items were already covered by Sprints 1-6; the genuinely new gaps,
+and what was done about each:
+
+- **`src/config.py`** (flagged as missing in the Section 7 audit) — built.
+  Consolidates the QDRANT_URL/COLLECTION_NAME/model-name/RRF/authority/
+  bonus/confidence-threshold constants that were previously duplicated
+  across ~13 files, wired through as defaults everywhere (all overridable,
+  no behavior change — `test_engines.py`/`test_agents.py` re-run clean).
+- **Item 15, Human Escalation** — was export-only (download a case brief
+  locally). Added `POST /api/escalate` (`src/escalation.py`, stdlib
+  `smtplib`) which emails the case brief to a configured facilitator
+  inbox, and a real "Escalate" button + reply-to field in `StepAction.jsx`.
+  Delivery config (`SMTP_HOST`/`SMTP_USER`/`SMTP_PASSWORD`/
+  `ESCALATION_EMAIL_TO`) is read from `.env` and not yet set — by your
+  choice, built now and wired later, same pattern as `GEMINI_API_KEY`.
+  `GET /api/escalate/status` reports whether it's configured.
+- **Item 16, Official Database Access** — `src/references.py` + `GET
+  /api/references`: categorized deep links to IP India (patent/trademark/
+  design search), GI Registry, TKDL, WIPO/WIPO Lex/PCT/Madrid/Hague, NBA,
+  AYUSH, FSSAI, CDSCO. Surfaced in `StepSources.jsx`. Deliberately does
+  not attempt record lookup/scraping (each portal has its own CAPTCHA/
+  session flow) or any paid-database connector — item 16 requires
+  explicit per-use permission and access logging for paid sources, which
+  is a separate, not-built feature.
+- **Item 13, source freshness checking** — chunks never carried a
+  `version_date` (Section 7's audit already noted this). Rather than
+  guessing amendment dates from memory, `src/freshness.py` maps each
+  document's own already-asserted title year (e.g. "The Patents Act,
+  1970") to a staleness flag (>10 years old) applied post-hoc in `api.py`
+  — no re-ingestion, no new claims. Surfaced as `freshness_note` on every
+  citation/source and rendered in `StepSources.jsx`.
+- **Item 11, Knowledge Graph** — Gap Analysis row 10 and the Section 7
+  audit both flagged this as unscoped. Built `src/engines/
+  knowledge_graph.py`: a multi-hop graph (`Product -> Ingredient ->
+  Biological Resource -> TK -> IP Type -> Authority -> ABS ->
+  Jurisdiction`) assembled from the outputs of the already-tested
+  `classifier.py`/`tk_engine.py`/`abs_engine.py` engines — not a
+  fabricated ingredient/regulation dataset (only the ingredient/
+  biological-resource label itself is free text, unverified). Exposed via
+  `POST /api/knowledge-graph`, covered by new assertions in
+  `test_engines.py`, and rendered as a traversable edge list in
+  `StepSources.jsx` (pre-filled from the wizard's own classification/ABS
+  answers, not a separate re-entry of the same facts).
+- **Explicitly deferred, by your decision, not by oversight**: items 19
+  (conversation history, source bookmarking)/20 (consent management,
+  encryption at rest, RBAC)/22 (audit/prompt/citation logs) all need the
+  same missing piece — a persistence layer with per-user identity, which
+  the API still deliberately does not have. You chose "skip for now"
+  rather than build a minimal unauthenticated SQLite layer for it.
+- International corpus (WIPO GRATK, Nagoya, TRIPS, US FDA Botanical
+  Guidance, EU THMPD) remained not ingested at the time this was
+  written — **resolved in Sprint 8, below.**
+
+All new code covered by `test_engines.py` (knowledge graph) and manually
+verified live against a running server with real Qdrant/Gemini (health,
+`/api/references`, `/api/knowledge-graph`, `/api/escalate` unconfigured-
+error path, `/api/escalate/status`, and `freshness_note` appearing on a
+real Patents Act 1970 citation). Frontend `npm run build`/`npm run lint`
+clean (Node 22, same requirement as Sprint 5).
+
+---
+
+## 9. Sprint 8 — International Corpus & Live Web-Sourced Ingestion (2026-09-28)
+
+Two things landed together: you supplied five real international PDFs,
+and a second ingestion path (periodic web fetching) was built for
+content that's genuinely only available as web pages.
+
+**International PDF corpus — now ingested.** Five documents registered
+in `document_config.py`'s `DOCUMENTS` and run through the normal
+`ingest.py` pipeline (full re-embed: 16 documents, 2173 chunks total):
+- `cbd-en.pdf` — Convention on Biological Diversity, full text and
+  annexes (`document_type: "treaty"`, authority weight 0.95).
+- `nagoya-protocol-en.pdf` — Nagoya Protocol, full text (`"treaty"`).
+- `Botanical-Drug-Development--Guidance-for-Industry.pdf` — the actual
+  US FDA guidance (`"international_guidance"`, 0.80) — this is the real
+  document; a web-fetch attempt at the same content was independently
+  confirmed blocked by FDA's anti-bot page (see below), so this PDF is
+  the only path to it right now.
+- `gratk_dc_exsum.pdf` — WIPO's own 2-page informal summary of the
+  GRATK Treaty (`"treaty_overview"`, 0.65) — not the full binding text,
+  which wasn't supplied as a clean standalone PDF.
+- `gratk.pdf` — a genuine 1-page excerpt from a WIPO General Assembly
+  document showing GRATK ratification/accession status (also
+  `"treaty_overview"`) — confirmed by content inspection, not assumed
+  from the filename.
+
+Verified live: real full-text retrieval with correct page numbers for
+both the Nagoya Protocol and the FDA guidance via `POST /api/agent`
+free-text queries (e.g. a Nagoya ABS query surfaced pages 3-6; an FDA
+botanical-drug query surfaced pages 8-34) — not just "the file loaded,"
+the actual pipeline retrieves and cites it correctly.
+
+**Live web-sourced corpus — new second ingestion path.** For official
+content that's a web page, not a downloadable PDF (regulatory portals,
+treaty-body overview pages), added a parallel pipeline that reuses the
+same chunker/embedder/Qdrant store as the PDF path but never touches
+`ingest.py` or `chunks.json`:
+- `src/web_sources.py` — the curated source registry (parallel to
+  `document_config.DOCUMENTS`), each entry needing an explicit,
+  hand-verified CSS `content_selector` (no automatic "readability"
+  extraction — a heuristic mis-extracting legal text is worse than
+  skipping the source).
+- `src/web_loader.py` — fetcher mirroring `document_loader.load_pdf()`'s
+  exact output contract (honors `robots.txt`, honest User-Agent,
+  `pdf_link` fetch mode delegates straight to the existing `load_pdf`).
+- `src/ingest_web.py` — standalone script (run manually or via cron, not
+  a scheduler inside the FastAPI process), with SHA-256 change detection
+  so an unchanged page costs nothing on re-run (confirmed live: second
+  run loaded zero embedding-model weight, "unchanged" for all sources),
+  and a delete-then-reinsert-by-`document_id` strategy
+  (`QdrantVectorStore.delete_by_document_id`, new method) so a page that
+  chunks differently on re-fetch doesn't leave orphaned stale points.
+- `src/freshness.py` gained a parallel `web_freshness_note()` path
+  (days-since-fetch, not years-since-enactment) for chunks carrying a
+  `fetched_at` field — `api.py`'s `_resolve_freshness_note()` picks the
+  right one automatically.
+- `hybrid_retriever.py` merges `data/processed/chunks_web.json` into the
+  in-memory BM25 corpus alongside `chunks.json` if present, optional and
+  additive — a fresh clone with no web corpus yet is unaffected.
+
+**Verification was done live, not assumed** — every one of the 15
+starter URLs from the original plan was actually fetched with
+`requests`/`BeautifulSoup` before being trusted:
+- **Working** (6, now in `web_sources.WEB_SOURCES`): `wipo_gratk_treaty_2024`,
+  `pct_texts`, `madrid_legal_texts`, `hague_legal_texts`,
+  `budapest_treaty` (all WIPO overview/landing pages — real WIPO
+  content, but a summary, not the full treaty text), and `cdsco_home`.
+- **Superseded** by the real PDFs above: `cbd_convention_text` (its URL
+  404'd anyway), `nagoya_protocol_text`, `us_fda_botanical_guidance` —
+  removed from the registry rather than left as redundant lower-quality
+  duplicates.
+- **Confirmed broken, left commented out with the specific reason**:
+  `trips_agreement` (WTO redirects to their own 404 page — a 200-status
+  trap), `eu_thmpd_directive` (EUR-Lex returns an empty 202 to a plain
+  GET), `uk_mhra_thr_scheme` (gov.uk genuinely 404s), `ipindia_patents_overview`
+  (dead deep link), and `ayush_home`/`fssai_home` (both are
+  JavaScript-rendered SPAs — a plain HTTP GET returns an empty app
+  shell; would need a headless browser, explicitly out of scope for
+  this v1 static fetcher).
+
+All ingested content (16 PDFs + 6 web sources, 2173 + 9 chunks) verified
+via `test_engines.py`/`test_agents.py` (clean) and live queries against
+a running server. `data/raw/`'s remaining un-ingested items —
+`3_Patents_Amendment_Rules_2024...`/`26_.../27_...` were already
+ingested in Sprint 6 — this sprint's new files are exactly the five
+listed above.
+
+---
+
+## 10. Sprint 9 — winning_features.md Full Build (2026-09-29)
+
+`winning_features.md` is a 20-item, tiered hackathon-judging wishlist.
+Two audits (frontend + backend) first confirmed what was actually true
+vs. only claimed: RAG+citations, the classifier wizard, confidence/
+abstention, and the disclaimer were real; but jurisdiction separation
+was enforced only by which agent got picked (not a retrieval-time
+filter), the "agent step trace" was a fake timed progress bar, the
+knowledge graph was plain text rows, and 12 of the 20 items had no code
+at all. This sprint built all 20, phase by phase, each verified live
+against the real Qdrant/Gemini stack before moving on — not just unit
+tests.
+
+**Architectural jurisdiction separation (item 2)** — `retriever.py`'s
+new `jurisdiction_query_filter`/`combined_query_filter` pass a real
+Qdrant `Filter` into `query_points()`; `bm25_retriever.py` mirrors it
+client-side. Verified live: an India-scoped FDA query returns **zero**
+FDA chunks, not just a prompt telling the LLM to ignore them. `"Both"`
+mode (`agents/graph.py`'s `run()`) invokes the graph twice and returns
+`{india, international}` as separate objects — confirmed they can
+produce genuinely different outcomes (one answered, one abstained) in
+the same call.
+
+**Real agent step trace (item 11)** — `AgentState.trace` uses a LangGraph
+`Annotated[list, operator.add]` reducer so every node in `agents/graph.py`
+appends its own entry; `StepAnalysis.jsx` renders the actual sequence
+post-hoc, distinct from the pre-existing simulated progress bar (kept,
+since there's no streaming backend to drive it live).
+
+**Persistence layer (`src/db.py`)** — stdlib SQLite, no login, session-
+scoped via an `X-Session-Id` header the frontend generates once into
+`localStorage`. Backs a real audit log (`/api/audit-log`), consent
+(`/api/consent`, including a **mocked** "Premium Patent Analytics DB"
+connector unmissably labeled MOCK DATA per item 15's own framing), and
+DPDP delete-my-data (`/api/privacy/delete`) — verified live: grant
+consent → log an entry → read it back → delete → confirm gone.
+
+**Corpus admin panel (item 20)** — `/api/admin/corpus` merges the PDF/
+web/uploaded document lists with real chunk counts from the actual
+ingested JSON files (not placeholders); upload stages a PDF and marks it
+`pending_reindex` rather than pretending to synchronously re-embed it
+inside a request.
+
+**Law Version Timeline (item 9)** — initially missed in this sprint's
+own plan, caught in review. A full old-vs-new text diff isn't honestly
+buildable — the corpus only has *one* full original+amendment pair
+(Patents Rules 2003/2024); Biological Diversity only has the 2023
+amendment and 2024 rules, not the original 2002/2004 text, and that gap
+is stated in `law_versions.py` rather than papered over. Instead:
+`retriever.py` gained a `document_id_filter` (same `Filter` mechanism as
+jurisdiction), so `POST /api/law-version-query` answers the *same
+question* with retrieval genuinely scoped to exactly one version.
+Verified live: "fee for filing a patent application" against the 2003
+Rules vs. the 2024 Amendment returns sources exclusively from each
+respective document — the doc's own suggested demo moment, for real.
+
+**IP Route Planner / ABS PDF / TKDL pointer (items 6-8)** —
+`engines/ipr_router.plan_ip_route()` and `engines/tk_engine.
+misappropriation_risk()` compose existing, already-tested engine output
+into a strategy list and a risk flag — no new legal facts. Rendered as
+colored flow boxes (`IPRoutePlanner.jsx`) and a labeled risk badge
+(`StepSources.jsx`), not paragraphs. `caseBrief.js` gained a dedicated
+`buildAbsChecklistMarkdown` export, separate from the general case
+brief.
+
+**Visual knowledge graph explorer (item 10)** — `engines/
+knowledge_graph.py`'s `{nodes, edges}` carries no layout by design;
+`KnowledgeGraphExplorer.jsx` computes a deterministic layered SVG layout
+client-side (columns by node `kind`), no new charting dependency.
+
+**Bhashini (item 13)** — `src/bhashini_client.py` built against the
+public ULCA two-step pipeline contract, env-var-gated
+(`BHASHINI_USER_ID`/`BHASHINI_API_KEY`) exactly like `llm.py`/
+`escalation.py`'s pattern. **Not live-verified** — no credentials exist
+yet — every exact endpoint/payload field is marked `# VERIFY` in the
+source, and `/api/translate` falls back to the existing Gemini path on
+any failure or missing config, so nothing breaks either way.
+
+**Persona modes (item 14)** — `prompt.py`'s `PERSONA_GUIDANCE` dict
+feeds a new `{persona_guidance}` `SYSTEM_PROMPT` placeholder (same
+`.format()` mechanism as `{context}`/`{query}`); adjusts tone/depth only,
+verified it never changes which sources get cited.
+
+**Export Market Navigator (item 12)** — real cards for US/EU/UK calling
+the already-grounded `intl_engine` pathway; GCC/ASEAN render as explicit
+"not yet in corpus" placeholders since `intl_engine.Market` only ever
+supported three markets — flagged, not fabricated.
+
+**Prompt-injection filtering (item 18)** — `guardrails/injection_filter.py`
+expands the previous 4-phrase check to ~17 patterns across instruction-
+override, jailbreak framing, and system-prompt exfiltration; still
+deterministic regex, not an LLM judge, matching the supervisor's existing
+"auditable and free" design.
+
+**Evaluation dashboard (item 19)** — `eval_benchmark.py --out-json`
+writes the real 49/50 (98%) golden-benchmark result to
+`data/processed/eval_results.json`; `GET /api/eval-results` serves it;
+`EvalDashboard.jsx` renders it as stat tiles + per-category bars — the
+actual measured numbers, not a mockup.
+
+All of Phases 0-11 verified via `test_engines.py`/`test_agents.py`
+(both clean, with new assertions for the injection filter, trace
+accumulation, and `"Both"` mode) plus live end-to-end checks against a
+running server with real Qdrant/Gemini for every phase that touched
+retrieval or generation. Frontend `npm run build`/`npm run lint` clean
+throughout (Node 22).
+
+---
+
+## 11. Conclusion
 
 By executing this phased implementation plan, **IP-Sakti** will evolve from a prototype retrieval script into an enterprise-grade, authoritative, and trusted AI companion for Indian Ayurveda innovators, researchers, and legal practitioners, setting the gold standard for citation-grounded legal AI in traditional knowledge and intellectual property.

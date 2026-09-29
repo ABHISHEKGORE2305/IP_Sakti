@@ -1,6 +1,19 @@
 from rank_bm25 import BM25Okapi
 
 
+def _jurisdiction_matches(chunk_jurisdiction: str | None, jurisdiction_filter: str | None) -> bool:
+    """Same semantics as retriever.jurisdiction_query_filter, applied
+    client-side — Qdrant's Filter has no BM25 equivalent, so hybrid_
+    retriever needs this to keep both retrieval paths' jurisdiction
+    separation consistent."""
+
+    if jurisdiction_filter == "India":
+        return chunk_jurisdiction == "India"
+    if jurisdiction_filter == "International":
+        return chunk_jurisdiction != "India"
+    return True
+
+
 class BM25Retriever:
 
     def __init__(
@@ -50,6 +63,8 @@ class BM25Retriever:
         self,
         query: str,
         top_k: int = 5,
+        jurisdiction_filter: str | None = None,
+        document_id_filter: str | None = None,
     ):
 
         tokenized_query = self.tokenize(
@@ -60,11 +75,22 @@ class BM25Retriever:
             tokenized_query
         )
 
-        ranked_indices = sorted(
+        all_ranked = sorted(
             range(len(scores)),
             key=lambda i: scores[i],
             reverse=True,
-        )[:top_k]
+        )
+
+        if jurisdiction_filter:
+            all_ranked = [
+                i for i in all_ranked
+                if _jurisdiction_matches(self.chunks[i].get("jurisdiction"), jurisdiction_filter)
+            ]
+
+        if document_id_filter:
+            all_ranked = [i for i in all_ranked if self.chunks[i].get("document_id") == document_id_filter]
+
+        ranked_indices = all_ranked[:top_k]
 
 
         results = []

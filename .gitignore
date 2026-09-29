@@ -18,8 +18,9 @@ sih_frontend_antigrav/dist/
 # Local Qdrant database (no longer needed after cloud migration)
 qdrant_storage/
 
-# Raw source PDFs (not needed at runtime, only processed chunks are used)
-data/raw/
+# Data and assets
+data/
+*.mp4
 
 # OS files
 .DS_Store
