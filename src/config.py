@@ -13,6 +13,9 @@ COLLECTION_NAME = "medical_documents"
 VECTOR_SIZE = 1024
 
 CHUNKS_PATH = "data/processed/chunks.json"
+WEB_CHUNKS_PATH = "data/processed/chunks_web.json"          # src/ingest_web.py output, merged in by hybrid_retriever.py
+WEB_SOURCES_MANIFEST_PATH = "data/processed/web_sources_manifest.json"
+WEB_SOURCE_STALE_AFTER_DAYS = 60                             # default; overridable per-source via web_sources.WEB_SOURCES
 
 # --------------------------------------------------------------------
 # Models
@@ -53,3 +56,13 @@ RERANK_STEEPNESS = 12.0
 API_HOST = "0.0.0.0"
 API_PORT = 8000
 CORS_ALLOW_ORIGINS = ["*"]
+
+# --------------------------------------------------------------------
+# Persistence (src/db.py) — audit log, consent, corpus admin. No-login,
+# session-id-scoped SQLite. See db.py's module docstring.
+# --------------------------------------------------------------------
+DB_PATH = "data/processed/app.db"
+
+# winning_features.md item 19 — written by `eval_benchmark.py --out-json`,
+# read by GET /api/eval-results.
+EVAL_RESULTS_PATH = "data/processed/eval_results.json"

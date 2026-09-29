@@ -20,7 +20,7 @@ would otherwise reload the embedding + reranker models on every call.
 from final_retriever import AyurvedicIPRetriever
 from context_builder import ContextBuilder
 from llm import GeminiLLM, LLMError
-from prompt import SYSTEM_PROMPT
+from prompt import SYSTEM_PROMPT, persona_guidance_text
 
 
 _retriever = None
@@ -69,11 +69,25 @@ def _get_llm():
     return _llm
 
 
-def _retrieve_and_draft(query: str, top_k: int = 6, candidate_k: int = 20) -> dict:
-    """Shared retrieval + grounded-generation path used by every RAG specialist."""
+def _retrieve_and_draft(
+    query: str,
+    top_k: int = 6,
+    candidate_k: int = 20,
+    jurisdiction_filter: str | None = None,
+    persona: str | None = None,
+) -> dict:
+    """Shared retrieval + grounded-generation path used by every RAG specialist.
+
+    jurisdiction_filter enforces the India/International separation at
+    the actual Qdrant/BM25 query (retriever.jurisdiction_query_filter,
+    bm25_retriever._jurisdiction_matches) — not just via which specialist
+    got picked, per winning_features.md item 2's "architectural"
+    requirement."""
 
     try:
-        results = _get_retriever().search(query=query, top_k=top_k, candidate_k=candidate_k)
+        results = _get_retriever().search(
+            query=query, top_k=top_k, candidate_k=candidate_k, jurisdiction_filter=jurisdiction_filter,
+        )
     except Exception as exc:  # noqa: BLE001
         # Mirrors rag_pipeline.AyurvedicIPRAG.answer()'s guard around the
         # same call (e.g. Qdrant unreachable) - every specialist funnels
@@ -86,7 +100,10 @@ def _retrieve_and_draft(query: str, top_k: int = 6, candidate_k: int = 20) -> di
         return {"retrieved": [], "draft_answer": None}
 
     context_data = _get_context_builder().build_context(results)
-    prompt = SYSTEM_PROMPT.format(context=context_data["context"], query=query)
+    prompt = SYSTEM_PROMPT.format(
+        context=context_data["context"], query=query, persona_guidance=persona_guidance_text(persona),
+        history_block="",
+    )
 
     try:
         answer = _get_llm().generate(prompt)
@@ -124,7 +141,9 @@ def patent_agent(state: dict) -> dict:
             "retrieved": [],
         }
 
-    result = _retrieve_and_draft(state["sanitized_query"])
+    result = _retrieve_and_draft(
+        state["sanitized_query"], jurisdiction_filter=state.get("jurisdiction"), persona=state.get("persona"),
+    )
     result["agent"] = "patent_agent"
     return result
 
@@ -163,7 +182,9 @@ def tm_gi_agent(state: dict) -> dict:
             "retrieved": [],
         }
 
-    result = _retrieve_and_draft(state["sanitized_query"])
+    result = _retrieve_and_draft(
+        state["sanitized_query"], jurisdiction_filter=state.get("jurisdiction"), persona=state.get("persona"),
+    )
     result["agent"] = "tm_gi_agent"
     result["note"] = (
         "No Trade Marks Act/GI Act/Designs Act corpus has been ingested — this "
@@ -204,7 +225,9 @@ def abs_agent(state: dict) -> dict:
             "retrieved": [],
         }
 
-    result = _retrieve_and_draft(state["sanitized_query"])
+    result = _retrieve_and_draft(
+        state["sanitized_query"], jurisdiction_filter=state.get("jurisdiction"), persona=state.get("persona"),
+    )
     result["agent"] = "abs_agent"
     return result
 
@@ -238,7 +261,9 @@ def reg_agent(state: dict) -> dict:
             "retrieved": [],
         }
 
-    result = _retrieve_and_draft(state["sanitized_query"])
+    result = _retrieve_and_draft(
+        state["sanitized_query"], jurisdiction_filter=state.get("jurisdiction"), persona=state.get("persona"),
+    )
     result["agent"] = "reg_agent"
     return result
 
@@ -286,7 +311,9 @@ def intl_agent(state: dict) -> dict:
             "retrieved": [],
         }
 
-    result = _retrieve_and_draft(state["sanitized_query"])
+    result = _retrieve_and_draft(
+        state["sanitized_query"], jurisdiction_filter=state.get("jurisdiction"), persona=state.get("persona"),
+    )
     result["agent"] = "intl_agent"
     result["note"] = (
         "No target_market supplied, and the international treaty/export corpus "
@@ -331,7 +358,9 @@ def classifier_agent(state: dict) -> dict:
                 "error": str(exc),
             }
 
-    result = _retrieve_and_draft(state["sanitized_query"])
+    result = _retrieve_and_draft(
+        state["sanitized_query"], jurisdiction_filter=state.get("jurisdiction"), persona=state.get("persona"),
+    )
     result["agent"] = "classifier_agent"
     result["note"] = (
         "No structured classification inputs supplied — this answer is "

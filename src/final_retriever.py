@@ -1,6 +1,7 @@
 from hybrid_retriever import AyurvedicHybridRetriever
 from reranker import AyurvedicIPReranker
 from legal_reference import extract_legal_references, match_reference
+from bm25_retriever import _jurisdiction_matches
 import config
 
 
@@ -51,11 +52,18 @@ class AyurvedicIPRetriever:
         candidate["exact_reference_match"] = True
         return candidate
 
-    def _inject_exact_matches(self, references, candidates):
+    def _inject_exact_matches(self, references, candidates, jurisdiction_filter=None, document_id_filter=None):
         """
         Make sure the chunks that literally are the requested
         provision are in the pool the reranker sees - otherwise a
         bad dense/BM25 round can drop them before we ever score them.
+
+        jurisdiction_filter/document_id_filter are enforced here too -
+        this bypasses the normal hybrid search, so without this check an
+        India-scoped (or law-version-scoped) query could still have a
+        non-matching chunk injected via an exact statutory-reference
+        match, defeating the retrieval-time separation in
+        retriever.combined_query_filter/bm25_retriever._jurisdiction_matches.
         """
 
         present = {c.get("chunk_id") for c in candidates}
@@ -63,6 +71,12 @@ class AyurvedicIPRetriever:
         for chunk in self.hybrid_retriever.chunks:
 
             if chunk.get("chunk_id") in present:
+                continue
+
+            if not _jurisdiction_matches(chunk.get("jurisdiction"), jurisdiction_filter):
+                continue
+
+            if document_id_filter and chunk.get("document_id") != document_id_filter:
                 continue
 
             if any(
@@ -115,6 +129,8 @@ class AyurvedicIPRetriever:
         query: str,
         top_k: int = config.TOP_K,
         candidate_k: int = config.CANDIDATE_K,
+        jurisdiction_filter: str | None = None,
+        document_id_filter: str | None = None,
     ):
 
         references = extract_legal_references(query)
@@ -127,6 +143,8 @@ class AyurvedicIPRetriever:
             query=query,
             top_k=candidate_k,
             candidate_k=candidate_k,
+            jurisdiction_filter=jurisdiction_filter,
+            document_id_filter=document_id_filter,
         )
 
         # --------------------------------
@@ -144,7 +162,7 @@ class AyurvedicIPRetriever:
         # Explicit legal reference -> targeted handling
         # --------------------------------
 
-        candidates = self._inject_exact_matches(references, candidates)
+        candidates = self._inject_exact_matches(references, candidates, jurisdiction_filter, document_id_filter)
 
         reranked = self.reranker.rerank(
             query=query,
