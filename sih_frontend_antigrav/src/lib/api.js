@@ -3,15 +3,7 @@
 // Same origin-detection pattern as the legacy frontend/app.js: same-origin
 // in production (behind nginx), localhost:8000 fallback for local dev.
 
-const API_BASE = (() => {
-  const origin = window.location.origin || '';
-  if (origin.startsWith('http')) {
-    if (!origin.includes('://localhost') && !origin.includes('://127.0.0.1')) {
-      return origin;
-    }
-  }
-  return 'http://127.0.0.1:8000';
-})();
+const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
 // No-login session identity (backend: src/db.py, api.py's _session_id) —
 // a UUID generated once and persisted in localStorage, sent as
@@ -32,7 +24,7 @@ function withSessionHeaders(extra = {}) {
   return { 'X-Session-Id': getSessionId(), ...extra };
 }
 
-async function postJson(path, body, { timeoutMs = 60000 } = {}) {
+async function postJson(path, body, { timeoutMs = 120000 } = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 

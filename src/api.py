@@ -378,7 +378,7 @@ def _run_query(
 
 
 @app.get("/health")
-def health() -> dict:
+async def health() -> dict:
     if _STATE.get("error"):
         status = "degraded"
     elif _STATE.get("rag") is None:
