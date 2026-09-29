@@ -318,14 +318,58 @@ def _agent_sources(retrieved: list) -> list[dict]:
     return sources
 
 
-def _run_query(query: str, top_k: int | None, history: list | None = None) -> dict | None:
+def _normalize_jurisdiction(value: str | None) -> str | None:
+    """Map a UI/caller jurisdiction label onto the two filter values the
+    retrievers understand ("India"/"International"), or None for no filter.
+
+    Anything explicitly dual-scoped, unrecognized or absent returns None:
+    an unknown label must widen the search rather than silently narrow it to
+    the wrong regime.
+    """
+
+    if not value:
+        return None
+
+    text = value.strip().lower()
+    if not text:
+        return None
+
+    if "both" in text or "dual" in text:
+        return None
+    # "India (National & International Multi-Step)" is a dual-scope question
+    # despite leading with India, so check for a co-mention first.
+    india = "india" in text
+    international = any(
+        term in text
+        for term in ("international", "global", "wipo", "pct", "foreign", "export")
+    )
+    if india and international:
+        return None
+    if india:
+        return "India"
+    if international:
+        return "International"
+    return None
+
+
+def _run_query(
+    query: str,
+    top_k: int | None,
+    history: list | None = None,
+    jurisdiction: str | None = None,
+) -> dict | None:
     """Shared guard + dispatch. Returns None when the backend is not ready."""
 
     rag = _STATE.get("rag")
     if rag is None:
         return None
     history_dicts = [h.model_dump() for h in history] if history else None
-    return rag.answer(query, top_k=top_k, history=history_dicts)
+    return rag.answer(
+        query,
+        top_k=top_k,
+        history=history_dicts,
+        jurisdiction_filter=_normalize_jurisdiction(jurisdiction),
+    )
 
 
 # ----------------------------------------------------------------------
@@ -397,7 +441,12 @@ def api_chat(request: ChatRequest) -> dict:
             "error": "empty_query",
         }
 
-    result = _run_query(query, request.top_k, history=request.history)
+    result = _run_query(
+        query,
+        request.top_k,
+        history=request.history,
+        jurisdiction=request.jurisdiction or request.jurisdiction_filter,
+    )
     if result is None:
         return {
             "answer": (

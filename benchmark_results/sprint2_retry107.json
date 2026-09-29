@@ -1,0 +1,69 @@
+[
+  {
+    "id": 107,
+    "title": "Novel Drug Delivery Systems (NDDS)",
+    "query": "An Ayurvedic laboratory encapsulates Curcumin into lipid nanoparticles for oral delivery. How does this impact classification and patentability?",
+    "jurisdiction": "India",
+    "category": "Novel Drug Delivery Systems (NDDS)",
+    "ground_truth": "Classification: Patent or Proprietary Medicine / NDDS Phytopharmaceutical.\n\nIP Posture: Highly Patentable. While Curcumin and its medicinal properties are prior art / TK, the nano-formulation, carrier matrix, targeted release mechanism, and bio-availability improvement overcome Section 3(p) and Section 3(d) objections if unexpected technical advantages are proven.",
+    "validation_criteria": "",
+    "actual_answer": "### 1. Executive Summary\nEncapsulating Curcumin into lipid nanoparticles is treated as creating a derivative or form of a known substance under patent examination principles. To be considered patentable, the application must demonstrate significantly improved therapeutic efficacy compared to the known substance, and cannot rely merely on isolation or known uses from traditional systems. For an actual filing or legal decision, consult a qualified patent professional.\n\n### 2. Applicable Legal & Regulatory Framework\n- **Statutory Law (the Patents Act):** Section 3 and Section 3(d) [Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals, Section 3, p.29].\n- **Subordinate Legislation (the Patents Rules):** The Patent Rules 2003 (as amended) [Guidelines for Examination of Ayush Related Inventions, Section 3, p.9].\n- **Patent Office Guidance (examination guidelines):** Guidelines for Examination of Ayush Related Inventions and Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals [Guidelines for Examination of Ayush Related Inventions, Section 1, p.5; Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals, Section 3, p.29].\n- **Traditional Knowledge Guidance (TK/biological material guidelines):** Utilization of the Traditional Knowledge Digital Library (TKDL) for prior art searches across Indian Systems of Medicine [Guidelines for Examination of Ayush Related Inventions, Section 3, p.9].\n\n### 3. Analysis & Specific Guidance\n- The patent office evaluates novelty and inventive step using databases and the Traditional Knowledge Digital Library (TKDL) [Guidelines for Examination of Ayush Related Inventions, Section 3, p.9].\n- Under the statutory framework of Section 3(d), derivatives, complexes, combinations, and other derivatives of known substances are considered to be the same substance unless they differ significantly in properties regarding efficacy [Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals, Section 3, p.29].\n- If Curcumin or its plant sources are part of prior art or known in Ayurveda, simply putting it into a new form (such as lipid nanoparticles for oral delivery) risks being treated as a mere discovery of a new form or property of a known substance, unless it demonstrates significantly enhanced therapeutic efficacy [Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals, Section 3, p.29]. Furthermore, claims for extracts or isolated active ingredients naturally present in plants are not considered novel or inventive if the use of such plants is already known in prior art [Guidelines for Examination of Ayush Related Inventions, Section 3, p.9].\n\n### 4. Identified Risks & Red Flags\n- **Section 3(d) Exclusion Risk:** Incremental inventions or new forms (such as nanoparticles, complexes, or carriers) of a known substance are deemed to be the same substance under Section 3(d) and will fail patentability unless they demonstrate significantly improved therapeutic efficacy [Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals, Section 3, p.29].\n- **Prior Art / Obviousness Risk:** If the therapeutic activity of Curcumin or the source plant is already documented in traditional knowledge or prior art, isolating or reformulating it without sufficient human intellect beyond reported uses or without an inventive step can face rejections [Guidelines for Examination of Ayush Related Inventions, Section 3, p.9].\n\n### 5. Actionable Checklist / Next Steps\n- Conduct a comprehensive prior art and TKDL search to check if the specific use and plant source of Curcumin are already documented [Guidelines for Examination of Ayush Related Inventions, Section 3, p.9].\n- Prepare comparative efficacy data demonstrating that lipid nanoparticle encapsulation results in a significant enhancement of therapeutic efficacy compared to the known substance, to address Section 3(d) requirements [Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals, Section 3, p.29].\n- Consult a qualified patent professional before filing any patent application to navigate the specific statutory provisions of the Patents Act 1970 (as amended) and the Patent Rules 2003 (as amended) [Guidelines for Examination of Ayush Related Inventions, Section 3, p.9].",
+    "actual_citations": [
+      {
+        "statute": "Guidelines for Examination of Ayush Related Inventions",
+        "section": "Section 3",
+        "title": "Page 5 of 14 (as amended) and The Patent Rules 2003 (as amended). The Patent office conducts prior art search to evaluate the novelty and inventive step using the Traditional Knowledge Digital Library (TKDL) which allows search on Indian Sy",
+        "page": 9,
+        "chunk_id": "Guidelines for Ayush_000012",
+        "reranker_score": 0.17071188986301422,
+        "freshness_note": null
+      },
+      {
+        "statute": "Guidelines for Examination of Ayush Related Inventions",
+        "section": "Section 3",
+        "title": "Page 10 of 14 Guiding Principle 5 In case a multi-ingredient formulation is known to have a specific therapeutic activity as per the prior art, merely selecting one or more ingredient for the same said therapeutic activity cannot be conside",
+        "page": 14,
+        "chunk_id": "Guidelines for Ayush_000017",
+        "reranker_score": 0.0874943882226944,
+        "freshness_note": null
+      },
+      {
+        "statute": "Guidelines for Examination of Ayush Related Inventions",
+        "section": "Section 1",
+        "title": "1. Introduction Ayush is traditional and non-conventional systems of healthcare and healing including Ayurveda, Siddha, Unani, Sowa-Rigpa, Homoeopathy and Yoga & Naturopathy. The scope of these guidelines covers inventions related to Ayush ",
+        "page": 5,
+        "chunk_id": "Guidelines for Ayush_000006",
+        "reranker_score": 0.0650104284286499,
+        "freshness_note": null
+      },
+      {
+        "statute": "Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals",
+        "section": "Section 3",
+        "title": "Guidelines For Examination Of Patent Applications In The Field Of Pharmaceuticals Office of the Controller General of Patents, Designs and Trademarks Page 28 Example 2: Invention: An extract of Calotrophis gigantea containing cardiac glycos",
+        "page": 29,
+        "chunk_id": "pharmaceuticals_guidelines_2014_000039",
+        "reranker_score": 0.016918925568461418,
+        "freshness_note": null
+      },
+      {
+        "statute": "Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals",
+        "section": "Section 7(b)",
+        "title": "Guidelines For Examination Of Patent Applications In The Field Of Pharmaceuticals Office of the Controller General of Patents, Designs and Trademarks Page 26 The first active agent present in the composition is in micronized form or sprayed",
+        "page": 27,
+        "chunk_id": "pharmaceuticals_guidelines_2014_000034",
+        "reranker_score": 0.012267322279512882,
+        "freshness_note": null
+      },
+      {
+        "statute": "Guidelines for Examination of Ayush Related Inventions",
+        "section": "p.2",
+        "title": "Integrative system and method for performing medical Diagnosis using Artificial Intelligence Applicant: Ayur.AI (OPC) Private Limited Patent No.: 429737, Date of Grant: 24/04/2023 Inventor: Balasubrahmanyam Pesala Vaginal douche composition",
+        "page": 2,
+        "chunk_id": "Guidelines for Ayush_000002",
+        "reranker_score": 0.011634171940386295,
+        "freshness_note": null
+      }
+    ],
+    "api_error": null
+  }
+]

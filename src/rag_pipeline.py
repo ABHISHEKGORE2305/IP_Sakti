@@ -12,6 +12,7 @@ from final_retriever import AyurvedicIPRetriever
 from context_builder import ContextBuilder
 from llm import GeminiLLM, LLMError
 from prompt import SYSTEM_PROMPT, history_block_text
+from query_expansion import QueryExpander
 import config
 
 
@@ -40,6 +41,7 @@ class AyurvedicIPRAG:
             max_context_chars=max_context_chars
         )
         self.llm = GeminiLLM()
+        self.query_expander = QueryExpander(llm=self.llm)
 
         print("\nRAG system ready!\n")
 
@@ -70,13 +72,18 @@ class AyurvedicIPRAG:
         candidate_k = candidate_k or self.candidate_k
 
         # ---------------- retrieval ----------------
+        # Retrieve on the statutory-vocabulary expansion, generate from the
+        # user's own wording — see query_expansion.py.
+        retrieval_query = self.query_expander.expand(query)
+
         try:
             results = self.retriever.search(
-                query=query,
+                query=retrieval_query,
                 top_k=top_k,
                 candidate_k=candidate_k,
                 jurisdiction_filter=jurisdiction_filter,
                 document_id_filter=document_id_filter,
+                reference_query=query,
             )
         except Exception as exc:  # noqa: BLE001
             return {

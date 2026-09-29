@@ -2,7 +2,7 @@ from pathlib import Path
 import json
 
 from document_loader import load_pdf
-from chunker import create_chunks
+from chunker import create_chunks, consolidate_chunks
 from embedding_model import EmbeddingModel
 from vector_store import QdrantVectorStore
 from document_config import DOCUMENTS
@@ -58,9 +58,14 @@ for document_config in DOCUMENTS:
         chunk_overlap=200,
     )
 
-    print(f"Chunks created: {len(chunks)}")
+    consolidated = consolidate_chunks(chunks)
 
-    all_chunks.extend(chunks)
+    print(
+        f"Chunks created: {len(chunks)} -> "
+        f"{len(consolidated)} after section consolidation"
+    )
+
+    all_chunks.extend(consolidated)
 
 
 print("\n" + "=" * 80)

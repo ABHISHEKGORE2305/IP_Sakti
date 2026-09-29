@@ -33,7 +33,17 @@ def load_pdf(
 
     pages = []
 
+    # Optional (first_page, last_page) 1-based inclusive window, for a PDF
+    # that bundles two distinct instruments — the Drugs and Cosmetics volume
+    # carries the Act on pp.1-38 and the Rules from p.39, and they must be
+    # ingested as separate documents so numbered provisions are labelled
+    # "Section N" vs "Rule N" correctly rather than all as sections.
+    page_range = (metadata or {}).get("page_range")
+
     for page_number, page in enumerate(document):
+
+        if page_range and not (page_range[0] <= page_number + 1 <= page_range[1]):
+            continue
 
         raw_text = page.get_text()
 

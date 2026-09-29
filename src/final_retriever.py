@@ -11,6 +11,10 @@ EXACT_REFERENCE_BONUS = config.EXACT_REFERENCE_BONUS
 SAME_SECTION_BONUS = config.SAME_SECTION_BONUS
 STATUTORY_SOURCE_BONUS = config.STATUTORY_SOURCE_BONUS
 
+# Ceiling on chunks force-injected into the reranker pool by the
+# exact-reference path — see _inject_exact_matches.
+MAX_INJECTED_PER_SEARCH = 12
+
 
 class AyurvedicIPRetriever:
 
@@ -68,7 +72,17 @@ class AyurvedicIPRetriever:
 
         present = {c.get("chunk_id") for c in candidates}
 
+        injected = 0
+
         for chunk in self.hybrid_retriever.chunks:
+
+            # A provision label is not unique across a 4,600-chunk corpus (a
+            # long section spans several chunks, and "Rule 2" recurs across
+            # instruments), and every injected chunk also receives the +2.0
+            # exact-reference bonus. Uncapped, one reference could fill the
+            # entire top-k with chunks the ranking never actually chose.
+            if injected >= MAX_INJECTED_PER_SEARCH:
+                break
 
             if chunk.get("chunk_id") in present:
                 continue
@@ -84,6 +98,7 @@ class AyurvedicIPRetriever:
                 for ref in references
             ):
                 candidates.append(self._candidate_from_chunk(chunk))
+                injected += 1
 
         return candidates
 
@@ -131,9 +146,21 @@ class AyurvedicIPRetriever:
         candidate_k: int = config.CANDIDATE_K,
         jurisdiction_filter: str | None = None,
         document_id_filter: str | None = None,
+        reference_query: str | None = None,
     ):
+        """
+        reference_query: the text to mine for explicit statutory references,
+        when it differs from the text used for semantic matching. Callers that
+        expand a query for retrieval (see query_expansion.py) must pass the
+        user's ORIGINAL wording here: an expansion names provisions
+        speculatively, and the exact-reference path below injects every chunk
+        carrying that label and adds a +2.5 score override — so letting a
+        guess drive it lets the expansion overrule the actual ranking.
+        """
 
-        references = extract_legal_references(query)
+        references = extract_legal_references(
+            reference_query if reference_query is not None else query
+        )
 
         # --------------------------------
         # STEP 1: Hybrid retrieval
