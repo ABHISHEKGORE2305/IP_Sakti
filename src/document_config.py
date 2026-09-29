@@ -13,6 +13,11 @@ AUTHORITY_WEIGHTS = {
     "patent_office_manual": 0.75,
     "tkdl_reference": 0.50,
     "ayurvedic_reference": 0.50,
+    # src/web_sources.py document types (periodic URL ingestion, src/ingest_web.py)
+    "treaty": 0.95,                # full treaty text (CBD, Nagoya, GRATK)
+    "treaty_overview": 0.65,       # what's currently fetchable — a treaty-body's own summary page, not the full text
+    "international_guidance": 0.80,
+    "regulatory_notice": 0.75,
 }
 
 DEFAULT_AUTHORITY_WEIGHT = config.DEFAULT_AUTHORITY_WEIGHT
@@ -127,10 +132,116 @@ DOCUMENTS = [
     },
 
     {
-        "filename": "an_overview_of_ayurveda.pdf",
+        "filename": "An_Overview_of_Ayurveda.pdf",
         "document": "An Overview of Ayurveda",
         "document_type": "ayurvedic_reference",
         "jurisdiction": "India",
+        "language": "en",
+    },
+
+    # --- Regulatory / allied-regime corpus ---
+    # The D&C Act + Rules govern the *classification* question that gates
+    # almost every downstream IP answer (classical ASU medicine under s.3(a)
+    # vs patent-and-proprietary under s.3(h) vs phytopharmaceutical under
+    # Rule 2(eb)), so its absence propagated into wrong or refused answers
+    # well beyond drug-licensing questions.
+    # One PDF, two instruments: the Act runs to p.38, the Rules from p.39
+    # (verified by the running header on each page). Registered separately so
+    # the Rules' numbered provisions are labelled "Rule N", which is how the
+    # benchmark — and a patent agent — cites them. document_id is set
+    # explicitly because it otherwise derives from the shared filename.
+    {
+        "filename": "11.2_2016DrugsandCosmeticsAct1940Rules1945.pdf",
+        "document_id": "drugs_and_cosmetics_act_1940",
+        "document": "The Drugs and Cosmetics Act, 1940",
+        "document_type": "statute",
+        "jurisdiction": "India",
+        "language": "en",
+        "page_range": (1, 38),
+    },
+    {
+        "filename": "11.2_2016DrugsandCosmeticsAct1940Rules1945.pdf",
+        "document_id": "drugs_and_cosmetics_rules_1945",
+        "document": "The Drugs and Cosmetics Rules, 1945",
+        "document_type": "rules",
+        "jurisdiction": "India",
+        "language": "en",
+        "page_range": (39, 635),
+    },
+    {
+        "filename": "17_Food Safety and Standards (Ayurveda Aahara) Regulations, 2022.pdf",
+        "document": "Food Safety and Standards (Ayurveda Aahara) Regulations, 2022",
+        "document_type": "rules",
+        "jurisdiction": "India",
+        # Bilingual Gazette notification; the Hindi pages still embed and are
+        # searchable, just without section/rule metadata precision.
+        "language": "en",
+    },
+    {
+        "filename": "4_Trade_Marks_Act_1999_IndiaCode_2026-06-01.pdf",
+        "document": "The Trade Marks Act, 1999",
+        "document_type": "statute",
+        "jurisdiction": "India",
+        "language": "en",
+    },
+    {
+        "filename": "Protection of Plant Varieties and Farmers' Rights Act, 2001.pdf",
+        "document": "The Protection of Plant Varieties and Farmers' Rights Act, 2001",
+        "document_type": "statute",
+        "jurisdiction": "India",
+        "language": "en",
+    },
+
+    # --- International treaty corpus (user-supplied PDFs, full text where available) ---
+    {
+        "filename": "cbd-en.pdf",
+        "document": "Convention on Biological Diversity (CBD), 1992 — Text and Annexes",
+        "document_type": "treaty",
+        "jurisdiction": "International",
+        "language": "en",
+    },
+    {
+        "filename": "nagoya-protocol-en.pdf",
+        "document": "Nagoya Protocol on Access to Genetic Resources and the Fair and Equitable Sharing of Benefits Arising from their Utilization, 2010",
+        "document_type": "treaty",
+        "jurisdiction": "International",
+        "language": "en",
+    },
+    {
+        "filename": "Botanical-Drug-Development--Guidance-for-Industry.pdf",
+        "document": "US FDA — Botanical Drug Development, Guidance for Industry",
+        "document_type": "international_guidance",
+        "jurisdiction": "United States",
+        "language": "en",
+    },
+    {
+        "filename": "37_WIPO GRATK Treaty.pdf",
+        "document": "WIPO Treaty on Intellectual Property, Genetic Resources and Associated Traditional Knowledge (GRATK), 2024",
+        "document_type": "treaty",
+        "jurisdiction": "International",
+        "language": "en",
+    },
+    {
+        "filename": "gratk_dc_exsum.pdf",
+        # WIPO's own 2-page informal summary of the treaty, not the full
+        # treaty text (that wasn't supplied as a clean standalone PDF —
+        # see src/web_sources.py's wipo_gratk_treaty_2024 for the
+        # complementary web-fetched overview page).
+        "document": "WIPO Treaty on Intellectual Property, Genetic Resources and Associated Traditional Knowledge (GRATK), 2024 — Informal Summary",
+        "document_type": "treaty_overview",
+        "jurisdiction": "International",
+        "language": "en",
+    },
+    {
+        "filename": "gratk.pdf",
+        # Single-page excerpt from a WIPO General Assembly document
+        # listing treaty ratification/accession status — not the treaty
+        # text itself, but genuine, current (dated in the source) status
+        # data. Confirmed by content inspection, not assumed from the
+        # filename.
+        "document": "WIPO GRATK Treaty — Ratification/Accession Status",
+        "document_type": "treaty_overview",
+        "jurisdiction": "International",
         "language": "en",
     },
 ]

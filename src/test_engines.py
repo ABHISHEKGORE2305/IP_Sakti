@@ -7,10 +7,11 @@ Run with:
 """
 
 from engines.classifier import classify_product, IntendedUse, ClassificationError
-from engines.ipr_router import advise_regime
-from engines.tk_engine import analyze_tk_patentability
+from engines.ipr_router import advise_regime, plan_ip_route
+from engines.tk_engine import analyze_tk_patentability, misappropriation_risk
 from engines.abs_engine import analyze_abs_compliance, EntityType, ActivityType
 from engines.reg_engine import analyze_regulatory_pathway
+from engines.knowledge_graph import build_graph
 
 
 def _header(title: str) -> None:
@@ -178,6 +179,80 @@ try:
     raise AssertionError("expected ValueError")
 except ValueError as exc:
     print("Correctly raised:", exc)
+
+
+# ----------------------------------------------------------------------
+# ipr_router.plan_ip_route / tk_engine.misappropriation_risk
+# (winning_features.md items 6/8)
+# ----------------------------------------------------------------------
+
+_header("IPR ROUTER: plan_ip_route colors outlook by TK risk and region-linkage")
+plan = plan_ip_route(
+    {"patent": "note", "trademark": "note", "geographical_indication": "note", "trade_secret": "note"},
+    tk_risk="barred",
+    is_region_linked=False,
+)
+by_regime = {p["regime"]: p for p in plan}
+assert by_regime["patent"]["outlook"] == "barred"
+assert by_regime["geographical_indication"]["outlook"] == "conditional"
+assert by_regime["trademark"]["outlook"] == "available"
+print("OK —", [(p["regime"], p["outlook"]) for p in plan])
+
+_header("IPR ROUTER: plan_ip_route omits regimes absent from ip_regimes")
+plan = plan_ip_route({"patent": "note"})
+assert [p["regime"] for p in plan] == ["patent"]
+print("OK — only supplied regimes appear")
+
+_header("TK ENGINE: misappropriation_risk levels")
+assert misappropriation_risk(True, True)["level"] == "high"
+assert misappropriation_risk(True, False)["level"] == "moderate"
+assert misappropriation_risk(False, True)["level"] == "moderate"
+assert misappropriation_risk(False, False)["level"] == "low"
+print("OK — high/moderate/moderate/low")
+
+result = analyze_tk_patentability(documented_in_classical_text=True, cited_in_tkdl=True)
+assert result["misappropriation_risk"]["level"] == "high"
+print("OK — analyze_tk_patentability includes misappropriation_risk")
+
+
+# ----------------------------------------------------------------------
+# knowledge_graph.py
+# ----------------------------------------------------------------------
+
+_header("KNOWLEDGE GRAPH: full multi-hop build (Product -> Ingredient -> "
+        "Biological Resource -> TK -> IP Type -> ABS -> Jurisdiction)")
+graph = build_graph(
+    jurisdiction="India",
+    ingredient="Withania somnifera (Ashwagandha)",
+    biological_resource="Root extract sourced from Madhya Pradesh",
+    classification_inputs={"in_first_schedule": False, "intended_use": "therapeutic"},
+    tk_inputs={"documented_in_classical_text": True},
+    abs_inputs={
+        "entity_type": "foreign_entity",
+        "activity_type": "commercial_utilization",
+        "seeking_ipr_on_biological_invention": True,
+    },
+)
+node_kinds = {n["kind"] for n in graph["nodes"]}
+assert {"Product", "Ingredient", "BiologicalResource", "Classification", "TKFinding",
+        "ABSObligation", "Jurisdiction"} <= node_kinds
+assert any(e["relation"] == "sourced_from" for e in graph["edges"])
+assert any(e["relation"] == "patent_issue" for e in graph["edges"])
+print(f"OK — {len(graph['nodes'])} nodes, {len(graph['edges'])} edges")
+
+_header("KNOWLEDGE GRAPH: partial input (jurisdiction-only) still resolves")
+graph = build_graph(jurisdiction="India")
+assert graph["nodes"] == [
+    {"id": "product", "kind": "Product", "label": "Ayurvedic Product / Formulation"},
+    {"id": "jurisdiction", "kind": "Jurisdiction", "label": "India"},
+]
+print("OK — no fabricated nodes when no facts are supplied")
+
+_header("KNOWLEDGE GRAPH: invalid engine inputs are caught, not left to crash")
+graph = build_graph(tk_inputs={"documented_in_classical_text": "not_a_bool_but_engine_is_lenient"})
+graph = build_graph(abs_inputs={"entity_type": "not_a_real_type", "activity_type": "bio_survey"})
+assert not any(n["kind"] == "ABSObligation" for n in graph["nodes"])
+print("OK — invalid abs_inputs skips that branch instead of raising")
 
 
 print("\n" + "=" * 80)

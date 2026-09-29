@@ -7,6 +7,21 @@
 export const JURISDICTIONS = [
   { value: 'India', flag: '🇮🇳', label: 'India', desc: 'Indian Patents Act, D&C Act, BD Act, AYUSH/FSSAI/CDSCO.' },
   { value: 'International', flag: '🌍', label: 'International', desc: 'WIPO, US FDA, EU THMPD, PCT and export-market pathways.' },
+  {
+    value: 'Both',
+    flag: '🇮🇳🌍',
+    label: 'Both (side-by-side)',
+    desc: 'Runs both independently and shows two separate panels — never mixed into one answer.',
+  },
+];
+
+// winning_features.md item 14 — persona modes. Adjusts tone/depth only
+// (see prompt.PERSONA_GUIDANCE); never changes which legal facts get cited.
+export const PERSONAS = [
+  { value: 'practitioner', label: 'Practitioner / Vaidya', desc: 'Plain language, clinical/dispensing focus.' },
+  { value: 'researcher', label: 'Researcher', desc: 'Precise terminology, denser citations.' },
+  { value: 'startup_msme', label: 'Startup / MSME', desc: 'Commercial implications first — cost, timeline, filing sequence.' },
+  { value: 'cultivator', label: 'Cultivator / Farmer', desc: 'Very simple language, ABS obligations prioritized.' },
 ];
 
 export const INTENDED_USE_OPTIONS = [

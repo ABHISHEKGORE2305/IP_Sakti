@@ -11,6 +11,8 @@ Run interactively:
         import json; print(json.dumps(run('What is Section 3(p)?'), indent=2))"
 """
 
+import time
+
 from langgraph.graph import END, StateGraph
 
 from agents.citation_agent import verify_citations
@@ -18,15 +20,16 @@ from agents.specialists import SPECIALISTS
 from agents.state import AgentState
 from agents.supervisor import route
 from guardrails.confidence import ABSTENTION_MESSAGE, evaluate_confidence
+from guardrails.injection_filter import detect_prompt_injection
 from guardrails.pii_sanitizer import sanitize_pii
 
 
-_INJECTION_MARKERS = (
-    "ignore previous instructions",
-    "ignore all previous instructions",
-    "disregard the system prompt",
-    "disregard your instructions",
-)
+def _trace(node: str, summary: str) -> dict:
+    """One entry for AgentState's `trace` list (see state.py) — every
+    node's return dict includes {"trace": [_trace(...)]} so the
+    Annotated[list, operator.add] reducer concatenates them into a real,
+    inspectable step-by-step record (winning_features.md item 11)."""
+    return {"node": node, "summary": summary, "timestamp": time.time()}
 
 
 # ----------------------------------------------------------------------
@@ -38,7 +41,10 @@ def input_sanitizer(state: AgentState) -> dict:
     query = (state.get("query") or "").strip()
 
     if not query:
-        return {"sanitized_query": "", "blocked": True, "block_reason": "empty_query", "pii_redactions": []}
+        return {
+            "sanitized_query": "", "blocked": True, "block_reason": "empty_query", "pii_redactions": [],
+            "trace": [_trace("input_sanitizer", "blocked: empty query")],
+        }
 
     # DPDP data minimization: redact PII before the query ever reaches
     # embedding/retrieval or the LLM prompt. sanitize_pii() returns the
@@ -51,12 +57,14 @@ def input_sanitizer(state: AgentState) -> dict:
     query = pii_result["sanitized_text"]
     redaction_types = [{"type": r["type"]} for r in pii_result["redactions"]]
 
-    if any(marker in query.lower() for marker in _INJECTION_MARKERS):
+    injection_match = detect_prompt_injection(query)
+    if injection_match:
         return {
             "sanitized_query": query,
             "blocked": True,
             "block_reason": "prompt_injection_pattern",
             "pii_redactions": redaction_types,
+            "trace": [_trace("input_sanitizer", f"blocked: prompt-injection pattern matched ({injection_match!r})")],
         }
 
     return {
@@ -64,6 +72,10 @@ def input_sanitizer(state: AgentState) -> dict:
         "blocked": False,
         "block_reason": None,
         "pii_redactions": redaction_types,
+        "trace": [_trace(
+            "input_sanitizer",
+            f"passed; {len(redaction_types)} PII redaction(s)" if redaction_types else "passed",
+        )],
     }
 
 
@@ -80,10 +92,12 @@ def supervisor_router(state: AgentState) -> dict:
                 "selected_agents": [],
                 "routing_reason": f"forced_agent '{forced_agent}' is not a known agent.",
                 "error": f"unknown_agent: {forced_agent}",
+                "trace": [_trace("supervisor_router", f"error: unknown forced_agent {forced_agent!r}")],
             }
         return {
             "selected_agents": [forced_agent],
             "routing_reason": f"forced_agent={forced_agent} — explicit selection.",
+            "trace": [_trace("supervisor_router", f"routed to {forced_agent} (forced_agent)")],
         }
 
     # Structured-input fast path: when the caller supplies the
@@ -104,6 +118,7 @@ def supervisor_router(state: AgentState) -> dict:
             return {
                 "selected_agents": [agent_name],
                 "routing_reason": f"{state_key} supplied — routed directly to {agent_name}.",
+                "trace": [_trace("supervisor_router", f"routed to {agent_name} ({state_key} supplied)")],
             }
 
     result = route(state["sanitized_query"])
@@ -119,14 +134,23 @@ def supervisor_router(state: AgentState) -> dict:
                 "No domain keywords matched; jurisdiction=International, "
                 "defaulted to intl_agent instead of patent_agent."
             ),
+            "trace": [_trace("supervisor_router", "routed to intl_agent (jurisdiction=International default)")],
         }
 
-    return result
+    return {**result, "trace": [_trace("supervisor_router", f"routed to {result.get('selected_agents')}")]}
 
 
 def _run_specialist(agent_name: str):
     def node(state: AgentState) -> dict:
-        return SPECIALISTS[agent_name](state)
+        result = SPECIALISTS[agent_name](state)
+        n_retrieved = len(result.get("retrieved") or [])
+        summary = (
+            f"ran {agent_name}; error={result['error']}" if result.get("error")
+            else f"ran {agent_name}; {n_retrieved} chunk(s) retrieved" if "retrieved" in result
+            else f"ran {agent_name}; deterministic engine output"
+        )
+        trace_entries = result.get("trace", []) + [_trace(agent_name, summary)]
+        return {**result, "trace": trace_entries}
     return node
 
 
@@ -149,16 +173,29 @@ def verification_guardrail(state: AgentState) -> dict:
                 "scores": None,
                 "note": "deterministic engine output — not subject to retrieval confidence gating",
             },
+            "trace": [_trace("verification_guardrail", "deterministic engine output — confidence gate bypassed")],
         }
 
     if not answer:
         confidence_report = evaluate_confidence(state["sanitized_query"], retrieved)
-        return {"citation_report": None, "confidence_report": confidence_report}
+        return {
+            "citation_report": None,
+            "confidence_report": confidence_report,
+            "trace": [_trace("verification_guardrail", f"no draft answer; confidence={confidence_report.get('band')}")],
+        }
 
     citation_report = verify_citations(answer, retrieved)
     confidence_report = evaluate_confidence(state["sanitized_query"], retrieved, citation_report)
 
-    return {"citation_report": citation_report, "confidence_report": confidence_report}
+    return {
+        "citation_report": citation_report,
+        "confidence_report": confidence_report,
+        "trace": [_trace(
+            "verification_guardrail",
+            f"{citation_report.get('verified_citations', 0)}/{citation_report.get('total_citations', 0)} "
+            f"citations verified; confidence={confidence_report.get('band')}",
+        )],
+    }
 
 
 def _format_engine_results(engine_results: dict) -> str:
@@ -214,6 +251,10 @@ def _format_engine_results(engine_results: dict) -> str:
             lines.append(f"{tkdl['topic']}: {tkdl['finding']}")
             if tkdl.get("recommendation"):
                 lines.append(f"Recommendation: {tkdl['recommendation']}")
+        misappropriation = analysis.get("misappropriation_risk")
+        if misappropriation:
+            lines.append("")
+            lines.append(f"{misappropriation['topic']} ({misappropriation['level']}): {misappropriation['finding']}")
         return "\n".join(lines)
 
     if "abs_compliance" in engine_results:
@@ -286,7 +327,11 @@ def output_synthesizer(state: AgentState) -> dict:
     if not final_answer and state.get("engine_results"):
         final_answer = _format_engine_results(state["engine_results"])
 
-    return {"final_answer": final_answer or "", "sources": sources}
+    return {
+        "final_answer": final_answer or "",
+        "sources": sources,
+        "trace": [_trace("output_synthesizer", f"{len(sources)} source(s) in final answer")],
+    }
 
 
 def fallback_handler(state: AgentState) -> dict:
@@ -301,17 +346,25 @@ def fallback_handler(state: AgentState) -> dict:
                 "request. Please rephrase your question."
             )
         )
-        return {"final_answer": message, "sources": []}
+        return {"final_answer": message, "sources": [], "trace": [_trace("fallback_handler", f"blocked: {reason}")]}
 
     if state.get("error") and not state.get("confidence_report"):
         # Routing failed before any specialist ran (e.g. an unknown
         # forced_agent from a malformed UI request).
-        return {"final_answer": f"Request could not be routed: {state['error']}", "sources": []}
+        return {
+            "final_answer": f"Request could not be routed: {state['error']}",
+            "sources": [],
+            "trace": [_trace("fallback_handler", f"routing error: {state['error']}")],
+        }
 
     confidence_report = state.get("confidence_report") or {}
     message = confidence_report.get("abstention_message") or ABSTENTION_MESSAGE
 
-    return {"final_answer": message, "sources": []}
+    return {
+        "final_answer": message,
+        "sources": [],
+        "trace": [_trace("fallback_handler", f"abstained; confidence={confidence_report.get('band')}")],
+    }
 
 
 # ----------------------------------------------------------------------
@@ -393,7 +446,23 @@ def get_graph():
 
 
 def run(query: str, jurisdiction: str = "India", **extra) -> dict:
-    """Execute the full multi-agent pipeline for `query` and return the final state."""
+    """
+    Execute the full multi-agent pipeline for `query` and return the final
+    state. jurisdiction="Both" (winning_features.md item 2) runs the graph
+    twice — once forced to "India", once to "International" — and returns
+    {"india": <state>, "international": <state>} instead of a single flat
+    state, so the two answers are never merged into one paragraph; callers
+    (api.py) render them as separate panels.
+    """
+
+    if jurisdiction == "Both":
+        india_state: AgentState = {"query": query, "jurisdiction": "India", **extra}
+        intl_state: AgentState = {"query": query, "jurisdiction": "International", **extra}
+        return {
+            "both": True,
+            "india": get_graph().invoke(india_state),
+            "international": get_graph().invoke(intl_state),
+        }
 
     initial_state: AgentState = {"query": query, "jurisdiction": jurisdiction, **extra}
 

@@ -335,6 +335,11 @@ def main():
         help="Also run a sample through the real agents.graph.run() pipeline (uses the Gemini quota).",
     )
     parser.add_argument("--full-sample", type=int, default=3)
+    parser.add_argument(
+        "--out-json", type=str, default=None,
+        help="Write structured results (winning_features.md item 19's eval dashboard) to this path, "
+             "e.g. data/processed/eval_results.json — served by GET /api/eval-results.",
+    )
     args = parser.parse_args()
 
     print("=" * 80)
@@ -369,10 +374,42 @@ def main():
     print(f"OVERALL: {total_passed}/{total} ({accuracy:.1%})")
     print("=" * 80)
 
+    if args.out_json:
+        _write_json_results(args.out_json, results_by_category, total_passed, total, accuracy)
+
     if args.full:
         _run_full_sample(args.full_sample)
 
     return 0 if total_passed == total else 1
+
+
+def _write_json_results(path, results_by_category, total_passed, total, accuracy):
+    import datetime
+    import json
+    from pathlib import Path
+
+    categories = []
+    for cat, name in CATEGORY_NAMES.items():
+        outcomes = results_by_category[cat]
+        categories.append({
+            "category": cat,
+            "name": name,
+            "passed": sum(outcomes),
+            "total": len(outcomes),
+        })
+
+    payload = {
+        "run_at": datetime.datetime.now().isoformat(),
+        "total_passed": total_passed,
+        "total": total,
+        "accuracy": accuracy,
+        "categories": categories,
+    }
+
+    out_path = Path(path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    print(f"\nWrote results to {out_path}")
 
 
 def _run_full_sample(sample_size):

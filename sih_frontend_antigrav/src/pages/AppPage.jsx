@@ -4,6 +4,12 @@
 // distinct from the marketing LandingPage.
 
 import { useEffect, useState } from 'react';
+import ChatView from '../components/app/ChatView';
+import AdminCorpusPanel from '../components/app/panels/AdminCorpusPanel';
+import EvalDashboard from '../components/app/panels/EvalDashboard';
+import ExportMarketCards from '../components/app/panels/ExportMarketCards';
+import LawVersionTimeline from '../components/app/panels/LawVersionTimeline';
+import PrivacyDashboard from '../components/app/panels/PrivacyDashboard';
 import Sidebar from '../components/app/Sidebar';
 import Wizard from '../components/app/Wizard';
 import './AppPage.css';
@@ -16,6 +22,7 @@ export default function AppPage() {
   const [language, setLanguage] = useState('en');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [wizardResetKey, setWizardResetKey] = useState(0);
+  const [view, setView] = useState('wizard');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -26,6 +33,12 @@ export default function AppPage() {
 
   const startNewSession = () => {
     setWizardResetKey((k) => k + 1);
+    setView('wizard');
+    setSidebarOpen(false);
+  };
+
+  const handleViewChange = (v) => {
+    setView(v);
     setSidebarOpen(false);
   };
 
@@ -41,6 +54,8 @@ export default function AppPage() {
         onNewSession={startNewSession}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        view={view}
+        onViewChange={handleViewChange}
       />
 
       <button
@@ -52,12 +67,20 @@ export default function AppPage() {
       </button>
 
       <main className="app-shell__main">
-        <Wizard
-          key={wizardResetKey}
-          jurisdiction={jurisdiction}
-          onJurisdictionChange={setJurisdiction}
-          language={language}
-        />
+        {view === 'wizard' && (
+          <Wizard
+            key={wizardResetKey}
+            jurisdiction={jurisdiction}
+            onJurisdictionChange={setJurisdiction}
+            language={language}
+          />
+        )}
+        {view === 'chat' && <ChatView jurisdiction={jurisdiction} />}
+        {view === 'export-markets' && <ExportMarketCards />}
+        {view === 'law-versions' && <LawVersionTimeline />}
+        {view === 'privacy' && <PrivacyDashboard />}
+        {view === 'admin-corpus' && <AdminCorpusPanel />}
+        {view === 'eval-dashboard' && <EvalDashboard />}
       </main>
     </div>
   );

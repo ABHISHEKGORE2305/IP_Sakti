@@ -2,9 +2,19 @@
 // Responsive glassmorphic sidebar: logo, new-session action, theme toggle,
 // jurisdiction toggle, and the multilingual language selector.
 
-import { Globe2, Languages, Moon, PlusCircle, Sun, X } from 'lucide-react';
+import { BarChart3, Clock, Database, Globe2, Languages, MessageCircle, Moon, PlusCircle, ShieldCheck, Sun, X } from 'lucide-react';
 import { JURISDICTIONS, LANGUAGES } from '../../lib/wizardConfig';
 import './Sidebar.css';
+
+const VIEWS = [
+  { value: 'wizard', label: 'Analysis', icon: null },
+  { value: 'chat', label: 'Chat', icon: MessageCircle },
+  { value: 'export-markets', label: 'Export Markets', icon: Globe2 },
+  { value: 'law-versions', label: 'Law Version Timeline', icon: Clock },
+  { value: 'privacy', label: 'Privacy & Audit', icon: ShieldCheck },
+  { value: 'admin-corpus', label: 'Corpus Admin', icon: Database },
+  { value: 'eval-dashboard', label: 'Evaluation', icon: BarChart3 },
+];
 
 export default function Sidebar({
   theme,
@@ -16,6 +26,8 @@ export default function Sidebar({
   onNewSession,
   open,
   onClose,
+  view = 'wizard',
+  onViewChange,
 }) {
   return (
     <>
@@ -36,6 +48,22 @@ export default function Sidebar({
           <PlusCircle size={16} />
           New Analysis
         </button>
+
+        {onViewChange && (
+          <section className="app-sidebar__section">
+            <div className="app-sidebar__pills">
+              {VIEWS.map((v) => (
+                <button
+                  key={v.value}
+                  className={`app-sidebar__pill${view === v.value ? ' app-sidebar__pill--active' : ''}`}
+                  onClick={() => onViewChange(v.value)}
+                >
+                  {v.icon && <v.icon size={13} />} {v.label}
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="app-sidebar__section">
           <p className="app-sidebar__label">

@@ -1,0 +1,1478 @@
+[
+  {
+    "id": 3,
+    "title": "Food Supplement vs Drug Threshold (Ayurveda-Aahar)",
+    "query": "Can I sell *Triphala* powder packed in sachets as a dietary health supplement under FSSAI without getting an AYUSH drug license?",
+    "jurisdiction": "India (National)",
+    "category": "Ayurveda-Aahar",
+    "ground_truth": "Yes, provided it complies with the **Food Safety and Standards (Ayurveda Aahar) Regulations, 2022**. Under **Regulation 3**, *Triphala* listed in authoritative texts can be manufactured as *Ayurveda Aahar* under FSSAI licensing, provided: (1) No medicinal or therapeutic disease-cure claims are made on the label; (2) Label explicitly displays the \"Ayurveda Aahar\" logo and statement \"FOOD SUPPLEMENT - NOT FOR MEDICINAL USE\"; and (3) Daily dosage limits do not exceed pharmacopoeial recommendations. If therapeutic claims are made, it defaults back to a drug under the Drugs & Cosmetics Act, 1940.",
+    "validation_criteria": "Cite FSSAI Ayurveda Aahar Regulations 2022; mandate logo & disclaimer requirements; distinguish drug vs food claims; High Confidence (\ud83d\udfe2).",
+    "sprint": 1,
+    "prior_verdict": "FAIL",
+    "actual_answer": "### 1. Executive Summary  \nYes \u2013 you can sell Triphala powder in sachets as a dietary health supplement under FSSAI, provided you treat it as an **Ayurveda Aahara** (food product) rather than an Ayurvedic medicine.  You must comply with the Ayurveda Aahara regulations (labeling, no disease\u2011treatment claims, no added vitamins/minerals, no infant\u2011use claims, and proper FSSAI licensing).  An AYUSH drug licence is not required for a food\u2011grade product.\n\n---\n\n### 2. Applicable Legal & Regulatory Framework  \n| Source | Key Provisions | Relevance |\n|--------|----------------|-----------|\n| **Food Safety and Standards (Ayurveda Aahara) Regulations, 2022 \u2013 Rule\u202f12(d)** | \u2022 No manufacture or sale of Ayurveda Aahara for infants \u2264\u202f24\u202fmonths.<br>\u2022 Must be manufactured in accordance with Schedule\u202f4 of the FSSAI Licensing & Registration Regulation, 2011.<br>\u2022 No addition of vitamins, minerals or amino acids (except natural ones). | Defines the product as a food, sets manufacturing and ingredient limits. |\n| **Food Safety and Standards (Ayurveda Aahara) Regulations, 2022 \u2013 Rule\u202f13** | \u2022 Label must state intended purpose, target consumer group, recommended duration, and include specific labelling requirements (e.g., \u201cAYURVEDA AAHARA\u201d logo, \u201cONLY FOR DIETARY USE\u201d, warning that it is not a substitute for a varied diet, precautions, storage instructions). | Sets mandatory labeling and advertising restrictions. |\n| **Food Safety and Standards (Ayurveda Aahara) Regulations, 2022 \u2013 Rule\u202f12(d) (additional)** | \u2022 No claim that the product treats, prevents or cures a disease.<br>\u2022 No prior approval required unless Schedule\u202fB requires it. | Prohibits disease\u2011treatment claims and clarifies approval pathway. |\n| **Food Safety and Standards (Ayurveda Aahara) Regulations, 2022 \u2013 Rule\u202f12(d) (additional)** | \u2022 Packaging must comply with the Food Safety and Standards (Packaging) Regulations, 2018. | Ensures sachet packaging meets food\u2011safety standards. |\n| **Drugs and Cosmetics Rules, 1945 \u2013 Rule\u202f61** | \u2022 Defines licences for Ayurvedic, Siddha and Unani drugs (not food). | Indicates that a drug licence is only needed for products marketed as medicines, not for food\u2011grade",
+    "actual_citations": [
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "p.225",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 statutory provision \u2014 India Drugs and Cosmetics Rules 1945 225 FORM 21B [See rule 61(2)] 1[Licence to sell, stock or exhibit or offer for sale, or distribute] by wholesale drugs specified in Schedules C",
+        "page": 225,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000814",
+        "reranker_score": 0.9840064644813538,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "p.233",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 statutory provision \u2014 India (c) Names of drugs .................................. 3. The licence authorises the sale by way of wholesale dealing and storage for sale by the licensee of the drugs manufac",
+        "page": 233,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000840",
+        "reranker_score": 0.9745764136314392,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "p.223",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 statutory provision \u2014 India Drugs and Cosmetics Rules 1945 223 FORM 21 [See rule 61 (2)] 1[Licence to sell, stock or exhibit or offer for sale,or distribute] by retail drugs specified in Schedules C and",
+        "page": 223,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000812",
+        "reranker_score": 0.9699768424034119,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "p.226",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 statutory provision \u2014 India Drugs and Cosmetics Rules 1945 226 1[FORM 21BB [See Rule 62D] Licence to sell by wholesale or to distribute drugs specified in Schedule C and Schedule C (1) to the Drugs and ",
+        "page": 226,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000818",
+        "reranker_score": 0.964368462562561,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 158",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 158 \u2014 statutory provision \u2014 India (a) of the Drugs and Cosmetics As per text As per text Not Required Required Not Required Drugs and Cosmetics Rules 1945 183 Act, 1940 3 (C) Ayurveda, siddha and U",
+        "page": 182,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000723",
+        "reranker_score": 0.9439873099327087,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 61",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 61 \u2014 statutory provision \u2014 India 2[61. Forms of licences to sell drugs. (1) a licence 3[ to sell, stock, exhibit or offer for sale or distribute] drugs other than those specified in Schedules C, C ",
+        "page": 66,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000140",
+        "reranker_score": 0.9432207345962524,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "p.415",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 statutory provision \u2014 India (b) the place where such drugs are stocked shall be open to inspection by a n Inspector appointed under the Act who can, if necessary, takes samples for test.] 40[23. Drugs s",
+        "page": 415,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_001740",
+        "reranker_score": 0.9217208027839661,
+        "freshness_note": null
+      },
+      {
+        "statute": "Food Safety and Standards (Ayurveda Aahara) Regulations, 2022",
+        "section": "Rule 12(d)",
+        "title": "Food Safety and Standards (Ayurveda Aahara) Regulations, 2022 \u2014 Rule 12(d) \u2014 statutory provision \u2014 India (d) \u201cSchedule\u201d mean a schedule to these regulations. 3. General requirements.- (1) Food Business Operators shall formulate Ayurveda Aah",
+        "page": 15,
+        "chunk_id": "17_Food Safety and Standards (Ayurveda Aahara) Regulations, 2022_000026",
+        "reranker_score": 0.9133747220039368,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 158(i)",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 158(i) \u2014 statutory provision \u2014 India (i) In relation to Ayurvedic, Siddha and Unani Tibb system of medicine of all formulations containing only such ingredients mentioned in the formulae described ",
+        "page": 182,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000722",
+        "reranker_score": 0.8994773030281067,
+        "freshness_note": null
+      },
+      {
+        "statute": "Food Safety and Standards (Ayurveda Aahara) Regulations, 2022",
+        "section": "Rule 13",
+        "title": "Food Safety and Standards (Ayurveda Aahara) Regulations, 2022 \u2014 Rule 13 \u2014 statutory provision \u2014 India 13. Other requirement for Ayurveda Aahara .- Every label of Ayurveda Aahara shall specify the intended purpose, the target consumer group,",
+        "page": 16,
+        "chunk_id": "17_Food Safety and Standards (Ayurveda Aahara) Regulations, 2022_000028",
+        "reranker_score": 0.8818672895431519,
+        "freshness_note": null
+      },
+      {
+        "statute": "Food Safety and Standards (Ayurveda Aahara) Regulations, 2022",
+        "section": "Rule 12(d)",
+        "title": "Food Safety and Standards (Ayurveda Aahara) Regulations, 2022 \u2014 Rule 12(d) \u2014 statutory provision \u2014 India 16 THE GAZETTE OF INDIA : EXTRAORDINARY [PART III\u2014SEC.4] (2) No person shall manufacture or sell Ayurveda Aahara intended for administr",
+        "page": 16,
+        "chunk_id": "17_Food Safety and Standards (Ayurveda Aahara) Regulations, 2022_000027",
+        "reranker_score": 0.8724573254585266,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 18(b)",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 18(b) \u2014 statutory provision \u2014 India (b) 6[sell, or stock or exhibit or offer for sale,] or distribute any drug 7[or cosmetic] which has been imported or manufactured in contravention of any of the",
+        "page": 16,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000167",
+        "reranker_score": 0.8539991974830627,
+        "freshness_note": null
+      }
+    ],
+    "api_error": null
+  },
+  {
+    "id": 8,
+    "title": "Proprietary Polyherbal Syrup Sourcing",
+    "query": "We developed a 12-herb cough syrup not found in any classical text. Is it classical or proprietary?",
+    "jurisdiction": "India (National)",
+    "category": "Patent & Proprietary (P&P) Medicine",
+    "ground_truth": "It is classified as a **Patent & Proprietary (P&P) Medicine** under **Section 3(h)(v) of the Drugs and Cosmetics Act, 1940**. Because the formulation ratio is not specified in First Schedule authoritative texts, you must obtain a manufacturing license from the State Licensing Authority (AYUSH) by submitting safety proof, ingredient identification, and stability test reports.",
+    "validation_criteria": "Cite D&C Act Sec 3(h)(v); detail SLA licensing prerequisites; High Confidence (\ud83d\udfe2).",
+    "sprint": 1,
+    "prior_verdict": "FAIL",
+    "actual_answer": "### 1. Executive Summary\nYour 12-herb cough syrup is classified as a **Patent or Proprietary Medicine**, not a classical Ayurvedic drug, because it is not found in the authoritative books specified in the First Schedule. This classification subjects your product to stricter labeling requirements, specifically the mandatory display of the true formula and quantities of all active ingredients on the label, and it excludes it from certain exemptions applicable to classical drugs.\n\n### 2. Applicable Legal & Regulatory Framework\n*   **Definition of Patent or Proprietary Medicine (Ayurvedic):** Section 10(h)(i) of the Drugs and Cosmetics Act, 1940 defines this category for Ayurvedic, Siddha, or Unani systems. It includes formulations containing only ingredients mentioned in formulae described in authoritative books specified in the First Schedule, but explicitly excludes medicines administered by parenteral route and formulations included in the authoritative books as specified in clause (a) [The Drugs and Cosmetics Act, 1940, Section 10(h)(i), p.8].\n*   **Definition of Ayurvedic Drugs:** Rule 158(B)(I)(A) of the Drugs and Cosmetics Rules, 1945 defines Ayurvedic drugs as medicines manufactured exclusively in accordance with formulae described in authoritative books of the Ayurvedic system as specified in the First Schedule [The Drugs and Cosmetics Rules, 1945, Rule 158(B)(I)(A), p.181].\n*   **Labeling Requirement for Patent/Proprietary Medicines:** Section 18(a)(iii) of the Drugs and Cosmetics Act, 1940 prohibits the manufacture or sale of any patent or proprietary medicine unless the true formula or list of active ingredients, together with their quantities, is displayed in the prescribed manner on the label or container [The Drugs and Cosmetics Act, 1940, Section 18(a)(iii), p.16].\n*   **Exemption for Classical Drugs:** Section 33A of the Drugs and Cosmetics Act, 1940 states that the provisions of the relevant Chapter do not apply to Ayurvedic, Siddha, or Unani drugs, implying that classical drugs (those in the First Schedule) are treated differently from proprietary ones [The Drugs and Cosmetics Act, 1940, Section 33A, p.26].\n\n### 3. Analysis & Specific Guidance\nThe legal distinction between a \"classical\" Ayurvedic drug and a \"Patent or Proprietary\" medicine hinges entirely on whether the formulation is found in the authoritative books listed in the First Schedule of the Act.\n\n1.  **Classical Drug Status:** According to Rule 158(B)(I)(A), a drug is considered a standard Ayurvedic drug only if it is manufactured \"exclusively in accordance with the formulae described in the authoritative books... specified in the First Schedule\" [The Drugs and Cosmetics Rules, 1945, Rule 158(B)(I)(A), p.181]. Since your 12-herb cough syrup is **not found in any classical text**, it does not meet this definition.\n2.  **Proprietary Medicine Status:** Section 10(h)(i) defines \"patent or proprietary medicine\" in the context of Ayurvedic systems as formulations containing ingredients mentioned in the authoritative books, but the definition is structured to distinguish these from the classical formulations themselves. Specifically, the definition in Section 10(h)(i) refers to formulations containing ingredients from the books, but the exclusion of \"a formulation included in the authoritative books as specified in clause (a)\" implies that if a formulation *is* in the books, it falls under the classical definition (Section 3(a) referenced in Rule 158), and if it is *not* in the books, it falls under the proprietary category for regulatory purposes.\n3.  **Regulatory Consequence:** Because your product is not in the First Schedule, it is treated as a Patent or Proprietary Medicine. Consequently, Section 18(a)(iii) applies, mandating that you display the \"true formula or list of active ingredients contained in it together with the quantities thereof\" on the label [The Drugs and Cosmetics Act, 1940, Section 18(a)(iii), p.16]. Classical drugs are generally exempt from this specific disclosure requirement under the broader framework of Section 33A, which carves out Ayurvedic drugs from certain chapter provisions [The Drugs and Cosmetics Act, 1940, Section 33A, p.26].\n\n### 4. Identified Risks & Red Flags\n*   **Labeling Non-Compliance:** If you fail to display the true formula and quantities of all 12 herbs on the label, you are in violation of Section 18(a)(iii), which prohibits the manufacture or sale of such medicines [The Drugs and Cosmetics Act, 1940, Section 18(a)(iii), p.16].\n*   **Misclassification Risk:** Attempting to market the product as a \"classical\" Ayurvedic drug without it being in the First Schedule could lead to regulatory rejection or penalties, as the definition in Rule 158(B)(I)(A) is strict regarding the source of the formula [The Drugs and Cosmetics Rules, 1945, Rule 158(B)(I)(A), p.181].\n*   **Therapeutic Claims:** Section 18(a)(iv) prohibits any drug that purports to prevent, cure, or mitigate disease unless prescribed. While this applies to all drugs, proprietary medicines are often scrutinized more closely for unsubstantiated claims compared to classical drugs with established historical usage [The Drugs and Cosmetics Act, 1940, Section 18(a)(iv), p.16].\n\n### 5. Actionable Checklist / Next Steps\n1.  **Verify First Schedule Status:** Confirm with the Drugs and Cosmetics Rules, 1945, First Schedule that your specific 12-herb combination is not listed. (Note: The First Schedule itself is not in the retrieved sources, but the legal test is defined in Rule 158(B)(I)(A) [The Drugs and Cosmetics Rules, 1945, Rule 158(B)(I)(A), p.181]).\n2.  **Prepare Labeling for Proprietary Medicine:** Design your label to include the \"true formula or list of active ingredients contained in it together with the quantities thereof\" as required by Section 18(a)(iii) [The Drugs and Cosmetics Act, 1940, Section 18(a)(iii), p.16].\n3.  **Apply for License as Patent/Proprietary Medicine:** When applying for a manufacturing or sale license, declare the product as a Patent or Proprietary Medicine, not a classical Ayurvedic drug, to ensure the correct regulatory pathway is followed.\n4.  **Consult a Qualified Patent/Regulatory Professional:** Given the specific requirements for proprietary medicines and the potential for misclassification, consult a legal expert specializing in Indian drug regulations to review your label and license application.",
+    "actual_citations": [
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 33A",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 33A \u2014 statutory provision \u2014 India 12[33A. Chapter not to apply to 13[Ayurvedic, Siddha or Unani] drugs.\u2014Save as otherwise provided in this Act, nothing contained in this Chapter shall apply to 13[",
+        "page": 26,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000245",
+        "reranker_score": 0.9178673028945923,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 7A",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 7A \u2014 statutory provision \u2014 India 2[7A. Sections 5 and 7 not to apply to Ayurvedic, Siddha or Unani drugs.\u2014Nothing contained in sections 5 and 7 shall apply to 3[Ayurvedic, Siddha or Unani] drugs.]",
+        "page": 10,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000065",
+        "reranker_score": 0.8772165775299072,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 12",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 12 \u2014 statutory provision \u2014 India 12. Power of Central Government to make rules.",
+        "page": 3,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000015",
+        "reranker_score": 0.8564967513084412,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 18",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 18 \u2014 statutory provision \u2014 India 18. Prohibition of manufacture and sale of certain drugs and cosmetics.\u2014From such date 1as may be fixed by the State Government by notification in the Official Gaz",
+        "page": 16,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000165",
+        "reranker_score": 0.8349622488021851,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 124(c)",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 124(c) \u2014 statutory provision \u2014 India (c) For drugs for which standards are not included in the edition of the official pharmacopoeia, for the time being in force, of any country or in edition immed",
+        "page": 155,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000589",
+        "reranker_score": 0.8168861269950867,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 158",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 158 \u2014 statutory provision \u2014 India 1[(e) The licensee shall maintain an Inspection Book in form 35 to enable an Inspector to record his impressions and the defects noticed.] 1. Ins. by G.S.R. 331 (E",
+        "page": 181,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000720",
+        "reranker_score": 0.8002257347106934,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 12",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 12 \u2014 statutory provision \u2014 India Drugs and Cosmetics Act, 1940 14 (n) require that the accepted scientific name of any specified drug shall be displayed in the prescribed manner on the label or wr",
+        "page": 14,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000118",
+        "reranker_score": 0.7868191003799438,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "p.597",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 statutory provision \u2014 India (a) where the process and usages are similar or same to the product known in traditional medicine or ethno medicine; and (b) where process or usage is different from that kno",
+        "page": 597,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_002513",
+        "reranker_score": 0.7584620714187622,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 10",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 10 \u2014 statutory provision \u2014 India Drugs and Cosmetics Act, 1940 8 1 [ 2 [(h)] \u2015patent or proprietary medicine\u2016 means,\u2014 (i) in relation to Ayurvedic, Siddha or Unani Tibb systems of medicine all for",
+        "page": 8,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000050",
+        "reranker_score": 0.7500324845314026,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 7",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 7 \u2014 statutory provision \u2014 India 7. The Drugs Consultative Committee. 7A. Sections 5 and 7 not to apply to Ayurvedic, Siddha or Unani drugs. CHAPTER III IMPORT OF DRUGS AND COSMETICS",
+        "page": 3,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000010",
+        "reranker_score": 0.7427073121070862,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 164",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 164 \u2014 statutory provision \u2014 India 164. Method of test or analysis to be employed in relation to Ayurvedic (including Siddha) or Unani drugs.\u2014The method of test or analysis to be employed in relatio",
+        "page": 196,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000766",
+        "reranker_score": 0.7398266792297363,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 10",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 10 \u2014 statutory provision \u2014 India Drugs and Cosmetics Act, 1940 12 1 [(bb) any 2 [adulterated or spurious] drug;] (c) any drug 3 [or cosmetic] for the import of which a licence is prescribed, other",
+        "page": 12,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000097",
+        "reranker_score": 0.7372663617134094,
+        "freshness_note": null
+      }
+    ],
+    "api_error": null
+  },
+  {
+    "id": 9,
+    "title": "Medical Device vs Ayurvedic External Applicator",
+    "query": "We created an infrared-heated copper wand designed to apply medicated Ayurvedic oil for arthritis. How is this classified?",
+    "jurisdiction": "India (National)",
+    "category": "Medical Device + AYUSH Combination",
+    "ground_truth": "The hardware applicator is governed as a **Medical Device** under the **Medical Devices Rules, 2017** regulated by CDSCO. The medicated oil used with it is governed separately as an **Ayurvedic Drug** under the D&C Act by the State AYUSH Licensing Authority. The device hardware can be patented under the Patents Act, 1970 if it meets novelty, inventive step, and industrial application criteria (Section 2(1)(j)).",
+    "validation_criteria": "Split hardware (CDSCO/Patents) from oil (AYUSH SLA); identify dual-regulatory framework; High Confidence (\ud83d\udfe2).",
+    "sprint": 1,
+    "prior_verdict": "FAIL",
+    "actual_answer": "### 1. Executive Summary\nBased on the provided sources, your device is likely classified as a **drug** (specifically an Ayurvedic drug) rather than a cosmetic or medical device, because it is designed to apply a medicated oil intended for the treatment of arthritis (a disease/disorder). The \"infrared-heated copper wand\" itself is the delivery mechanism for this drug. Consequently, its manufacture and sale are subject to the strict licensing and quality control requirements of the Drugs and Cosmetics Act, 1940, specifically Chapter IVA, which governs Ayurvedic, Siddha, and Unani (ASU) drugs. You cannot simply sell this as a wellness gadget; it requires a manufacturing license and compliance with Good Manufacturing Practices (GMP).\n\n### 2. Applicable Legal & Regulatory Framework\n*   **Definition of Ayurvedic Drug:** Section 3(a) of the Drugs and Cosmetics Act, 1940 defines an \"Ayurvedic, Siddha or Unani drug\" as medicines intended for internal or external use for the diagnosis, treatment, mitigation, or prevention of disease or disorder in human beings, manufactured exclusively in accordance with formulae in authoritative books specified in the First Schedule. [The Drugs and Cosmetics Act, 1940, Section 3(a), p.6]\n*   **Exclusion from General Drug Provisions:** Section 7A states that Sections 5 and 7 (which generally deal with drug classification and import) do not apply to Ayurvedic, Siddha, or Unani drugs, directing them instead to the specific provisions of Chapter IVA. [The Drugs and Cosmetics Act, 1940, Section 7A, p.10]\n*   **Licensing Requirement:** Section 33E(c) prohibits the manufacture for sale or distribution of any Ayurvedic, Siddha, or Unani drug except under a license issued by the prescribed authority. [The Drugs and Cosmetics Act, 1940, Section 33E(c), p.28]\n*   **Technical Staff Requirements:** Rule 157(2) of the Drugs and Cosmetics Rules, 1945 mandates that the manufacture of ASU drugs be conducted under the direction of competent technical staff, including a whole-time employee with specific qualifications. [The Drugs and Cosmetics Rules, 1945, Rule 157(2), p.179]\n*   **GMP Compliance:** Form 26E-I indicates that manufacturing units must comply with Good Manufacturing Practices (GMP) as laid down in Schedule T of the Rules, and this certificate is valid for five years. [The Drugs and Cosmetics Rules, 1945, Form 26E-I, p.240]\n*   **Inspection:** Rule 162(i) requires Inspectors to inspect premises licensed for the manufacture of ASU drugs not less than twice a year to ensure compliance. [The Drugs and Cosmetics Rules, 1945, Rule 162(i), p.194]\n\n### 3. Analysis & Specific Guidance\nYour product consists of two components: the **medicated Ayurvedic oil** and the **infrared-heated copper wand**.\n\n1.  **Classification of the Oil:** The oil is intended for \"arthritis,\" which is a disease or disorder. Under Section 3(a), any medicine intended for the treatment of a disease in human beings is an \"Ayurvedic drug\" if it is manufactured according to authoritative formulae. [The Drugs and Cosmetics Act, 1940, Section 3(a), p.6]\n2.  **Classification of the Wand:** The sources do not explicitly define \"medical devices\" or \"instruments\" in the context of ASU drugs. However, Section 3(f) defines \"manufacture\" to include processes for making, altering, or treating a drug with a view to its sale. [The Drugs and Cosmetics Act, 1940, Section 3(f), p.7] Since the wand is integral to the *application* of the medicated oil for therapeutic purposes, it is likely treated as part of the drug delivery system. If the wand is sold *with* the oil as a kit, the entire package is governed by the drug regulations.\n3.  **Regulatory Pathway:** Because the product is an ASU drug, it falls under Chapter IVA. Section 7A explicitly excludes ASU drugs from the general provisions of Sections 5 and 7, meaning they are not regulated under the standard \"New Drug\" or \"Cosmetic\" pathways but under the specific ASU framework. [The Drugs and Cosmetics Act, 1940, Section 7A, p.10]\n4.  **Licensing:** You must obtain a manufacturing license under Section 33E(c). [The Drugs and Cosmetics Act, 1940, Section 33E(c), p.28] This license requires the presence of qualified technical staff (Rule 157(2)) and adherence to GMP standards (Form 26E-I). [The Drugs and Cosmetics Rules, 1945, Rule 157(2), p.179; Form 26E-I, p.240]\n\n### 4. Identified Risks & Red Flags\n*   **Unlicensed Manufacture:** Selling the product without a valid license under Section 33E(c) is a punishable offense under Section 33-I. [The Drugs and Cosmetics Act, 1940, Section 33E(c), p.28; Section 33-I, p.29]\n*   **Non-Compliant Formulae:** If the medicated oil is not manufactured \"exclusively in accordance with the formulae described in the authoritative books... specified in the First Schedule,\" it may not qualify as a legitimate ASU drug under Section 3(a), potentially leading to classification as a spurious or adulterated drug. [The Drugs and Cosmetics Act, 1940, Section 3(a), p.6]\n*   **Lack of GMP Certification:** Failure to maintain GMP compliance as per Schedule T and Form 26E-I can result in license revocation or penalties. [The Drugs and Cosmetics Rules, 1945, Form 26E-I, p.240]\n*   **Technical Staff Deficiency:** If you do not have a whole-time employee with the required ASU qualifications (as per Rule 157(2) and Rule 162A), your manufacturing operations are illegal. [The Drugs and Cosmetics Rules, 1945, Rule 157(2), p.179; Rule 162A, p.194]\n\n### 5. Actionable Checklist / Next Steps\n1.  **Verify Formulae:** Ensure the medicated oil recipe is listed in the authoritative books specified in the First Schedule of the Drugs and Cosmetics Act. [The Drugs and Cosmetics Act, 1940, Section 3(a), p.6]\n2.  **Hire Qualified Technical Staff:** Appoint a whole-time employee with the required Ayurvedic/Siddha/Unani qualifications (e.g., BAMS, B.Pharm (Ayurveda)) to supervise manufacturing. [The Drugs and Cosmetics Rules, 1945, Rule 157(2), p.179; Rule 162A, p.194]\n3.  **Apply for Manufacturing License:** Submit an application to the State Drug Licensing Authority for a license to manufacture ASU drugs under Section 33E. [The Drugs and Cosmetics Act, 1940, Section 33E(c), p.28]\n4.  **Implement GMP:** Set up your manufacturing facility to comply with Good Manufacturing Practices (Schedule T) and prepare for the issuance of Form 26E-I (GMP Certificate). [The Drugs and Cosmetics Rules, 1945, Form 26E-I, p.240]\n5.  **Prepare for Inspection:** Ensure your premises are ready for bi-annual inspections by authorized Inspectors as required by Rule 162(i). [The Drugs and Cosmetics Rules, 1945, Rule 162(i), p.194]\n6.  **Consult a Patent/Regulatory Professional:** While the sources cover drug regulation, they do not cover patent law. If you intend to patent the *device* (the wand) separately from the *drug* (the oil), consult a patent attorney, as the classification of the device itself may differ from the drug.",
+    "actual_citations": [
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 7A",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 7A \u2014 statutory provision \u2014 India 2[7A. Sections 5 and 7 not to apply to Ayurvedic, Siddha or Unani drugs.\u2014Nothing contained in sections 5 and 7 shall apply to 3[Ayurvedic, Siddha or Unani] drugs.]",
+        "page": 10,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000065",
+        "reranker_score": 0.8525514006614685,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 162(b)",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 162(b) \u2014 statutory provision \u2014 India (b) At least 5 years experience in the Ayurveda/ Siddha/ Unani drug manufacturing or testing of Ayurvedic, Siddha and Unani drugs or enforcement of provisions o",
+        "page": 195,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000763",
+        "reranker_score": 0.8139310479164124,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 10(i)",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 10(i) \u2014 statutory provision \u2014 India (i) Cardiac Stents (ii) Drug Eluding Stents (iii) Catheters (iv) Intra Ocular Lenses (v) I.V. Cannulac (vi) Bone Cements (vii) Heart Valves (viii) Scalp Vein Se",
+        "page": 7,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000049",
+        "reranker_score": 0.8029561638832092,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 3",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 3 \u2014 statutory provision \u2014 India 3. Definitions.\u2014In this Act, unless there is anything repugnant in the subject or context, 7 [(a) \u20158[Ayurvedic, Siddha or Unani] drug\u2016 includes all medicines intend",
+        "page": 6,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000043",
+        "reranker_score": 0.7525138854980469,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 33H",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 33H \u2014 statutory provision \u2014 India 33H. Application of provisions of sections 22, 23, 24 and 25.\u2014The provisions of sections 22, 23, 24 and 25 and the rules, if any, made thereunder shall, so far as",
+        "page": 29,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000275",
+        "reranker_score": 0.6623545289039612,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 10",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 10 \u2014 statutory provision \u2014 India (i) in relation to 9 [Ayurvedic, Siddha or Unani] drug, a Government Analyst appointed by the Central Government or a State Government under section 33F; and (ii) ",
+        "page": 7,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000047",
+        "reranker_score": 0.6305739283561707,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 33E",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 33E \u2014 statutory provision \u2014 India (a) manufacture for sale or for distribution\u2014 (i) any misbranded, adulterated or spurious Ayurvedic, Siddha or Unani drugs; (ii) any patent or proprietary medicin",
+        "page": 28,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000268",
+        "reranker_score": 0.5537765026092529,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 158",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 158 \u2014 statutory provision \u2014 India 1[(e) The licensee shall maintain an Inspection Book in form 35 to enable an Inspector to record his impressions and the defects noticed.] 1. Ins. by G.S.R. 331 (E",
+        "page": 181,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000720",
+        "reranker_score": 0.5304513573646545,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 157",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 157 \u2014 statutory provision \u2014 India (i) of clause (h) of the said section: Provided that this rule shall not be applicable for single plant-ingredient based Ayurvedic, Siddha or UnaniTibb formulation",
+        "page": 179,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000704",
+        "reranker_score": 0.4476485550403595,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 162",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 162 \u2014 statutory provision \u2014 India 162. Duties of Inspectors specially authorised to inspect the manufacture of Ayurvedic (including Siddha) or Unani drugs\u2014Subject to the instructions of the control",
+        "page": 194,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000760",
+        "reranker_score": 0.43468403816223145,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "p.240",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 statutory provision \u2014 India Drugs and Cosmetics Rules 1945 240 2 Names of technical staff. Date: \u2026\u2026\u2026\u2026 Signature............ Designation\u2026\u2026\u2026.. 1. Added by G.S.R. 376(E), dt. 20.7.1978. 1[FORM 26E-I (See r",
+        "page": 240,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000853",
+        "reranker_score": 0.4332117438316345,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 33",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 33 \u2014 statutory provision \u2014 India 33. Power of Central Government to make rules. 33A. Chapter not to apply to Ayurvedic, Siddha or Unani drugs. CHAPTER IV A PROVISIONS RELATING TO AYURVEDIC SIDDHA ",
+        "page": 4,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000035",
+        "reranker_score": 0.41273826360702515,
+        "freshness_note": null
+      }
+    ],
+    "api_error": null
+  },
+  {
+    "id": 10,
+    "title": "Agricultural Bio-stimulant vs Herbal Cosmetic",
+    "query": "Can an extract of *Pongamia pinnata* (Karanja) used on crops to prevent fungal infection be licensed as an Ayurvedic medicine?",
+    "jurisdiction": "India (National)",
+    "category": "Bio-stimulant / Agricultural Input",
+    "ground_truth": "No. Plant protection products for crops do not fall under the Drugs & Cosmetics Act or AYUSH regulation. They are governed as **Bio-stimulants** under the **Fertilizer (Inorganic, Organic or Mixed) (Control) Amendment Order, 2021** administered by the Ministry of Agriculture, requiring toxicity data and registration with the Central Insecticides Board & Registration Committee (CIB&RC) if pesticide claims are made.",
+    "validation_criteria": "Deny AYUSH classification; route to FCO / CIB&RC agricultural regulatory framework; High Confidence (\ud83d\udfe2).",
+    "sprint": 1,
+    "prior_verdict": "PARTIAL",
+    "actual_answer": "### 1. Executive Summary\nNo, an extract of *Pongamia pinnata* (Karanja) used on crops to prevent fungal infection cannot be licensed as an Ayurvedic medicine under the provided sources. The legal definition of an \"Ayurvedic drug\" is strictly limited to medicines intended for use in **human beings or animals** for the diagnosis, treatment, mitigation, or prevention of disease or disorder [The Drugs and Cosmetics Act, 1940, Section 3(a), p.6]. Since your product is intended for crops (plants), it falls outside the scope of the Drugs and Cosmetics Act, 1940, and would likely be regulated under agricultural or pesticide regulations, which are not covered in the retrieved sources.\n\n### 2. Applicable Legal & Regulatory Framework\n*   **Definition of Ayurvedic Drug:** The core statutory definition is found in Section 3(a) of the Drugs and Cosmetics Act, 1940. It defines an \"Ayurvedic, Siddha or Unani drug\" as medicines intended for internal or external use for or in the diagnosis, treatment, mitigation, or prevention of disease or disorder in **human beings or animals**, and manufactured exclusively in accordance with formulae described in authoritative books specified in the First Schedule [The Drugs and Cosmetics Act, 1940, Section 3(a), p.6].\n*   **Licensing Guidelines:** Rule 158(B)(I)(A) of the Drugs and Cosmetics Rules, 1945, reiterates this definition for licensing purposes, stating that Ayurvedic drugs include medicines for human beings or animals manufactured per authoritative books [The Drugs and Cosmetics Rules, 1945, Rule 158(B)(I)(A), p.181].\n*   **Exclusion of Other Chapters:** Section 33A of the Act states that Chapter IV (Provisions relating to Ayurvedic, Siddha, and Unani drugs) does not apply to other chapters, but it does not expand the definition of the drug itself to include agricultural products [The Drugs and Cosmetics Act, 1940, Section 33A, p.26].\n*   **Quality Standards:** Rule 164 specifies that tests for Ayurvedic drugs must be scientifically established to determine if the drug contains the ingredients stated on the label, referencing the Ayurvedic Pharmacopoeia [The Drugs and Cosmetics Rules, 1945, Rule 164, p.196].\n\n### 3. Analysis & Specific Guidance\nThe user's product is an extract of *Pongamia pinnata* intended for use on **crops** to prevent fungal infection.\n\n1.  **Target Organism Mismatch:** The statutory definition of an Ayurvedic drug in Section 3(a) explicitly limits the scope of application to \"human beings or animals\" [The Drugs and Cosmetics Act, 1940, Section 3(a), p.6]. Crops are plants, not human beings or animals. Therefore, a product intended solely for plant health does not meet the statutory definition of an \"Ayurvedic drug.\"\n2.  **Formulation Requirement:** Even if the target were an animal, the drug must be manufactured \"exclusively in accordance with the formulae described in the authoritative books... specified in the First Schedule\" [The Drugs and Cosmetics Act, 1940, Section 3(a), p.6]. While *Pongamia pinnata* may be mentioned in Ayurvedic texts, the specific formulation for *crop* fungal prevention is unlikely to be a standard therapeutic formula for human/animal disease as defined in the First Schedule.\n3.  **Licensing Ineligibility:** Rule 158(B) outlines guidelines for issuing licenses for Ayurvedic drugs. Since the product does not fit the definition in Section 3(a), it cannot be licensed under the provisions for Ayurvedic drugs in Chapter IVA [The Drugs and Cosmetics Rules, 1945, Rule 158(B)(I)(A), p.181].\n4.  **Regulatory Gap:** The retrieved sources do not contain provisions for licensing agricultural pesticides or plant protection products. The Drugs and Cosmetics Act, 1940, is not the governing statute for crop protection agents.\n\n### 4. Identified Risks & Red Flags\n*   **Misclassification Risk:** Attempting to license a crop protection product as an Ayurvedic medicine would likely result in rejection by the Licensing Authority because it fails the definition in Section 3(a) [The Drugs and Cosmetics Act, 1940, Section 3(a), p.6].\n*   **Legal Non-Compliance:** Selling a product labeled as an \"Ayurvedic medicine\" when it is intended for crops could be considered misbranding or selling a drug not in accordance with the Act, potentially attracting penalties under Section 33-I for contravention of the chapter [The Drugs and Cosmetics Act, 1940, Section 33-I, p.29].\n*   **Regulatory Vacuum in Sources:** The retrieved sources do not cover the legal framework for agricultural inputs. Relying on the Drugs and Cosmetics Act for crop protection is legally incorrect based on the provided texts.\n\n### 5. Actionable Checklist / Next Steps\n1.  **Do Not Apply for Ayurvedic License:** Do not submit an application for an Ayurvedic drug manufacturing license (e.g., under Form 25D/25E referenced in [The Drugs and Cosmetics Rules, 1945, Form 26E3, p.241]) for this crop protection product, as it does not meet the definition in Section 3(a) [The Drugs and Cosmetics Act, 1940, Section 3(a), p.6].\n2.  **Identify Correct Regulatory Regime:** Consult the **Insecticides Act, 1968** or the **Central Insecticides Board and Registration Committee (CIBRC)** guidelines, which are the standard regulatory frameworks for crop protection products in India. *Note: These specific statutes and rules are not present in the retrieved sources.*\n3.  **Consult a Specialist:** Engage a regulatory affairs specialist or legal counsel experienced in agricultural inputs and pesticide registration to determine the correct classification and licensing pathway for *Pongamia pinnata* extract used on crops.\n4.  **Verify Ingredient Status:** If you intend to use *Pongamia pinnata* in a human/animal medicine, verify if the specific formulation is listed in the First Schedule of the Drugs and Cosmetics Act and if it is described in the authoritative books of Ayurveda [The Drugs and Cosmetics Act, 1940, Section 3(a), p.6].",
+    "actual_citations": [
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 33A",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 33A \u2014 statutory provision \u2014 India 12[33A. Chapter not to apply to 13[Ayurvedic, Siddha or Unani] drugs.\u2014Save as otherwise provided in this Act, nothing contained in this Chapter shall apply to 13[",
+        "page": 26,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000245",
+        "reranker_score": 0.9564942121505737,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 158",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 158 \u2014 statutory provision \u2014 India 1[(e) The licensee shall maintain an Inspection Book in form 35 to enable an Inspector to record his impressions and the defects noticed.] 1. Ins. by G.S.R. 331 (E",
+        "page": 181,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000720",
+        "reranker_score": 0.9502517580986023,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 7A",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 7A \u2014 statutory provision \u2014 India 2[7A. Sections 5 and 7 not to apply to Ayurvedic, Siddha or Unani drugs.\u2014Nothing contained in sections 5 and 7 shall apply to 3[Ayurvedic, Siddha or Unani] drugs.]",
+        "page": 10,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000065",
+        "reranker_score": 0.9473556876182556,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 158(i)",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 158(i) \u2014 statutory provision \u2014 India (i) In relation to Ayurvedic, Siddha and Unani Tibb system of medicine of all formulations containing only such ingredients mentioned in the formulae described ",
+        "page": 182,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000722",
+        "reranker_score": 0.9394969940185547,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 7",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 7 \u2014 statutory provision \u2014 India 7. The Drugs Consultative Committee. 7A. Sections 5 and 7 not to apply to Ayurvedic, Siddha or Unani drugs. CHAPTER III IMPORT OF DRUGS AND COSMETICS",
+        "page": 3,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000010",
+        "reranker_score": 0.9316807985305786,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "p.241",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 statutory provision \u2014 India Drugs and Cosmetics Rules 1945 241 ( Signature and Name) State Drug Controller/Licensing Authority Address\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026 Name of State or Union territory\u2026\u2026\u2026\u2026] ______________",
+        "page": 241,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000854",
+        "reranker_score": 0.9099360108375549,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 164",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 164 \u2014 statutory provision \u2014 India 164. Method of test or analysis to be employed in relation to Ayurvedic (including Siddha) or Unani drugs.\u2014The method of test or analysis to be employed in relatio",
+        "page": 196,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000766",
+        "reranker_score": 0.9082852005958557,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 33N",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 33N \u2014 statutory provision \u2014 India Drugs and Cosmetics Act, 1940 32 (b) prescribe the qualification and duties of Government Analysts and the qualifications of Inspectors; (c) prescribe the methods",
+        "page": 32,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000291",
+        "reranker_score": 0.9058073163032532,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "p.559",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 statutory provision \u2014 India Drugs and Cosmetics Rules 1945 559 (7) Manufacturers who are manufacturing patent and proprietary Ayurveda, Siddha, and Unani medicines shall provide their own specification ",
+        "page": 559,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_002359",
+        "reranker_score": 0.9057684540748596,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 33H",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 33H \u2014 statutory provision \u2014 India 33H. Application of provisions of sections 22, 23, 24 and 25.\u2014The provisions of sections 22, 23, 24 and 25 and the rules, if any, made thereunder shall, so far as",
+        "page": 29,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000275",
+        "reranker_score": 0.9050893783569336,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 3",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 3 \u2014 statutory provision \u2014 India 3. Definitions.\u2014In this Act, unless there is anything repugnant in the subject or context, 7 [(a) \u20158[Ayurvedic, Siddha or Unani] drug\u2016 includes all medicines intend",
+        "page": 6,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000043",
+        "reranker_score": 0.9020287990570068,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 161",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 161 \u2014 statutory provision \u2014 India (a) Name of the Ayurvedic, Siddha and Unani drug (Single or compound formulations; (b) the name, address of the manufacturer and the number of licence under which ",
+        "page": 192,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000748",
+        "reranker_score": 0.8967086672782898,
+        "freshness_note": null
+      }
+    ],
+    "api_error": null
+  },
+  {
+    "id": 11,
+    "title": "Sourcing Medicinal Plants from Forest Lands",
+    "query": "We harvest wild *Aconitum heterophyllum* (Ativisha) from high-altitude Himalayan forests for our drug formulation. Does regulatory classification change?",
+    "jurisdiction": "India (National)",
+    "category": "Classical / P&P with Sourcing Restrictions",
+    "ground_truth": "While the drug classification remains Classical or P&P under the D&C Act, sourcing species listed under **CITES** or declared endangered under **Section 38 of the Biological Diversity Act, 2002** requires explicit forest clearance permits, strict non-detriment findings, and adherence to the Wildlife Protection Act, 1972.",
+    "validation_criteria": "Identify Sec 38 BDA endangered species bar; flag CITES & Wildlife Protection Act compliance; High Confidence (\ud83d\udfe2).",
+    "sprint": 1,
+    "prior_verdict": "FAIL",
+    "actual_answer": "### 1. Executive Summary\nHarvesting wild *Aconitum heterophyllum* (Ativisha) from high-altitude Himalayan forests involves accessing biological resources and associated traditional knowledge for commercial utilization. Under Indian law, applicants seeking patents for inventions based on biological resources must comply with both the patent regime and the Biological Diversity Act [Guidelines for Examination of Ayush Related Inventions, Section 2, p. 7]. Specifically, commercial access to biological resources typically requires prior intimation to the State Biodiversity Board, though certain practitioners and local communities may have exemptions or distinct provisions depending on their status [The Biological Diversity (Amendment) Act, 2023, Section 9, p. 4].\n\n### 2. Applicable Legal & Regulatory Framework\n* **The Biological Diversity (Amendment) Act, 2023, Section 9, p. 4:** Governs prior intimation to the State Biodiversity Board for accessing biological resources and associated knowledge for commercial utilization, including exemptions for vaids, hakims, and registered AYUSH practitioners practicing indigenous medicines for sustenance and livelihood, as well as provisions for cultivated medicinal plants requiring a certificate of origin.\n* **The Biological Diversity (Amendment) Act, 2023, Section 3, p. 2:** Defines terms such as \"access\", \"biological resources\", \"benefit claimers\", and \"codified traditional knowledge\" (defined as knowledge derived from authoritative books specified in the First Schedule to the Drugs and Cosmetics Act, 1940).\n* **Guidelines for Examination of Ayush Related Inventions, Section 2, p. 7:** Outlines patentability exclusions under the Patents Act, 1970 (such as Section 3(p) for traditional knowledge and Section 3(e) for mere admixtures) and mandates that applicants utilizing biological resources must also abide by the provisions of the Biological Diversity Act, 2002.\n\n### 3. Analysis & Specific Guidance\nWhen harvesting wild *Aconitum heterophyllum* from high-altitude Himalayan forests for drug formulation:\n1. **Biological Resource Access:** Because you are procuring biological resources (plants or parts thereof) originating from India for commercial utilization, you fall within the scope of access regulations [The Biological Diversity (Amendment) Act, 2023, Section 3, p. 2]. \n2. **Prior Intimation / Approvals:** Generally, commercial access to biological resources and associated knowledge requires giving prior intimation to the concerned State Biodiversity Board [The Biological Diversity (Amendment) Act, 2023, Section 9, p. 4]. \n3. **Exemptions and Codified Knowledge:** The statutory framework exempts \"vaids, hakims and registered AYUSH practitioners only who have been practicing indigenous medicines, including Indian systems of medicine as profession for sustenance and livelihood\" from the prior intimation requirement under Section 7 [The Biological Diversity (Amendment) Act, 2023, Section 9, p. 4]. Additionally, \"codified traditional knowledge\" is defined with reference to authoritative books in the First Schedule to the Drugs and Cosmetics Act, 1940 [The Biological Diversity (Amendment) Act, 2023, Section 3, p. 2]. If your use relies on cultivated medicinal plants rather than wild harvesting, an exemption is available upon obtaining a certificate of origin from the Biodiversity Management Committee [The Biological Diversity (Amendment) Act, 2023, Section 9, p. 4]; however, since your facts specify harvesting *wild* plants from forests, this cultivated plant exemption does not apply.\n4. **Patent Examination Intersection:** If you intend to patent the resulting formulation, the Patent Office will evaluate whether the invention constitutes traditional knowledge or an aggregation of known properties under Section 3(p), or a mere admixture under Section 3(e) [Guidelines for Examination of Ayush Related Inventions, Section 2, p. 7]. Furthermore, compliance with the Biological Diversity Act is an absolute prerequisite alongside patent requirements [Guidelines for Examination of Ayush Related Inventions, Section 2, p. 7].\n\n### 4. Identified Risks & Red Flags\n* **Wild-Harvesting vs. Cultivation Exemption Risk:** The statutory exemption for cultivated medicinal plants requires a certificate of origin from the Biodiversity Management Committee [The Biological Diversity (Amendment) Act, 2023, Section 9, p. 4]. Because your material is harvested *wild* from forests rather than cultivated, you cannot utilize the certificate of origin exemption for cultivated plants.\n* **Patent Exclusion Risks:** Inventions involving traditional components risk objection under Section 3(p) (traditional knowledge or aggregation/duplication of known properties) or Section 3(e) (mere admixture resulting only in the aggregation of component properties) during patent examination [Guidelines for Examination of Ayush Related Inventions, Section 2, p. 7].\n* **Regulatory Non-Compliance Exposure:** Failure to provide prior intimation to the State Biodiversity Board for commercial utilization of wild-sourced biological resources exposes the operation to regulatory penalties under the biological diversity framework.\n\n### 5. Actionable Checklist / Next Steps\n* Review your operational status to determine whether you qualify under the specific practitioner exemptions (as a vaid, hakim, or registered AYUSH practitioner practicing for sustenance and livelihood) [The Biological Diversity (Amendment) Act, 2023, Section 9, p. 4].\n* If not exempt as an individual practitioner, submit the required prior intimation to the concerned State Biodiversity Board for commercial utilization of the biological resource [The Biological Diversity (Amendment) Act, 2023, Section 9, p. 4].\n* Ensure compliance with all statutory requirements under both the Biological Diversity framework and the Patents Act prior to filing any patent application for the drug formulation [Guidelines for Examination of Ayush Related Inventions, Section 2, p. 7].\n* *Recommendation:* Consult a qualified patent professional or legal expert specializing in Indian traditional knowledge and biodiversity law before commercializing or filing.",
+    "actual_citations": [
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 9",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 9 \u2014 statutory provision \u2014 India 9. For section 7 of the principal Act, the following section shall be substituted, namely:\u2014 \"7. (1) No person, other than the person covered under sub-",
+        "page": 4,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000020",
+        "reranker_score": 0.8911308646202087,
+        "freshness_note": null
+      },
+      {
+        "statute": "Guidelines for Examination of Ayush Related Inventions",
+        "section": "Section 2",
+        "title": "Guidelines for Examination of Ayush Related Inventions \u2014 Section 2 \u2014 ayush examination guidelines \u2014 India Page 3 of 14 other derivatives of known substance shall be considered to be the same substance, unless they differ significantly in pr",
+        "page": 7,
+        "chunk_id": "Guidelines for Ayush_000009",
+        "reranker_score": 0.8426157236099243,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "p.598",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 statutory provision \u2014 India (a) determined to be endangered or threatened under the Endangered Species Act or the Convention on International Trade in Endangered species (CITES) of wild Fauna and Flora;",
+        "page": 598,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_002518",
+        "reranker_score": 0.8225236535072327,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 16",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 16 \u2014 statutory provision \u2014 India 16. In section 18 of the principal Act,\u2014 (a) for sub-sections (1) and (2), the following sub-sections shall be substituted, namely:\u2014 \"(1) The National",
+        "page": 6,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000040",
+        "reranker_score": 0.7387288808822632,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 3",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 3 \u2014 statutory provision \u2014 India 3. In section 2 of the principal Act,\u2014 (i) for clause (a), the following clauses shall be substituted, namely:\u2014 \u2018(a) \u201caccess\u201d means collecting, procuri",
+        "page": 2,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000007",
+        "reranker_score": 0.7386781573295593,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 21",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 21 \u2014 statutory provision \u2014 India 21. In section 23 of the principal Act, for clauses (a) and (b), the following clauses shall be substituted, namely:\u2014 \"(a) advise the State Government",
+        "page": 8,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000061",
+        "reranker_score": 0.729329526424408,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity Rules, 2024",
+        "section": "Rule 21",
+        "title": "The Biological Diversity Rules, 2024 \u2014 Rule 21 \u2014 statutory provision \u2014 India 21. Management and utilisation of National Biodiversity Fund.- (1) The National Biodiversity Fund shall be operated by the Chairperson or by such other officer of ",
+        "page": 58,
+        "chunk_id": "27_Biological_Diversity_Rules_2024_000186",
+        "reranker_score": 0.6735592484474182,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity Rules, 2024",
+        "section": "Rule 11",
+        "title": "The Biological Diversity Rules, 2024 \u2014 Rule 11 \u2014 statutory provision \u2014 India (v) suggest guidelines for framing rules by the State Government or Union territory Administration for conservation and management of the areas of biodiversity imp",
+        "page": 53,
+        "chunk_id": "27_Biological_Diversity_Rules_2024_000145",
+        "reranker_score": 0.6510578989982605,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 23",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 23 \u2014 statutory provision \u2014 India 23. In section 27 of the principal Act,\u2014 (i) in sub-section (1), for clause (b), the following clause shall be substituted, namely:\u2014 \"(b) all sums inc",
+        "page": 9,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000067",
+        "reranker_score": 0.6314149498939514,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 10",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 10 \u2014 statutory provision \u2014 India 10. In section 8 of the principal Act,\u2014 (a) for sub-section (3), the following sub-section shall be substituted, namely:\u2014 \"(3) The Head office of the ",
+        "page": 4,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000021",
+        "reranker_score": 0.6294201612472534,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity Rules, 2024",
+        "section": "Rule 11",
+        "title": "The Biological Diversity Rules, 2024 \u2014 Rule 11 \u2014 statutory provision \u2014 India (q) recommend creation of posts, periodic revision of recruitment rules, pay and allowances and terms and conditions of service to the Central Government for effec",
+        "page": 53,
+        "chunk_id": "27_Biological_Diversity_Rules_2024_000140",
+        "reranker_score": 0.6129904985427856,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity Rules, 2024",
+        "section": "Rule 18",
+        "title": "The Biological Diversity Rules, 2024 \u2014 Rule 18 \u2014 statutory provision \u2014 India 18. Measures for monitoring and regulating the use in India of biological resource or associated traditional knowledge obtained from any foreign country.- (1) Any ",
+        "page": 57,
+        "chunk_id": "27_Biological_Diversity_Rules_2024_000182",
+        "reranker_score": 0.6108648180961609,
+        "freshness_note": null
+      }
+    ],
+    "api_error": null
+  },
+  {
+    "id": 13,
+    "title": "AYUSH Herbal Tea (Infusion) Classification",
+    "query": "Is a dried bag of crushed Tulsi, Ginger, and Cinnamon sold as 'Immunity Tea' a food or a drug?",
+    "jurisdiction": "India (National)",
+    "category": "Ayurveda-Aahar / Food",
+    "ground_truth": "If sold as a beverage for general wellbeing without disease-treatment claims, it is classified as **Ayurveda-Aahar** under the **FSSAI (Ayurveda Aahar) Regulations, 2022**. If it claims to 'cure viral influenza or COVID-19', it is reclassified as a drug requiring an AYUSH manufacturing license and governed by the DMR(OA) Act 1954.",
+    "validation_criteria": "Route to FSSAI Ayurveda Aahar; flag prohibition of disease cure claims; High Confidence (\ud83d\udfe2).",
+    "sprint": 1,
+    "prior_verdict": "FAIL",
+    "actual_answer": "### 1. Executive Summary\nBased on the retrieved sources, whether a product like 'Immunity Tea' (made of dried crushed Tulsi, Ginger, and Cinnamon) is classified as a food or a drug depends on its intended use, representation, and whether it is specially labelled as conforming to drug standards. Specifically, items such as ginger, pepper, cumin, and cinnamon are treated as spices and condiments unless they are specially labelled as conforming to the standards in the official Pharmacopoeia or drug compendia [The Drugs and Cosmetics Rules, 1945, p. 413]. If manufactured or sold as a medicine or substance intended for the diagnosis, treatment, mitigation, or prevention of disease, it falls under the definition of a drug or an Ayurvedic drug [The Drugs and Cosmetics Act, 1940, Section 3, p. 6].\n\n### 2. Applicable Legal & Regulatory Framework\n* **The Drugs and Cosmetics Act, 1940, Section 3(a):** Defines 'Ayurvedic, Siddha or Unani drug' to include all medicines intended for internal or external use for the diagnosis, treatment, mitigation, or prevention of disease or disorder in human beings or animals, manufactured exclusively in accordance with authoritative books specified in the First Schedule [The Drugs and Cosmetics Act, 1940, Section 3, p. 6].\n* **The Drugs and Cosmetics Act, 1940, Section 3(b):** Defines 'drug' to include all medicines for internal or external use and all substances intended to be used for or in the diagnosis, treatment, mitigation, or prevention of any disease or disorder [The Drugs and Cosmetics Act, 1940, Section 10, p. 6].\n* **The Drugs and Cosmetics Rules, 1945:** Distinguishes ordinary spices and condiments (such as ginger, pepper, cumin, and cinnamon) from drugs, noting they are treated as spices/condiments unless specially labelled as conforming to official drug standards [The Drugs and Cosmetics Rules, 1945, p. 413].\n\n### 3. Analysis & Specific Guidance\n* **Ingredients as Spices vs. Drugs:** The retrieved rules explicitly list ginger, pepper, cumin, and cinnamon alongside other spices and condiments, stating they are categorized as such *unless* they are specially labelled as conforming to the standards in the Indian Pharmacopoeia or official compendia of drug standards [The Drugs and Cosmetics Rules, 1945, p. 413]. \n* **Therapeutic Claims and Intent:** Under the statutory definitions, if the mixture of Tulsi, Ginger, and Cinnamon is intended and represented for use in the diagnosis, treatment, mitigation, or prevention of a disease or disorder (such as boosting immunity against specific illnesses), it meets the broad definition of a \"drug\" or an \"Ayurvedic drug\" [The Drugs and Cosmetics Act, 1940, Section 3, p. 6]. \n* **Sub-question not covered:** The exact statutory line distinguishing whether an everyday herbal infusion is automatically a commercial food or a beverage without therapeutic claims is not fully detailed in these specific text excerpts, aside from the labelling rule for spices [The Drugs and Cosmetics Rules, 1945, p. 413]. Additional facts regarding the product's label claims, marketing, and whether it claims to prevent or cure a specific disease would settle the precise classification.\n\n### 4. Identified Risks & Red Flags\n* **Misbranding or Unlicensed Drug Manufacturing Risks:** If the product contains therapeutic disease-mitigation claims (such as curing or preventing ailments) but is sold without compliance as an Ayurvedic drug or standard quality drug, it risks breaching prohibitions on misbranded or substandard drugs under the regulatory framework [The Drugs and Cosmetics Act, 1940, Section 18, p. 16].\n* **Labelling Exposure:** Selling spices like cinnamon and ginger under special drug labelling without adhering to pharmacopoeial standards, or vice versa, creates regulatory non-compliance [The Drugs and Cosmetics Rules, 1945, p. 413].\n\n### 5. Actionable Checklist / Next Steps\n* Review the product packaging and promotional materials to verify whether any therapeutic, disease-prevention, or \"Immunity\" treatment claims are being made.\n* Check whether the ingredients (specifically ginger and cinnamon) are labelled as standard spices or if they invoke official Pharmacopoeia drug standards [The Drugs and Cosmetics Rules, 1945, p. 413].\n* Consult a qualified patent or regulatory professional to determine appropriate licensing (such as FSSAI for food/beverage or state licensing for Ayurvedic drugs) based on the final intended marketing claims.",
+    "actual_citations": [
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "p.37",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 statutory provision \u2014 India Drugs and Cosmetics Act, 1940 37 4[THE SECOND SCHEDULE (See sections 8 and 16) STANDARDS TO BE COMPLIED WITH BY IMPORTED DRUGS AND BY DRUGS MANUFACTURED FOR SALE, SOLD, STOCKED",
+        "page": 37,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000354",
+        "reranker_score": 0.9053935408592224,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 10",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 10 \u2014 statutory provision \u2014 India 10. 24th August, 1974, vide notifin no. S.O. 2185, dt. 9th August, 1974. Drugs and Cosmetics Act, 1940 7 1 [ 2 [(aaa)] \u2015cosmetic\u2016 means any article intended to be ",
+        "page": 6,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000045",
+        "reranker_score": 0.8902223706245422,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 7A",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 7A \u2014 statutory provision \u2014 India 2[7A. Sections 5 and 7 not to apply to Ayurvedic, Siddha or Unani drugs.\u2014Nothing contained in sections 5 and 7 shall apply to 3[Ayurvedic, Siddha or Unani] drugs.]",
+        "page": 10,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000065",
+        "reranker_score": 0.8699520230293274,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 33E",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 33E \u2014 statutory provision \u2014 India (a) if it is sold, or offered or exhibited for sale, under a name which belongs to another drug; or (b) if it is an imitation of, or is a substitute for, another ",
+        "page": 28,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000263",
+        "reranker_score": 0.8673008680343628,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 18",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 18 \u2014 statutory provision \u2014 India 18. Prohibition of manufacture and sale of certain drugs and cosmetics.\u2014From such date 1as may be fixed by the State Government by notification in the Official Gaz",
+        "page": 16,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000165",
+        "reranker_score": 0.8611241579055786,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 10",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 10 \u2014 statutory provision \u2014 India (i) in relation to 9 [Ayurvedic, Siddha or Unani] drug, a Government Analyst appointed by the Central Government or a State Government under section 33F; and (ii) ",
+        "page": 7,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000047",
+        "reranker_score": 0.8550544381141663,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "p.413",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 statutory provision \u2014 India Drugs and Cosmetics Rules 1945 413 pure, skimmed or malted, fortified with vitamins and minerals or otherwise. (ii) Farex, Oats, 19[***] and all other similar cereal preparat",
+        "page": 413,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_001732",
+        "reranker_score": 0.8305662870407104,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 33H",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 33H \u2014 statutory provision \u2014 India 33H. Application of provisions of sections 22, 23, 24 and 25.\u2014The provisions of sections 22, 23, 24 and 25 and the rules, if any, made thereunder shall, so far as",
+        "page": 29,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000275",
+        "reranker_score": 0.8188425302505493,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 33L",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 33L \u2014 statutory provision \u2014 India 33L. Application of provisions to Government departments.\u2014The provisions of this Chapter except those contained in section 33K shall apply in relation to the manu",
+        "page": 31,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000287",
+        "reranker_score": 0.8185172080993652,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 3",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 3 \u2014 statutory provision \u2014 India 3. Definitions.\u2014In this Act, unless there is anything repugnant in the subject or context, 7 [(a) \u20158[Ayurvedic, Siddha or Unani] drug\u2016 includes all medicines intend",
+        "page": 6,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000043",
+        "reranker_score": 0.7859609127044678,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "p.327",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 statutory provision \u2014 India (i) the patent or proprietary name of the product along with the generic name, if any, strength and the dosage form; (ii) a description or identification of the final contain",
+        "page": 327,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_001142",
+        "reranker_score": 0.7796775102615356,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Act, 1940",
+        "section": "Section 9B",
+        "title": "The Drugs and Cosmetics Act, 1940 \u2014 Section 9B \u2014 statutory provision \u2014 India 9B. Spurious drugs.\u2014 For the purposes of this Chapter, a drug shall be deemed to be spurious\u2014 (a) if it is imported under a name which belongs to another drug; or ",
+        "page": 11,
+        "chunk_id": "drugs_and_cosmetics_act_1940_000079",
+        "reranker_score": 0.7632302045822144,
+        "freshness_note": null
+      }
+    ],
+    "api_error": null
+  },
+  {
+    "id": 15,
+    "title": "Bio-equivalent Generic Classical Medicine",
+    "query": "Do I need to perform clinical trials to launch a generic *Triphala Guggulu* tablet in India?",
+    "jurisdiction": "India (National)",
+    "category": "Classical Medicine",
+    "ground_truth": "No clinical trials are required. Under **Rule 158B of the Drugs and Cosmetics Rules, 1945**, classical formulations cited in First Schedule texts do not require clinical trial evidence for manufacturing approval. You must demonstrate compliance with Ayurvedic Pharmacopoeia of India (API) standards and manufacturing GMP (Schedule T).",
+    "validation_criteria": "Cite D&C Rules Rule 158B & Schedule T GMP; confirm clinical trial exemption; High Confidence (\ud83d\udfe2).",
+    "sprint": 1,
+    "prior_verdict": "FAIL",
+    "actual_answer": "### 1. Executive Summary\nFor launching a traditional formulation like *Triphala Guggulu* manufactured exclusively in accordance with authoritative Ayurvedic books specified in the First Schedule, safety studies (such as clinical trials) are not required [The Drugs and Cosmetics Rules, 1945, Rule 158(B) I.(A), p.181; The Drugs and Cosmetics Rules, 1945, Rule 158(B) II.(A), p.182]. However, the product must be manufactured under valid licensing and Good Manufacturing Practices (GMP) provisions [The Drugs and Cosmetics Rules, 1945, Form 26E-I, p.240].\n\n### 2. Applicable Legal & Regulatory Framework\n- **Statutory Rules & Definitions:** \n  - The Drugs and Cosmetics Rules, 1945 \u2014 Rule 158(B) I.(A) (definition and scope of Ayurveda, Siddha, and Unani medicines under Section 3(a)) [The Drugs and Cosmetics Rules, 1945, Rule 158(B) I.(A), p.181].\n  - The Drugs and Cosmetics Rules, 1945 \u2014 Rule 158(B) II.(A) (safety study and evidence of effectiveness requirements categorized in Table) [The Drugs and Cosmetics Rules, 1945, Rule 158(B) II.(A), p.182].\n- **Licensing & Manufacturing Approvals:**\n  - The Drugs and Cosmetics Rules, 1945 \u2014 Rule 154 (form of licence to manufacture Ayurvedic, Siddha, or Unani drugs in Form 25-D) [The Drugs and Cosmetics Rules, 1945, Rule 154, p.178].\n  - The Drugs and Cosmetics Rules, 1945 \u2014 Form 26E-I (Certificate of Good Manufacturing Practices for ASU drugs under Schedule T) [The Drugs and Cosmetics Rules, 1945, Form 26E-I, p.240].\n\n### 3. Analysis & Specific Guidance\nUnder the regulatory framework, Ayurvedic medicines intended for internal or external use that are manufactured exclusively in accordance with the formulae described in the authoritative books specified in the First Schedule are classified under category 158(B) I.(A) [The Drugs and Cosmetics Rules, 1945, Rule 158(B) I.(A), p.181]. \n\nWhen reviewing the regulatory requirements for safety studies and proof of effectiveness under Rule 158(B) II.(A), category 1(A) (covering Ayurveda, Siddha, and Unani drugs given in Rule 158B as referred to in Section 3(a), manufactured as per text) expressly designates safety studies as \"Not Required\" and proof of effectiveness as \"Not Required\" (relying on published literature or text instead) [The Drugs and Cosmetics Rules, 1945, Rule 158(B) II.(A), p.182]. Therefore, launching a standard text-based *Triphala Guggulu* tablet formulated strictly per the authoritative texts does not mandate performing clinical trials.\n\n### 4. Identified Risks & Red Flags\n- None identified on the facts given, provided the formulation strictly adheres to the traditional text specified in the First Schedule without unauthorized changes to dosage forms or ingredients that would trigger higher-tier safety evaluation requirements.\n\n### 5. Actionable Checklist / Next Steps\n- Ensure the manufacturing facility holds a valid manufacturing licence in Form 25-D [The Drugs and Cosmetics Rules, 1945, Rule 154, p.178].\n- Verify that the manufacturing unit complies with Good Manufacturing Practices (GMP) under Schedule T, yielding a valid certificate in Form 26E-I [The Drugs and Cosmetics Rules, 1945, Form 26E-I, p.240].\n- Maintain records of raw material identification and testing in accordance with Rule 160 [The Drugs and Cosmetics Rules, 1945, Rule 160, p.185].",
+    "actual_citations": [
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 162(b)",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 162(b) \u2014 statutory provision \u2014 India (b) At least 5 years experience in the Ayurveda/ Siddha/ Unani drug manufacturing or testing of Ayurvedic, Siddha and Unani drugs or enforcement of provisions o",
+        "page": 195,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000763",
+        "reranker_score": 0.9683496952056885,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "p.279",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 statutory provision \u2014 India Drugs and Cosmetics Rules 1945 279 Categories of Ayurvedic, Siddha and Unani drugs. \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026 \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026 \u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026\u2026 2. Name of experts employed for test",
+        "page": 279,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000958",
+        "reranker_score": 0.9402784705162048,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 164",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 164 \u2014 statutory provision \u2014 India 164. Method of test or analysis to be employed in relation to Ayurvedic (including Siddha) or Unani drugs.\u2014The method of test or analysis to be employed in relatio",
+        "page": 196,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000766",
+        "reranker_score": 0.907684326171875,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 160",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 160 \u2014 statutory provision \u2014 India 160. Identification of raw materials.\u2014 Raw materials used in the preparation of Ayurvedic (including Siddha) or Unani drugs shall be identified and tested, whereve",
+        "page": 185,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000731",
+        "reranker_score": 0.9073291420936584,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 158",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 158 \u2014 statutory provision \u2014 India 1[(e) The licensee shall maintain an Inspection Book in form 35 to enable an Inspector to record his impressions and the defects noticed.] 1. Ins. by G.S.R. 331 (E",
+        "page": 181,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000720",
+        "reranker_score": 0.9066523909568787,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 163",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 163 \u2014 statutory provision \u2014 India Drugs and Cosmetics Rules 1945 196 163B. The functions of the Central Drug Laboratory in respect of Ayurvedic, Siddha and Unani drugs shall be carried out at the P",
+        "page": 196,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000765",
+        "reranker_score": 0.8993672728538513,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "p.559",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 statutory provision \u2014 India (b) Chemist, who shall possess at least Bachelor Degree in Science or Pharmacy or Pharmacy (Ayurveda), awarded by a recognized University; and (c) Botanist (Pharmacognosist),",
+        "page": 559,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_002361",
+        "reranker_score": 0.8955753445625305,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 154",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 154 \u2014 statutory provision \u2014 India 154. Form of licence to manufacture Ayurvedic (including Siddha) or Unani drugs. \u2014 (1) Subject to the conditions of rule 157 being fulfilled, a licence to manufact",
+        "page": 178,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000698",
+        "reranker_score": 0.8934180736541748,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 158(i)",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 158(i) \u2014 statutory provision \u2014 India (i) In relation to Ayurvedic, Siddha and Unani Tibb system of medicine of all formulations containing only such ingredients mentioned in the formulae described ",
+        "page": 182,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000722",
+        "reranker_score": 0.8873204588890076,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 122(d)",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 122(d) \u2014 statutory provision \u2014 India Drugs and Cosmetics Rules 1945 146 (h) The Sponsor including their employees, subsidiaries and branches, their agents, contractors and sub-contractors and clini",
+        "page": 146,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000540",
+        "reranker_score": 0.881308376789093,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "p.240",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 statutory provision \u2014 India Drugs and Cosmetics Rules 1945 240 2 Names of technical staff. Date: \u2026\u2026\u2026\u2026 Signature............ Designation\u2026\u2026\u2026.. 1. Added by G.S.R. 376(E), dt. 20.7.1978. 1[FORM 26E-I (See r",
+        "page": 240,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000853",
+        "reranker_score": 0.8725860714912415,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Drugs and Cosmetics Rules, 1945",
+        "section": "Rule 162",
+        "title": "The Drugs and Cosmetics Rules, 1945 \u2014 Rule 162 \u2014 statutory provision \u2014 India 162. Duties of Inspectors specially authorised to inspect the manufacture of Ayurvedic (including Siddha) or Unani drugs\u2014Subject to the instructions of the control",
+        "page": 194,
+        "chunk_id": "drugs_and_cosmetics_rules_1945_000760",
+        "reranker_score": 0.8719309568405151,
+        "freshness_note": null
+      }
+    ],
+    "api_error": null
+  },
+  {
+    "id": 22,
+    "title": "Statement and Undertaking (Form 3) Deadlines 2024",
+    "query": "What is the updated timeline under the 2024 Patent Rules to submit Form 3 (foreign filing details)?",
+    "jurisdiction": "India (National)",
+    "category": "Patent Procedure",
+    "ground_truth": "Under the **Patents (Amendment) Rules, 2024 (Rule 12)**, the applicant must file **Form 3** within **three months** from the date of the first statement of objections (FER) issued by the Controller, replacing the earlier requirement of filing updates every six months from foreign filing.",
+    "validation_criteria": "Cite Patents (Amendment) Rules 2024 Rule 12; state 3-month FER timeline update; High Confidence (\ud83d\udfe2).",
+    "sprint": 1,
+    "prior_verdict": "FAIL",
+    "actual_answer": "### 1. Executive Summary\nFor founders managing foreign patent filings alongside an Indian application, the timeline and obligations for submitting foreign filing details (Form 3) are governed strictly by statutory rules. While the retrieved sources do not detail a newly modified specific calendar day limit unique to the 2024 Rules for Form 3, they clearly establish the foundational framework: an initial statement and undertaking regarding foreign applications must be filed within six months from the date of filing the application under Section 8(1) and Rule 12(1A). Furthermore, applicants must keep the Controller informed of subsequent foreign filings within six months of such filing, and provide novelty/patentability objections within six months of a communication from the Controller [The Patents Rules, 2003, Rule 12, p.11].\n\n### 2. Applicable Legal & Regulatory Framework\n*   **Statutory Provision:** Section 8(1) and Section 8(2) of the Patents Act, 1970 [Manual of Patent Office Practice and Procedure, Section 16(j), p.99].\n*   **Subordinate Legislation:** Rule 12(1), Rule 12(1A), Rule 12(2), and Rule 12(3) of the Patents Rules, 2003 [The Patents Rules, 2003, Rule 12, p.11].\n*   **Patent Office Guidance / Manual:** Manual of Patent Office Practice and Procedure \u2014 Section 16 (Information and undertaking regarding foreign applications) [Manual of Patent Office Practice and Procedure, Section 16, p.99; Manual of Patent Office Practice and Procedure, Section 16(j), p.99] and Table 22.03 (Time limits) [Manual of Patent Office Practice and Procedure, Section 94(v), p.172].\n\n### 3. Analysis & Specific Guidance\nUnder the governing framework, the procedural requirements and timelines for filing Form 3 are structured into distinct milestones:\n1.  **Initial Filing:** The statement and undertaking required under Section 8(1) must be made in Form 3 and filed along with the application or within **six months from the date of filing the application** [The Patents Rules, 2003, Rule 12(1), (1A), p.11]. For international applications designating India, this six-month period is reckoned from the actual date on which the corresponding application is filed in India [The Patents Rules, 2003, Rule 12(1A), p.11]. No fee is prescribed if submitted within these timelines [Manual of Patent Office Practice and Procedure, Section 16(j), p.99].\n2.  **Subsequent Foreign Filings:** Pursuant to the undertaking given under Section 8(1)(b), the applicant must keep the Controller informed of details regarding corresponding applications filed in any other country within **six months from the date of such filing** [The Patents Rules, 2003, Rule 12(2), p.11].\n3.  **Controller-Requested Objections:** When required by the Controller under Section 8(2), the applicant must furnish information relating to objections concerning novelty and patentability (including allowed claims) within **six months from the date of such communication by the Controller** [The Patents Rules, 2003, Rule 12(3), p.11].\n\n*(Note: The exact textual amendments of the 2024 Patent Rules regarding Form 3 are not fully captured within the four corners of the provided source corpus, which primarily cites Rule 12 of the 2003 Rules and standard Manual timelines [The Patents Rules, 2003, Rule 12, p.11; Manual of Patent Office Practice and Procedure, Section 94(v), p.172].)*\n\n### 4. Identified Risks & Red Flags\n*   Failure to adhere to the statutory timelines for submitting foreign filing particulars via Form 3 can adversely affect the continuation and grant of the patent application [Manual of Patent Office Practice and Procedure, Section 16(j), p.99].\n\n### 5. Actionable Checklist / Next Steps\n*   **File Form 3 (Initial):** Ensure Form 3 is submitted either with the application or strictly within **six months from the date of filing the application** [The Patents Rules, 2003, Rule 12(1A), p.11].\n*   **Update Subsequent Filings:** Track any foreign patent applications filed outside India and update the Controller within **six months from the date of such filing** [The Patents Rules, 2003, Rule 12(2), p.11].\n*   **Respond to Controller Inquiries:** If the Controller requests foreign search/examination reports or objections under Section 8(2), supply the required particulars within **six months from the date of communication** [The Patents Rules, 2003, Rule 12(3), p.11].",
+    "actual_citations": [
+      {
+        "statute": "Manual of Patent Office Practice and Procedure",
+        "section": "Section 16",
+        "title": "Manual of Patent Office Practice and Procedure \u2014 Section 16 \u2014 patent office manual \u2014 India (a) a statement setting out the name of the country where the application is being prosecuted, the serial number and date of filing of the applicatio",
+        "page": 99,
+        "chunk_id": "patent_office_manual_2019_000128",
+        "reranker_score": 0.9881276488304138,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Rules, 2003",
+        "section": "Rule 12",
+        "title": "The Patents Rules, 2003 \u2014 Rule 12 \u2014 statutory provision \u2014 India 12. Statement and undertaking regarding foreign applications.\u2014(1) The statement and undertaking required to be filed by an applicant for a patent under sub- section (1) of sect",
+        "page": 11,
+        "chunk_id": "patent_rules_2003_000044",
+        "reranker_score": 0.9834322333335876,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Rules, 2003",
+        "section": "Rule 20",
+        "title": "The Patents Rules, 2003 \u2014 Rule 20 \u2014 statutory provision \u2014 India (a) pay the prescribed national fee and other fees to the patent office in the manner prescribed under these rules and under the regulations made under the Treaty; (b) and wher",
+        "page": 21,
+        "chunk_id": "patent_rules_2003_000101",
+        "reranker_score": 0.9815562963485718,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Rules, 2003",
+        "section": "Rule 63A",
+        "title": "The Patents Rules, 2003 \u2014 Rule 63A \u2014 statutory provision \u2014 India 63A. Request made under section 26(1).\u2014Request under section 26(1) shall be made on Form 12 within three months from the date of the order of the Controller and shall be accom",
+        "page": 31,
+        "chunk_id": "patent_rules_2003_000150",
+        "reranker_score": 0.975893497467041,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents (Amendment) Rules, 2024",
+        "section": "Rule 4",
+        "title": "The Patents (Amendment) Rules, 2024 \u2014 Rule 4 \u2014 statutory provision \u2014 India 6 THE GAZETTE OF INDIA : EXTRAORDINARY [PART II\u2014SEC. 3(i)] MINISTRY OF COMMERCE AND INDUSTRY (Department for promotion of Industry and Internal Trade) NOTIFICATION N",
+        "page": 6,
+        "chunk_id": "3_Patents_Amendment_Rules_2024_16-03-2024_000010",
+        "reranker_score": 0.9748110771179199,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Rules, 2003",
+        "section": "Rule 121",
+        "title": "The Patents Rules, 2003 \u2014 Rule 121 \u2014 statutory provision \u2014 India 121. Period within which copies of specification etc. are to be filed. \u2014The period within which copies of specification or corresponding documents to be filed by the applicant",
+        "page": 50,
+        "chunk_id": "patent_rules_2003_000239",
+        "reranker_score": 0.9733816385269165,
+        "freshness_note": null
+      },
+      {
+        "statute": "Manual of Patent Office Practice and Procedure",
+        "section": "Section 16(j)",
+        "title": "Manual of Patent Office Practice and Procedure \u2014 Section 16(j) \u2014 patent office manual \u2014 India 99 Digital Library (TKDL) and other resources to decide as to whether the claimed subject matter falls within the purview of this provision. 09.03",
+        "page": 99,
+        "chunk_id": "patent_office_manual_2019_000127",
+        "reranker_score": 0.972282350063324,
+        "freshness_note": null
+      },
+      {
+        "statute": "Manual of Patent Office Practice and Procedure",
+        "section": "Section 94(v)",
+        "title": "Manual of Patent Office Practice and Procedure \u2014 Section 94(v) \u2014 patent office manual \u2014 India 172 22.03: Time limits prescribed by the Patents Act, 1970 and Patents Rules, 2003 S.N. Description Time Provision 1. Proof of right to make an ap",
+        "page": 172,
+        "chunk_id": "patent_office_manual_2019_000212",
+        "reranker_score": 0.9691406488418579,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents (Amendment) Rules, 2024",
+        "section": "Rule 107A",
+        "title": "The Patents (Amendment) Rules, 2024 \u2014 Rule 107A \u2014 statutory provision \u2014 India 8 THE GAZETTE OF INDIA : EXTRAORDINARY [PART II\u2014SEC. 3(i)]",
+        "page": 8,
+        "chunk_id": "3_Patents_Amendment_Rules_2024_16-03-2024_000013",
+        "reranker_score": 0.9678745269775391,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Rules, 2003",
+        "section": "Rule 74",
+        "title": "The Patents Rules, 2003 \u2014 Rule 74 \u2014 statutory provision \u2014 India 74. Form of patent.\u2014(1) A patent shall be in the form as specified in the Third Schedule with such modifications as the circumstances of each case may require and shall bear th",
+        "page": 34,
+        "chunk_id": "patent_rules_2003_000161",
+        "reranker_score": 0.9666433334350586,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Rules, 2003",
+        "section": "Rule 71",
+        "title": "The Patents Rules, 2003 \u2014 Rule 71 \u2014 statutory provision \u2014 India 71. Permission for making patent application outside India under section 39.\u2014(1) The request for permission for making patent application outside India shall be made in Form 25",
+        "page": 33,
+        "chunk_id": "patent_rules_2003_000158",
+        "reranker_score": 0.9661152958869934,
+        "freshness_note": null
+      },
+      {
+        "statute": "Manual of Patent Office Practice and Procedure",
+        "section": "Section 94(v)",
+        "title": "Manual of Patent Office Practice and Procedure \u2014 Section 94(v) \u2014 patent office manual \u2014 India 174 for filing abroad from the date of filing of such request Rule 71 33. Time after which no permission is required for filing abroad Six weeks a",
+        "page": 174,
+        "chunk_id": "patent_office_manual_2019_000214",
+        "reranker_score": 0.9641285538673401,
+        "freshness_note": null
+      }
+    ],
+    "api_error": null
+  },
+  {
+    "id": 24,
+    "title": "Divisional Applications for Polyherbal Formulations",
+    "query": "The patent examiner says my application claims both an extraction process AND a topical formulation. Should I file a divisional application?",
+    "jurisdiction": "India (National)",
+    "category": "Patent Procedure",
+    "ground_truth": "Under **Section 16 of the Patents Act, 1970**, if the claims lack unity of invention (Section 10(5)), you may file a **Divisional Application** (Form 2) before grant. The divisional application retains the priority date of the parent application.",
+    "validation_criteria": "Cite Patents Act Sec 16 and Sec 10(5); explain retention of priority date; High Confidence (\ud83d\udfe2).",
+    "sprint": 1,
+    "prior_verdict": "PARTIAL",
+    "actual_answer": "### 1. Executive Summary\nFiling a divisional application is permitted if an application relates to more than one invention, allowing you to separate distinct inventions into further applications while retaining the original filing date [The Patents Act, 1970, Section 16, p.17; Manual of Patent Office Practice and Procedure, Section 16(b), p.49]. However, independent claims of different categories\u2014specifically a product (such as a topical formulation) and a process specially adapted for its manufacture\u2014may be allowed in a single application if they are linked to form a single inventive concept [Manual of Patent Office Practice and Procedure, Section 16(b), p.104]. Whether you need a divisional application depends on whether the examiner's objection is based on a true lack of unity of invention or whether the claims can remain together under a single inventive concept.\n\n### 2. Applicable Legal & Regulatory Framework\n* **Statutory Provision:** The Patents Act, 1970, Section 16 (Power of Controller to make orders respecting division of application) [The Patents Act, 1970, Section 16, p.17].\n* **Patent Office Practice and Procedure:** Manual of Patent Office Practice and Procedure, Chapter 6 (Divisional Application and Patent of Addition), Sections 06.01, 06.01.01, 06.01.02, 06.01.03, 06.01.05, and 06.01.06 [Manual of Patent Office Practice and Procedure, Section 16(a)-(b), pp.48\u201350; Manual of Patent Office Practice and Procedure, Section 16(b), p.104].\n* **Patent Examination Guidance:** Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals, Section 12 (Unity of Invention) [Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals, Section 7(j), p.47].\n\n### 3. Analysis & Specific Guidance\n* **Basis for a Divisional Application:** Under Section 16(1) of the Patents Act, an applicant may file a further (divisional) application in respect of an invention disclosed in the provisional or complete specification if they so desire, or to remedy an objection raised by the Controller that the claims relate to more than one invention [The Patents Act, 1970, Section 16, p.17; Manual of Patent Office Practice and Procedure, Section 16(a), p.48]. \n* **Unity of Invention and Claim Categories:** Independent claims of different categories may be allowed in a single application if they are linked to form a single inventive concept and are supported by the description [Manual of Patent Office Practice and Procedure, Section 16(b), p.104]. Specifically, claims for a product and a process specially adapted for the manufacture of that product can constitute a single inventive concept [Manual of Patent Office Practice and Procedure, Section 16(b), p.104].\n* **Content and Priority of a Divisional Application:** If a divisional application is filed, it must be accompanied by a complete specification that does not include any matter not in substance disclosed in the first-mentioned application [The Patents Act, 1970, Section 16(2), p.17; Manual of Patent Office Practice and Procedure, Section 16(b), p.49]. The complete specification must contain a specific reference to the original application [Manual of Patent Office Practice and Procedure, Section 16(b), p.49], and the claims will be accorded the date of filing of the first-mentioned application as their priority date [Manual of Patent Office Practice and Procedure, Section 16(b), p.49].\n* **Next step to determine:** Check whether your extraction process and topical formulation share a single inventive concept (e.g., whether the process is specially adapted to manufacture that specific formulation) [Manual of Patent Office Practice and Procedure, Section 16(b), p.104]. If the examiner has validly objected that they represent distinct, unlinked inventions lacking unity, a divisional application is the appropriate mechanism to remedy the objection [The Patents Act, 1970, Section 16, p.17; Manual of Patent Office Practice and Procedure, Section 16(a), p.48].\n\n### 4. Identified Risks & Red Flags\n* **Double Patenting / Claim Overlap:** Neither the original complete specification nor the divisional complete specification may include a claim for any matter claimed in the other [The Patents Act, 1970, Section 16(3), p.17; Manual of Patent Office Practice and Procedure, Section 16(b), p.49]. Divisional applications are examined vis-\u00e0-vis the first-mentioned application to avoid claim overlap and double patenting [Manual of Patent Office Practice and Procedure, Section 16(b), p.49].\n* **Scope Limitation:** Claims of a divisional application must be based on the claims of the first-mentioned application, and no addition of claims outside the scope of those earlier claims is allowable [Manual of Patent Office Practice and Procedure, Section 16(b), p.49].\n* **Substantive Application Requirements:** A divisional application is treated as a substantive application, meaning separate fees must be paid and a separate request for examination must be made [Manual of Patent Office Practice and Procedure, Section 16(b), p.49; Manual of Patent Office Practice and Procedure, Section 16(b), p.50].\n\n### 5. Actionable Checklist / Next Steps\n* Evaluate the examiner's objection to determine if the extraction process and topical formulation lack unity or if they form a single inventive concept (such as a product and a process specially adapted for its manufacture) [Manual of Patent Office Practice and Procedure, Section 16(b), p.104].\n* If filing a divisional application, ensure it is filed at the appropriate patent office where the first-mentioned application was filed [Manual of Patent Office Practice and Procedure, Section 16(b), p.49].\n* Prepare a complete specification for the divisional application that contains a specific reference to the original application number [Manual of Patent Office Practice and Procedure, Section 16(b), p.49; Manual of Patent Office Practice and Procedure, Section 05.03.01, p.37].\n* Ensure the divisional complete specification does not include any matter not in substance disclosed in the first-mentioned application [The Patents Act, 1970, Section 16(2), p.17; Manual of Patent Office Practice and Procedure, Section 16(b), p.49].\n* Pay the required separate fee(s) applicable to a substantive patent application [Manual of Patent Office Practice and Procedure, Section 16(b), p.49; Manual of Patent Office Practice and Procedure, Section 06.01.06, p.50].\n* File a separate request for examination for the divisional application [Manual of Patent Office Practice and Procedure, Section 16(b), p.49].\n* Amend either the original or the divisional complete specification if required by the Controller to ensure there is no claim overlap or double patenting [The Patents Act, 1970, Section 16(3), p.17; Manual of Patent Office Practice and Procedure, Section 16(b), p.49].",
+    "actual_citations": [
+      {
+        "statute": "Manual of Patent Office Practice and Procedure",
+        "section": "Section 16(a)",
+        "title": "Manual of Patent Office Practice and Procedure \u2014 Section 16(a) \u2014 patent office manual \u2014 India 48 Chapter- 6: Divisional Application and Patent of Addition 06.01 Divisional Application 06.01.01 General i. An applicant may, at any time before",
+        "page": 48,
+        "chunk_id": "patent_office_manual_2019_000062",
+        "reranker_score": 0.977249026298523,
+        "freshness_note": null
+      },
+      {
+        "statute": "Manual of Patent Office Practice and Procedure",
+        "section": "Section 16(b)",
+        "title": "Manual of Patent Office Practice and Procedure \u2014 Section 16(b) \u2014 patent office manual \u2014 India 49 National phase application under PCT. vi. Claims of divisional application(s) shall be based on the claims of first mentioned (or earlier appli",
+        "page": 49,
+        "chunk_id": "patent_office_manual_2019_000064",
+        "reranker_score": 0.9672843217849731,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Act, 1970",
+        "section": "Section 16",
+        "title": "The Patents Act, 1970 \u2014 Section 16 \u2014 statutory provision \u2014 India 16. Power of Controller to make orders respecting division of application.\u2014(1) A person who has made an application for a patent under this Act may, at any time 1[before the g",
+        "page": 17,
+        "chunk_id": "patents_act_1970_000103",
+        "reranker_score": 0.9420516490936279,
+        "freshness_note": null
+      },
+      {
+        "statute": "Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals",
+        "section": "Section 7(j)",
+        "title": "Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals \u2014 Section 7(j) \u2014 patent guidelines \u2014 India Guidelines For Examination Of Patent Applications In The Field Of Pharmaceuticals Office of the Controller General ",
+        "page": 47,
+        "chunk_id": "pharmaceuticals_guidelines_2014_000062",
+        "reranker_score": 0.9165177345275879,
+        "freshness_note": null
+      },
+      {
+        "statute": "Manual of Patent Office Practice and Procedure",
+        "section": "Section 16(b)",
+        "title": "Manual of Patent Office Practice and Procedure \u2014 Section 16(b) \u2014 patent office manual \u2014 India (b) If the applicant has submitted the proof of right in the prescribed manner with the first mentioned application, the same is not required to b",
+        "page": 48,
+        "chunk_id": "patent_office_manual_2019_000063",
+        "reranker_score": 0.902062714099884,
+        "freshness_note": null
+      },
+      {
+        "statute": "Manual of Patent Office Practice and Procedure",
+        "section": "Section 16(b)",
+        "title": "Manual of Patent Office Practice and Procedure \u2014 Section 16(b) \u2014 patent office manual \u2014 India 50 06.01.06 Fee For all purposes under the Patents Act, the divisional application is treated as a substantive application and, hence, all fees ap",
+        "page": 50,
+        "chunk_id": "patent_office_manual_2019_000065",
+        "reranker_score": 0.9000393748283386,
+        "freshness_note": null
+      },
+      {
+        "statute": "Manual of Patent Office Practice and Procedure",
+        "section": "Section 16(a)",
+        "title": "Manual of Patent Office Practice and Procedure \u2014 Section 16(a) \u2014 patent office manual \u2014 India 37 05.03 Complete Specification Complete Specification is a techno-legal document which fully and particularly describes the invention and disclos",
+        "page": 37,
+        "chunk_id": "patent_office_manual_2019_000051",
+        "reranker_score": 0.8989112377166748,
+        "freshness_note": null
+      },
+      {
+        "statute": "Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals",
+        "section": "p.8",
+        "title": "Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals \u2014 patent guidelines \u2014 India Guidelines For Examination Of Patent Applications In The Field Of Pharmaceuticals Office of the Controller General of Patents, Des",
+        "page": 8,
+        "chunk_id": "pharmaceuticals_guidelines_2014_000010",
+        "reranker_score": 0.8697251677513123,
+        "freshness_note": null
+      },
+      {
+        "statute": "Manual of Patent Office Practice and Procedure",
+        "section": "Section 16(a)",
+        "title": "Manual of Patent Office Practice and Procedure \u2014 Section 16(a) \u2014 patent office manual \u2014 India 47 d) When a complete specification is filed after the provisional specification, the Controller may on the request of the applicant made any time",
+        "page": 47,
+        "chunk_id": "patent_office_manual_2019_000061",
+        "reranker_score": 0.8527229428291321,
+        "freshness_note": null
+      },
+      {
+        "statute": "Manual of Patent Office Practice and Procedure",
+        "section": "Section 16(a)",
+        "title": "Manual of Patent Office Practice and Procedure \u2014 Section 16(a) \u2014 patent office manual \u2014 India 44 allows the applicant to have a legal title to different aspects of the invention. d) Terms of the claim which confuse the scope of the inventio",
+        "page": 44,
+        "chunk_id": "patent_office_manual_2019_000058",
+        "reranker_score": 0.8025563359260559,
+        "freshness_note": null
+      },
+      {
+        "statute": "Manual of Patent Office Practice and Procedure",
+        "section": "Section 16(b)",
+        "title": "Manual of Patent Office Practice and Procedure \u2014 Section 16(b) \u2014 patent office manual \u2014 India 104 application may be divided in order to meet the objection of plurality of distinct inventions. 2) The determination whether a group of inventi",
+        "page": 104,
+        "chunk_id": "patent_office_manual_2019_000134",
+        "reranker_score": 0.7953694462776184,
+        "freshness_note": null
+      },
+      {
+        "statute": "Manual of Patent Office Practice and Procedure",
+        "section": "Section 16(a)",
+        "title": "Manual of Patent Office Practice and Procedure \u2014 Section 16(a) \u2014 patent office manual \u2014 India 45 m) Trade Marks should not be used in Patent Applications where a generic term can be used instead, since a Trademark is an indication of the or",
+        "page": 45,
+        "chunk_id": "patent_office_manual_2019_000059",
+        "reranker_score": 0.7745406031608582,
+        "freshness_note": null
+      }
+    ],
+    "api_error": null
+  },
+  {
+    "id": 26,
+    "title": "Working of Patents (Form 27) 2024 Amendments",
+    "query": "How often must an Indian patent holder file Form 27 regarding commercial working of an Ayurvedic patent under current law?",
+    "jurisdiction": "India (National)",
+    "category": "Patent Post-Grant Compliance",
+    "ground_truth": "Under **Rule 131 of the Patents (Amendment) Rules, 2024**, **Form 27** must be filed once every **three financial years** (instead of annually), within three months from the expiry of that three-year period.",
+    "validation_criteria": "Cite Patents Amendment Rules 2024 Rule 131; state 3-year reporting cycle; High Confidence (\ud83d\udfe2).",
+    "sprint": 1,
+    "prior_verdict": "FAIL",
+    "actual_answer": "### 1. Executive Summary\nAn Indian patent holder must furnish statements regarding the commercial working of their patent in India at intervals not being less than six months, as prescribed by law. For specific filing procedures, forms, or deadlines beyond this interval requirement, the available sources do not provide further details.\n\n### 2. Applicable Legal & Regulatory Framework\n- The Patents Act, 1970, Section 146(2) [The Patents Act, 1970, Section 146, p. 62]\n\n### 3. Analysis & Specific Guidance\nUnder the statutory framework governing patents in India, every patentee and licensee is required to furnish statements as to the extent to which the patented invention has been worked on a commercial scale in India [The Patents Act, 1970, Section 146, p. 62]. The statute mandates that these intervals shall not be less than six months [The Patents Act, 1970, Section 146, p. 62]. \n\nThe retrieved sources establish this general statutory frequency requirement under Section 146(2). However, the specific form number (such as \"Form 27\") referenced in your question is not mentioned in the provided text, and the sources do not contain the precise procedural rules or submission deadlines for filing this form. To fully settle the question of whether \"Form 27\" is the correct designation and what its exact filing schedule is, you would need to consult the full text of the Patents Rules, 2003 (specifically the rules governing working statements under Section 146) which are not present in the retrieved sources.\n\n### 4. Identified Risks & Red Flags\n- Failure to furnish required statements regarding the commercial working of a patent under Section 146 can expose the patentee to regulatory non-compliance under the Patents Act, 1970 [The Patents Act, 1970, Section 146, p. 62].\n\n### 5. Actionable Checklist / Next Steps\n- Review the commercial working status of the Ayurvedic patent in India to prepare the required periodical statements.\n- Ensure statements regarding the extent of commercial working are prepared at intervals of not less than six months [The Patents Act, 1970, Section 146, p. 62].\n- Consult a qualified patent professional or review the complete Patents Rules, 2003, to confirm the exact form and submission portal details, as they are not covered in the retrieved sources.",
+    "actual_citations": [
+      {
+        "statute": "Guidelines for Examination of Ayush Related Inventions",
+        "section": "Section 7",
+        "title": "Guidelines for Examination of Ayush Related Inventions \u2014 Section 7 \u2014 ayush examination guidelines \u2014 India 7. The Patent Act, 1970. https://ipindia.gov.in/writereaddata/Portal/ev/sections-index.html",
+        "page": 15,
+        "chunk_id": "Guidelines for Ayush_000022",
+        "reranker_score": 0.9804427027702332,
+        "freshness_note": null
+      },
+      {
+        "statute": "Manual of Patent Office Practice and Procedure",
+        "section": "Section 94",
+        "title": "Manual of Patent Office Practice and Procedure \u2014 Section 94 \u2014 patent office manual \u2014 India 131 Chapter 14: Compulsory Licensing 14.01 Working of patents - General principles a. Patents are granted to encourage inventions and to secure that ",
+        "page": 131,
+        "chunk_id": "patent_office_manual_2019_000162",
+        "reranker_score": 0.9515115022659302,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Act, 1970",
+        "section": "Section 11",
+        "title": "The Patents Act, 1970 \u2014 Section 11 \u2014 statutory provision \u2014 India (a) the publication or use of the invention so far as claimed in that claim on or after the priority date of such claim; or (b) the grant of another patent which claims the in",
+        "page": 14,
+        "chunk_id": "patents_act_1970_000080",
+        "reranker_score": 0.9486418962478638,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Act, 1970",
+        "section": "Section 83",
+        "title": "The Patents Act, 1970 \u2014 Section 83 \u2014 statutory provision \u2014 India 83. General principles applicable to working of patented inventions.\u2014Without prejudice to the other provisions contained in this Act, in exercising the powers conferred by thi",
+        "page": 41,
+        "chunk_id": "patents_act_1970_000314",
+        "reranker_score": 0.9466685652732849,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Rules, 2003",
+        "section": "Rule 74",
+        "title": "The Patents Rules, 2003 \u2014 Rule 74 \u2014 statutory provision \u2014 India 74. Form of patent.\u2014(1) A patent shall be in the form as specified in the Third Schedule with such modifications as the circumstances of each case may require and shall bear th",
+        "page": 34,
+        "chunk_id": "patent_rules_2003_000161",
+        "reranker_score": 0.9336212277412415,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Act, 1970",
+        "section": "Section 107A",
+        "title": "The Patents Act, 1970 \u2014 Section 107A \u2014 statutory provision \u2014 India 2[107A. Certain acts not to be considered as infringement.\u2014For the purposes of this Act,\u2014 (a) any act of making, constructing, 3[using, selling or importing] a patented inve",
+        "page": 51,
+        "chunk_id": "patents_act_1970_000384",
+        "reranker_score": 0.917770504951477,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Act, 1970",
+        "section": "Section 145",
+        "title": "The Patents Act, 1970 \u2014 Section 145 \u2014 statutory provision \u2014 India 5[145. Publication of official journal.\u2014The Controller shall publish periodically an official journal which shall contain such information as may be required to be published ",
+        "page": 62,
+        "chunk_id": "patents_act_1970_000474",
+        "reranker_score": 0.9119628071784973,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Act, 1970",
+        "section": "Section 89",
+        "title": "The Patents Act, 1970 \u2014 Section 89 \u2014 statutory provision \u2014 India 89. General purposes for granting compulsory licences.\u2014The powers of the Controller upon an application made under section 84 shall be exercised with a view to securing the fo",
+        "page": 44,
+        "chunk_id": "patents_act_1970_000341",
+        "reranker_score": 0.9062246680259705,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Rules, 2003",
+        "section": "Rule 75",
+        "title": "The Patents Rules, 2003 \u2014 Rule 75 \u2014 statutory provision \u2014 India 75. Amendment of patent under section 44. \u2014 An application under section 44 for the amendment of a patent shall be made in Form 10 along with substantiating evidence and be acc",
+        "page": 34,
+        "chunk_id": "patent_rules_2003_000163",
+        "reranker_score": 0.9019747972488403,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Act, 1970",
+        "section": "Section 146",
+        "title": "The Patents Act, 1970 \u2014 Section 146 \u2014 statutory provision \u2014 India 146. Power of Controller to call for information from patentees.\u2014(1) The Controller may, at any time during the continuance of the patent, by notice in writing, require a pat",
+        "page": 62,
+        "chunk_id": "patents_act_1970_000475",
+        "reranker_score": 0.8611544370651245,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Rules, 2003",
+        "section": "Rule 68",
+        "title": "The Patents Rules, 2003 \u2014 Rule 68 \u2014 statutory provision \u2014 India 68. Form of application to be made under section 28(7).\u2014 (1) An application under sub-section (7) of section 28 shall be made in Form 8 and shall be accompanied by a statement ",
+        "page": 32,
+        "chunk_id": "patent_rules_2003_000154",
+        "reranker_score": 0.8207762241363525,
+        "freshness_note": null
+      },
+      {
+        "statute": "Guidelines for Examination of Ayush Related Inventions",
+        "section": "Section 3",
+        "title": "Guidelines for Examination of Ayush Related Inventions \u2014 Section 3 \u2014 ayush examination guidelines \u2014 India 3. Guidelines to offer understanding on processing of patent applications of Ayush related invention(s): 3.1 Filing of patent applicat",
+        "page": 8,
+        "chunk_id": "Guidelines for Ayush_000011",
+        "reranker_score": 0.8200806379318237,
+        "freshness_note": null
+      }
+    ],
+    "api_error": null
+  },
+  {
+    "id": 30,
+    "title": "Plant Variety Protection (PPV&FR Act) vs Patent",
+    "query": "We bred a new cultivar of Ashwagandha with 300% higher withanolide content. Can we patent the plant in India?",
+    "jurisdiction": "India (National)",
+    "category": "Plant Variety Protection",
+    "ground_truth": "No. Plants and seeds in whole or part are strictly excluded from patenting under **Section 3(j) of the Patents Act, 1970**. You must seek protection under the **Protection of Plant Varieties and Farmers' Rights (PPV&FR) Act, 2001** by registering the variety based on Distinctiveness, Uniformity, and Stability (DUS testing).",
+    "validation_criteria": "Cite Patents Act Sec 3(j) exclusion; route to PPV&FR Act 2001 (DUS criteria); High Confidence (\ud83d\udfe2).",
+    "sprint": 1,
+    "prior_verdict": "FAIL",
+    "actual_answer": "### 1. Executive Summary\nNo, you cannot obtain a patent for the plant itself in India, as plants in whole or in part are excluded from patentability. However, the Protection of Plant Varieties and Farmers' Rights Act, 2001 provides a specialized legal framework to protect new plant varieties if they meet specific criteria. For any patent filings related to plant extracts or derivatives, the Indian Patent Office evaluates prior art using the Traditional Knowledge Digital Library (TKDL) and strict inventive step standards.\n\n### 2. Applicable Legal & Regulatory Framework\n* **The Patents Act, 1970:** Section 64 [The Patents Act, 1970, Section 64, p. 35]\n* **Manual of Patent Office Practice and Procedure:** Section 16(j) [Manual of Patent Office Practice and Procedure, Section 16(j), p. 95]\n* **Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals:** Section 10.23 [Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals, Section 7(j), p. 37]\n* **Guidelines for Examination of Ayush Related Inventions:** Section 3.4 (Guiding Principle 1) [Guidelines for Examination of Ayush Related Inventions, Section 3, p. 9]\n* **The Protection of Plant Varieties and Farmers' Rights Act, 2001:** Sections 1, 2, 8, 15, 29, 30, and 39 [The Protection of Plant Varieties and Farmers' Rights Act, 2001, Section 1, p. 7; Section 2, p. 8; Section 8, p. 11; Section 15, p. 13; Section 29, p. 19; Section 30, p. 20; Section 39, p. 22]\n\n### 3. Analysis & Specific Guidance\n* **Patentability of Plants:** Under patent practice and procedure, plants in whole or in any part thereof (including seeds, varieties, and species) are explicitly excluded from being considered inventions [Manual of Patent Office Practice and Procedure, Section 16(j), p. 95]. Therefore, your Ashwagandha cultivar cannot be patented as a plant product under patent law. \n* **Alternative Protection for Plant Varieties:** Plant varieties are provided protection in India under the Protection of Plant Varieties and Farmers' Rights Act, 2002 [sic - cited in text as 2001/2002] [Manual of Patent Office Practice and Procedure, Section 16(j), p. 95]. A new variety is eligible for registration if it conforms to the criteria of novelty, distinctiveness, uniformity, and stability [The Protection of Plant Varieties and Farmers' Rights Act, 2001, Section 15, p. 13]. \n* **Extracts and Active Ingredients:** If you seek to patent extracts, alkaloids, or isolated active ingredients (such as withanolides) naturally present in plants where the use of the plant is already known in prior art, such product claims cannot be considered novel and/or inventive [Guidelines for Examination of Ayush Related Inventions, Section 3, p. 9]. However, processes for obtaining such extracts or isolates may be considered patentable subject to general patentability requirements [Guidelines for Examination of Ayush Related Inventions, Section 3, p. 9].\n* **Prior Art Search:** The Indian Patent Office conducts prior art searches for Ayush-related inventions and traditional knowledge using databases such as the Traditional Knowledge Digital Library (TKDL) [Guidelines for Examination of Ayush Related Inventions, Section 3, p. 9].\n\n### 4. Identified Risks & Red Flags\n* **Statutory Subject Matter Exclusion:** Attempting to claim a plant, plant part, or seed directly in a patent application will result in rejection under statutory plant exclusions [Manual of Patent Office Practice and Procedure, Section 16(j), p. 95].\n* **Traditional Knowledge and Obviousness Hurdles:** Because Ashwagandha is part of traditional systems of medicine, simply isolating naturally present active constituents or claiming known properties without sufficient technical advancement beyond reported literature risks rejection under traditional knowledge provisions and lack of inventive step [Guidelines for Examination of Ayush Related Inventions, Section 3, p. 9].\n* **Revocation and Disclosure Risks:** Failure to properly disclose the source or geographical origin of biological material used in an invention can form the basis for patent revocation under Section 64 [The Patents Act, 1970, Section 64, p. 35].\n\n### 5. Actionable Checklist / Next Steps\n* Evaluate filing an application for registration under the Protection of Plant Varieties and Farmers' Rights Act to secure rights for the new cultivar based on novelty, distinctiveness, uniformity, and stability [The Protection of Plant Varieties and Farmers' Rights Act, 2001, Section 15, p. 13].\n* If pursuing a patent instead for an invention derived from the plant, ensure claims focus on novel processes for obtaining extracts/isolates rather than the natural plant parts or naturally occurring compounds themselves [Guidelines for Examination of Ayush Related Inventions, Section 3, p. 9].\n* Ensure strict transparency regarding the geographical origin and source of the biological material used to avoid post-grant revocation vulnerabilities [The Patents Act, 1970, Section 64, p. 35].\n* *Recommendation:* Consult a qualified patent professional or intellectual property attorney specializing in agricultural and traditional knowledge-related inventions before making any filings.",
+    "actual_citations": [
+      {
+        "statute": "Manual of Patent Office Practice and Procedure",
+        "section": "Section 16(j)",
+        "title": "Manual of Patent Office Practice and Procedure \u2014 Section 16(j) \u2014 patent office manual \u2014 India 95 treatment, the termination of pregnancy, castration, sterilization, artificial insemination, embryo transplants, treatments for experimental an",
+        "page": 95,
+        "chunk_id": "patent_office_manual_2019_000123",
+        "reranker_score": 0.8877492547035217,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Protection of Plant Varieties and Farmers' Rights Act, 2001",
+        "section": "Section 15",
+        "title": "The Protection of Plant Varieties and Farmers' Rights Act, 2001 \u2014 Section 15 \u2014 statutory provision \u2014 India 15. Registrable varieties.\u2014(1) A new variety shall be registered under this Act if it conforms to the criteria of novelty, distinctiv",
+        "page": 13,
+        "chunk_id": "Protection of Plant Varieties and Farmers' Rights Act, 2001_000172",
+        "reranker_score": 0.7801730036735535,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Protection of Plant Varieties and Farmers' Rights Act, 2001",
+        "section": "Section 1",
+        "title": "The Protection of Plant Varieties and Farmers' Rights Act, 2001 \u2014 Section 1 \u2014 statutory provision \u2014 India 1. Short title, extent and commencement.\u2014(1) This Act may be called the Protection of Plant Varieties and Farmers\u2019 Rights Act, 2001. (",
+        "page": 7,
+        "chunk_id": "Protection of Plant Varieties and Farmers' Rights Act, 2001_000105",
+        "reranker_score": 0.7293601632118225,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Act, 1970",
+        "section": "Section 64",
+        "title": "The Patents Act, 1970 \u2014 Section 64 \u2014 statutory provision \u2014 India (k) that the subject of any claim of the complete specification is not patentable under this Act; (l) that the invention so far as claimed in any claim of the complete specifi",
+        "page": 35,
+        "chunk_id": "patents_act_1970_000253",
+        "reranker_score": 0.6815199255943298,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Protection of Plant Varieties and Farmers' Rights Act, 2001",
+        "section": "Section 39",
+        "title": "The Protection of Plant Varieties and Farmers' Rights Act, 2001 \u2014 Section 39 \u2014 statutory provision \u2014 India 39. Farmers\u2019 rights.\u2014(1) Notwithstanding anything contained in this Act,\u2014 (i) a farmer who has bred or developed a new variety shall ",
+        "page": 22,
+        "chunk_id": "Protection of Plant Varieties and Farmers' Rights Act, 2001_000258",
+        "reranker_score": 0.6572954654693604,
+        "freshness_note": null
+      },
+      {
+        "statute": "Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals",
+        "section": "Section 7(j)",
+        "title": "Guidelines for Examination of Patent Applications in the Field of Pharmaceuticals \u2014 Section 7(j) \u2014 patent guidelines \u2014 India Guidelines For Examination Of Patent Applications In The Field Of Pharmaceuticals Office of the Controller General ",
+        "page": 37,
+        "chunk_id": "pharmaceuticals_guidelines_2014_000052",
+        "reranker_score": 0.6326490640640259,
+        "freshness_note": null
+      },
+      {
+        "statute": "Guidelines for Examination of Ayush Related Inventions",
+        "section": "Section 3",
+        "title": "Guidelines for Examination of Ayush Related Inventions \u2014 Section 3 \u2014 ayush examination guidelines \u2014 India Page 5 of 14 (as amended) and The Patent Rules 2003 (as amended). The Patent office conducts prior art search to evaluate the novelty ",
+        "page": 9,
+        "chunk_id": "Guidelines for Ayush_000012",
+        "reranker_score": 0.6323184370994568,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Protection of Plant Varieties and Farmers' Rights Act, 2001",
+        "section": "Section 30",
+        "title": "The Protection of Plant Varieties and Farmers' Rights Act, 2001 \u2014 Section 30 \u2014 statutory provision \u2014 India 30. Researcher\u2019s rights.\u2014Nothing contained in this Act shall prevent\u2014 (a) the use of any variety registered under this Act by any per",
+        "page": 20,
+        "chunk_id": "Protection of Plant Varieties and Farmers' Rights Act, 2001_000234",
+        "reranker_score": 0.5661764740943909,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Protection of Plant Varieties and Farmers' Rights Act, 2001",
+        "section": "Section 2",
+        "title": "The Protection of Plant Varieties and Farmers' Rights Act, 2001 \u2014 Section 2 \u2014 statutory provision \u2014 India (i) is predominantly derived from such initial variety, or from a variety that itself is predominantly derived from such initial varie",
+        "page": 8,
+        "chunk_id": "Protection of Plant Varieties and Farmers' Rights Act, 2001_000116",
+        "reranker_score": 0.5429486036300659,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Patents Act, 1970",
+        "section": "Section 83",
+        "title": "The Patents Act, 1970 \u2014 Section 83 \u2014 statutory provision \u2014 India (d) that patents granted do not impede protection of public health and nutrition and should act as instrument to promote public interest specially in sectors of vital importan",
+        "page": 41,
+        "chunk_id": "patents_act_1970_000318",
+        "reranker_score": 0.5403066873550415,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Protection of Plant Varieties and Farmers' Rights Act, 2001",
+        "section": "Section 8",
+        "title": "The Protection of Plant Varieties and Farmers' Rights Act, 2001 \u2014 Section 8 \u2014 statutory provision \u2014 India 8. General functions of Authority.\u2014(1) It shall be the duty of the Authority to promote, by such measures as it thinks fit, the encour",
+        "page": 11,
+        "chunk_id": "Protection of Plant Varieties and Farmers' Rights Act, 2001_000151",
+        "reranker_score": 0.520061194896698,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Protection of Plant Varieties and Farmers' Rights Act, 2001",
+        "section": "Section 29",
+        "title": "The Protection of Plant Varieties and Farmers' Rights Act, 2001 \u2014 Section 29 \u2014 statutory provision \u2014 India 29. Exclusion of certain varieties.\u2014(1) Notwithstanding anything contained in this Act, no registration of a variety shall be made un",
+        "page": 19,
+        "chunk_id": "Protection of Plant Varieties and Farmers' Rights Act, 2001_000232",
+        "reranker_score": 0.4397713243961334,
+        "freshness_note": null
+      }
+    ],
+    "api_error": null
+  },
+  {
+    "id": 36,
+    "title": "Indian AYUSH Practitioner ABS Exemption",
+    "query": "I am a registered Indian Vaidya running a local clinic. Do I need NBA approval or ABS fee payment under the 2023 Biodiversity Amendment Act to make medicine for my patients?",
+    "jurisdiction": "India (National)",
+    "category": "ABS Compliance / Regulatory Exemption",
+    "ground_truth": "No. Under **Section 3(2) and Section 7 of the Biological Diversity Act, 2002 (as amended by the Biological Diversity (Amendment) Act, 2023)**, registered AYUSH practitioners, cultivated medicinal plant growers, and local codifiers of traditional knowledge are **explicitly exempted** from giving prior intimation to State Biodiversity Boards (SBB) and paying Access and Benefit Sharing (ABS) fees for commercial utilization.",
+    "validation_criteria": "Cite BDA Amendment Act 2023 Sec 3(2) & Sec 7 exemptions; confirm zero ABS liability for local registered Vaidyas; High Confidence (\ud83d\udfe2).",
+    "sprint": 1,
+    "prior_verdict": "FAIL",
+    "actual_answer": "### 1. Executive Summary\nAs a registered Indian Vaidya practicing indigenous medicine for livelihood and sustenance, you are generally exempt from giving prior intimation to the State Biodiversity Board for accessing biological resources and associated knowledge for commercial utilization [The Biological Diversity (Amendment) Act, 2023, Section 9, p. 4]. However, if your preparations or inventions involve applying for intellectual property rights or commercializing based on accessed biological resources, specific registration or approval duties with the National Biodiversity Authority (NBA) may be triggered [The Biological Diversity (Amendment) Act, 2023, Section 8, p. 8].\n\n### 2. Applicable Legal & Regulatory Framework\n* The Biological Diversity (Amendment) Act, 2023, Section 9 [p. 4]\n* The Biological Diversity (Amendment) Act, 2023, Section 6 [p. 3]\n* The Biological Diversity (Amendment) Act, 2023, Section 8 [p. 8]\n* The Biological Diversity Rules, 2024, Rule 13 [p. 53]\n\n### 3. Analysis & Specific Guidance\nUnder the statutory framework, the requirement to give prior intimation to the concerned State Biodiversity Board for accessing biological resources and associated knowledge for commercial utilization does not apply to vaids, hakims, and registered AYUSH practitioners who have been practicing indigenous medicines as a profession for sustenance and livelihood [The Biological Diversity (Amendment) Act, 2023, Section 9, p. 4]. \n\nHowever, if your practice extends beyond compounding medicines for immediate patients into seeking intellectual property rights (such as patents) or commercializing an invention derived from accessed biological resources or traditional knowledge, you must check the applicable statutory pathways:\n* Persons covered under Section 7 (which includes practitioners) applying for any intellectual property right for an invention based on research or information on an Indian biological resource or associated traditional knowledge must *register* with the National Biodiversity Authority before the grant of such rights [The Biological Diversity (Amendment) Act, 2023, Section 8, p. 8].\n* Persons covered under Section 7 who have obtained an intellectual property right for such inventions must obtain *prior approval* from the National Biodiversity Authority at the time of commercialisation [The Biological Diversity (Amendment) Act, 2023, Section 8, p. 8].\n* Specific procedures for access and applications on the web portal of the Authority (such as Form 1 or Form 2) apply to persons under Section 3(2), whereas traditional practitioners rely on the exemptions or registrations outlined for Section 7 actors [The Biological Diversity Rules, 2024, Rule 13, p. 53; The Biological Diversity (Amendment) Act, 2023, Section 9, p. 4].\n\n### 4. Identified Risks & Red Flags\n* **IP and Commercialisation Triggers:** While making medicines for your immediate clinic patients for sustenance is protected, attempting to patent or commercialize these preparations without complying with the required NBA registration or prior approval mandates under Section 8 can lead to regulatory non-compliance [The Biological Diversity (Amendment) Act, 2023, Section 8, p. 8].\n* *Note:* No other risks (such as specific advertising restrictions or general biological resource access penalties for local vaids practicing for livelihood) are identified on the facts given, provided your activities remain strictly within standard clinical practice and do not cross into unauthorized commercial-scale IP applications without registration.\n\n### 5. Actionable Checklist / Next Steps\n* Confirm that your practice qualifies under the exemption for registered AYUSH practitioners practicing indigenous medicines for sustenance and livelihood [The Biological Diversity (Amendment) Act, 2023, Section 9, p. 4].\n* If you intend to apply for a patent or any intellectual property right for an invention based on biological resources or associated traditional knowledge, ensure you complete the required registration with the National Biodiversity Authority before the grant of those rights [The Biological Diversity (Amendment) Act, 2023, Section 8, p. 8].\n* If you have obtained an intellectual property right and are moving toward commercialisation, obtain prior approval from the National Biodiversity Authority at the time of commercialisation [The Biological Diversity (Amendment) Act, 2023, Section 8, p. 8].",
+    "actual_citations": [
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 18",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 18 \u2014 statutory provision \u2014 India 18. In section 20 of the principal Act,\u2014 (i) in the marginal heading, for the words \"biological resource or knowledge\", the words \"results of research",
+        "page": 7,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000050",
+        "reranker_score": 0.9840788841247559,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 16",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 16 \u2014 statutory provision \u2014 India 16. In section 18 of the principal Act,\u2014 (a) for sub-sections (1) and (2), the following sub-sections shall be substituted, namely:\u2014 \"(1) The National",
+        "page": 6,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000040",
+        "reranker_score": 0.981892466545105,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 9",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 9 \u2014 statutory provision \u2014 India 9. For section 7 of the principal Act, the following section shall be substituted, namely:\u2014 \"7. (1) No person, other than the person covered under sub-",
+        "page": 4,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000020",
+        "reranker_score": 0.9810906052589417,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 19(c)",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 19(c) \u2014 statutory provision \u2014 India (c) in sub-section (3), for the proviso, the following proviso shall be substituted, namely:\u2014 \"Provided that where biological resource or associate",
+        "page": 8,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000056",
+        "reranker_score": 0.978024959564209,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity Rules, 2024",
+        "section": "Rule 13",
+        "title": "The Biological Diversity Rules, 2024 \u2014 Rule 13 \u2014 statutory provision \u2014 India 13. Procedure for access to biological resources and knowledge associated thereto. \u2013 (1) Any person, referred to in sub-section (2) of section 3 of the Act, seekin",
+        "page": 53,
+        "chunk_id": "27_Biological_Diversity_Rules_2024_000150",
+        "reranker_score": 0.9768843054771423,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 6",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 6 \u2014 statutory provision \u2014 India 6. For section 4 of the principal Act, the following section shall be substituted, namely:\u2014 \u201c4. No person or entity shall share or transfer any result ",
+        "page": 3,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000013",
+        "reranker_score": 0.9744939804077148,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 8",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 8 \u2014 statutory provision \u2014 India 8. In section 6 of the principal Act,\u2014 (a) for sub-section (1), the following sub-sections shall be substituted, namely:\u2014 \u201c(1) Any person or entity cov",
+        "page": 3,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000016",
+        "reranker_score": 0.9736742973327637,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 3",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 3 \u2014 statutory provision \u2014 India 3. In section 2 of the principal Act,\u2014 (i) for clause (a), the following clauses shall be substituted, namely:\u2014 \u2018(a) \u201caccess\u201d means collecting, procuri",
+        "page": 2,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000007",
+        "reranker_score": 0.9713683724403381,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 19",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 19 \u2014 statutory provision \u2014 India 19. In section 21 of the principal Act,\u2014 (a) in the marginal heading, for the word \"equitable\", the words \"fair and equitable\" shall be substituted; (",
+        "page": 7,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000052",
+        "reranker_score": 0.9712364673614502,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 24",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 24 \u2014 statutory provision \u2014 India 24. In section 32 of the principal Act,\u2014 (i) in sub-section (1), for clause (c), the following clause shall be substituted, namely:\u2014 \"(c) all sums inc",
+        "page": 9,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000071",
+        "reranker_score": 0.9695740342140198,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 21",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 21 \u2014 statutory provision \u2014 India 21. In section 23 of the principal Act, for clauses (a) and (b), the following clauses shall be substituted, namely:\u2014 \"(a) advise the State Government",
+        "page": 8,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000061",
+        "reranker_score": 0.9691030979156494,
+        "freshness_note": null
+      },
+      {
+        "statute": "The Biological Diversity (Amendment) Act, 2023",
+        "section": "Section 17",
+        "title": "The Biological Diversity (Amendment) Act, 2023 \u2014 Section 17 \u2014 statutory provision \u2014 India 17. In section 19 of the principal Act,\u2014 (a) for sub-section (2), the following sub-sections shall be substituted, namely:\u2014 \"(2) Any person referred t",
+        "page": 6,
+        "chunk_id": "26_Biological_Diversity_Act_2002_IndiaCode_000045",
+        "reranker_score": 0.9649534821510315,
+        "freshness_note": null
+      }
+    ],
+    "api_error": null
+  }
+]

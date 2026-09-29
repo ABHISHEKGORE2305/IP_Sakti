@@ -5,6 +5,10 @@ from qdrant_client.models import (
     Distance,
     VectorParams,
     PointStruct,
+    Filter,
+    FieldCondition,
+    MatchValue,
+    FilterSelector,
 )
 
 import config
@@ -147,6 +151,12 @@ class QdrantVectorStore:
 
                     "authority_weight":
                         chunk.get("authority_weight"),
+
+                    # Only present on web-sourced chunks (src/web_loader.py,
+                    # src/ingest_web.py) — used by freshness.web_freshness_note
+                    # instead of the title-year lookup used for PDFs.
+                    "fetched_at":
+                        chunk.get("fetched_at"),
                 },
             )
 
@@ -183,4 +193,27 @@ class QdrantVectorStore:
         print(
             f"\nSuccessfully uploaded "
             f"{len(points)} chunks"
+        )
+
+
+    # --------------------------------
+    # Delete all points for one document (used by ingest_web.py before
+    # re-upserting a changed web source, so a page that now chunks
+    # differently doesn't leave orphaned stale points behind).
+    # --------------------------------
+
+    def delete_by_document_id(self, document_id: str):
+
+        self.client.delete(
+            collection_name=self.collection_name,
+            points_selector=FilterSelector(
+                filter=Filter(
+                    must=[
+                        FieldCondition(
+                            key="document_id",
+                            match=MatchValue(value=document_id),
+                        )
+                    ]
+                )
+            ),
         )

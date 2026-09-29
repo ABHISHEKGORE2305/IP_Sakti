@@ -7,12 +7,23 @@ Scans a generated answer for inline citations of the form
 against the chunks actually retrieved for the query. Citations that do
 not match any retrieved source are flagged as unverified/hallucinated,
 and can be stripped from the answer text before it reaches the user.
+
+Some models (observed with Groq's openai/gpt-oss models — not Gemini)
+ignore the prompt's bracket-format instruction and instead cite by
+mirroring context_builder.py's own "SOURCE N" labels, in either ASCII
+`[SOURCE 1]` or full-width `【SOURCE 1】` brackets (a habit from
+browsing-citation training data), sometimes without any brackets at
+all. These are just as verifiable — N is a direct, unambiguous index
+into the same `retrieved_sources` list the document-citation path
+matches against — so they are extracted and verified the same way
+rather than being counted as zero citations and force-abstained.
 """
 
 import re
 
 
 _CITATION_RE = re.compile(r"\[([^\[\]]+?)\]")
+_SOURCE_REF_RE = re.compile(r"[\[【]?\s*SOURCE\s+(\d+)\s*[\]】]?", re.IGNORECASE)
 _REFERENCE_MARKER_RE = re.compile(r"^(section|rule)\b", re.IGNORECASE)
 _PAGE_RE = re.compile(r"(\d+)")
 
@@ -55,14 +66,22 @@ def _parse_citation(raw: str) -> dict | None:
 
 
 def extract_citations(answer_text: str) -> list[dict]:
-    """Extract every [Document, Section/Rule, Page]-shaped citation from the answer."""
+    """
+    Extract every citation from the answer: both
+    [Document, Section/Rule, Page]-shaped citations and "SOURCE N"-shaped
+    ones (see module docstring).
+    """
 
+    text = answer_text or ""
     citations = []
 
-    for raw in _CITATION_RE.findall(answer_text or ""):
+    for raw in _CITATION_RE.findall(text):
         parsed = _parse_citation(raw)
         if parsed:
             citations.append(parsed)
+
+    for match in _SOURCE_REF_RE.finditer(text):
+        citations.append({"source_number": int(match.group(1))})
 
     return citations
 
@@ -80,7 +99,15 @@ def _source_reference(source: dict) -> str:
     )
 
 
-def _matches_source(citation: dict, source: dict) -> bool:
+def _matches_source(citation: dict, source: dict, source_number: int) -> bool:
+
+    if "source_number" in citation:
+        # SOURCE N is a direct positional index into the same list
+        # context_builder.py numbered (1-indexed) when it built the
+        # prompt — `retrieved` here is the raw retriever output, so the
+        # match is against list position, not a "source_number" field
+        # (which only context_builder's own `sources` output carries).
+        return citation["source_number"] == source_number
 
     doc = _normalise(source.get("document") or "")
     ref = _normalise(_source_reference(source))
@@ -114,7 +141,8 @@ def verify_citations(answer_text: str, retrieved_sources: list[dict]) -> dict:
 
     verdicts = [
         {**citation, "verified": any(
-            _matches_source(citation, source) for source in retrieved_sources
+            _matches_source(citation, source, i)
+            for i, source in enumerate(retrieved_sources, start=1)
         )}
         for citation in citations
     ]
@@ -148,6 +176,15 @@ def strip_unverified_citations(answer_text: str, report: dict) -> str:
     for verdict in report["citations"]:
 
         if verdict["verified"]:
+            continue
+
+        if "source_number" in verdict:
+            cleaned = _SOURCE_REF_RE.sub(
+                lambda m, n=verdict["source_number"]: (
+                    "[unverified citation removed]" if int(m.group(1)) == n else m.group(0)
+                ),
+                cleaned,
+            )
             continue
 
         page_part = f", p.{verdict['page']}" if verdict.get("page") is not None else ""
