@@ -100,6 +100,10 @@ class GroqLLM:
             ],
             model=model,
             temperature=0.2,
+            # The five-section answer format with a framework table and a
+            # checklist runs long; without an explicit ceiling the provider
+            # default truncated answers mid-sentence.
+            max_tokens=4096,
         )
         text = chat_completion.choices[0].message.content
         if not text:

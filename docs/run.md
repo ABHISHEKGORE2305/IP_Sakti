@@ -5,8 +5,15 @@ docker start ip_sakti_qdrant
 
 2. Backend API
 source venv/bin/activate
-PYTHONPATH=src python -m uvicorn api:app --reload --port 8000 --app-dir src
+PYTHONPATH=src python -m uvicorn api:app --reload --reload-dir src --port 8000 --app-dir src
 Needs GEMINI_API_KEY in .env at repo root (already present).
+
+--reload-dir src is not optional. --reload on its own watches the whole working
+directory, which here is ~60,000 files (venv/ ~41k, node_modules/ ~18k) against
+129 actual source files. The watcher re-walks that tree on every poll, pegs the
+main thread, and starves the event loop — the API then stops answering even
+/health. Scoping the watch to src/ is the difference between a responsive server
+and one that appears hung.
 
 3. Frontend (React app) — requires Node ≥22:
 nvm use 22   # or: export NVM_DIR="$HOME/.nvm"; source "$NVM_DIR/nvm.sh"; nvm use 22

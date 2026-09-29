@@ -117,6 +117,86 @@ No chunk anywhere in the corpus contained both "what are not inventions" and
 
 Corpus after re-ingestion: **2,173 → 4,656 chunks**, 22 documents.
 
+## Two further defects the rebuild exposed
+
+The first rebuild made test case 001 *worse*, which surfaced two more bugs:
+
+7. **Mass-mislabelled provisions.** The heading detector read numbered form
+   fields ("1. Name of the applicant") as rule headings. In a volume that is
+   two-thirds Forms and Schedules this tagged 330 chunks "Rule 2" and 317
+   "Rule 1". Wrong labels are worse than none, because retrieval's
+   exact-reference path trusts them. Fixed with two signals: statutory
+   numbering ascends (a heading numbered at or below the current provision is
+   a list item), and FORM/SCHEDULE banners suppress heading detection.
+   Result: 268 distinct labels, at most 45 per label, 410 chunks honestly
+   unlabelled. Side effect: more citations now render as page-only ("p.7")
+   where a chunk has no reliable provision label — accurate, but less precise.
+8. **Query expansion hijacked the exact-reference path.** `extract_legal_
+   references` mined the *expansion* rather than the user's words, so a
+   speculatively-named provision injected every chunk with that label and
+   applied a +2.5 score override — twelve identical "Rule 9" hits and no
+   Patents Act at all. References now come only from the user's original
+   wording (`reference_query`), and injection is capped at 12.
+
+## Measured outcome
+
+Re-ran 49 cases drawn from both sprints — every case the reports named as a
+diagnostic example, plus a seeded stratified draw that deliberately included
+previously-**passing** cases so regressions would show.
+
+| | Before | After |
+|---|---|---|
+| PASS | 8 (16%) | 13 (27%) |
+| PARTIAL | 8 (16%) | 18 (37%) |
+| FAIL | 33 (67%) | 18 (37%) |
+
+Reranker scores moved from 0.03–0.07 into the 0.67–0.84 range the model
+actually uses for relevant passages. Most movement was FAIL→PARTIAL rather
+than FAIL→PASS, so this is a substantial improvement, not a solved problem.
+
+**Regressions (5).** Cases 79 and 183 went PASS/PARTIAL→FAIL; 39, 124 and 140
+went PASS→PARTIAL. Four share one cause: `top_k=12` plus query expansion pulled
+adjacent instruments (CBD, GRATK, BD Rules) into the top slots and displaced
+the document that previously ranked. Worth tuning before the next run.
+
+Every new PASS traces to a newly ingested statute (Trade Marks → 146, PPV&FR →
+125/152/160, GRATK → 71, FSSAI → 3, D&C → 15/56), confirming root cause 2.
+
+## Still failing after the fixes
+
+- **2024 amendments — no progress at all.** Cases 22, 26, 96 and 127 still
+  fail. Case 96 confidently states Form 27 is filed annually (it is now
+  three-yearly) while case 26 says six-monthly — the system contradicts itself
+  within a single run. The amending instruments are in the corpus, so this is
+  an amendment-precedence ranking problem, not coverage.
+- **The jurisdiction toggle still does not work.** Case 175 is the switch test
+  and it refuses. Cases 74/79/83/183 now fail by refusing on international law
+  rather than substituting US law — a different failure with the same outcome.
+- **Over-abstention persists** where the corpus does hold the answer (case 63,
+  cosmetic-vs-drug classification). Of the 17 answers still containing a
+  refusal phrase, only 6 are legitimately scoped limitations; 11 remain
+  blanket non-answers.
+- **Citation precision.** Some answers cite provisions that do not exist
+  (case 65: "Rule 154A", "Sec 33EEC") or mislabel them (case 8 cites
+  "Sec 10(h)(i)" for Sec 3(h)). For a tool whose selling point is grounded
+  citation, this needs its own pass.
+
+## Fixed after the verification run
+
+- **Wrong-instrument numerics (case 172).** The answer gave cosmetic colourant
+  limits (2 ppm As, 20 ppm Pb) as the limits for finished Ayurvedic drugs; the
+  API figures are Pb 10 / As 3 / Cd 0.3 / Hg 1 ppm, and the Pharmacopoeia is
+  not in the corpus. `prompt.py` now forbids carrying a numeric limit across
+  product categories and requires naming the category a figure actually
+  governs. Retested: the answer now flags those figures as cosmetic-only.
+  (Case 66, reported alongside it, was already behaving correctly — it cited
+  no figures and scoped Rule 144 to cosmetics.)
+- **Truncated answers (case 3).** `_call_groq` set no `max_tokens`, so the
+  provider default cut long answers mid-sentence. Now 4096.
+- **Bare section numbers in expansion** ("Section 8" matching across four
+  Acts, burning 10 of 12 slots) — the expansion prompt now requires every
+  provision to be written with its instrument.
+
 ## What these fixes do not address
 
 - **Stale statutory state** (Form 27 annual vs 3-year under the 2024 Rules;
