@@ -26,11 +26,15 @@ RERANKER_MODEL_NAME = "BAAI/bge-reranker-v2-m3"
 # --------------------------------------------------------------------
 # Retrieval & fusion
 # --------------------------------------------------------------------
-TOP_K = 6                    # final chunks returned to the LLM
-CANDIDATE_K = 20             # candidates pulled per retriever before fusion/rerank
+# Benchmark questions routinely span 3-4 regimes at once (e.g. classify the
+# formulation under the D&C Act, then patentability under the Patents Act,
+# then ABS duties under the BD Act). At top_k=6 the later regimes were being
+# crowded out of the context entirely.
+TOP_K = 12                   # final chunks returned to the LLM
+CANDIDATE_K = 40             # candidates pulled per retriever before fusion/rerank
 RRF_K = 60                   # reciprocal-rank-fusion smoothing constant
 DEFAULT_AUTHORITY_WEIGHT = 0.50
-MAX_CONTEXT_CHARS = 12000
+MAX_CONTEXT_CHARS = 24000
 
 # Score bonuses added on top of the cross-encoder score when the query
 # names an explicit statutory provision (Section/Rule/Form).
