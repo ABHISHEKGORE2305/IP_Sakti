@@ -8,7 +8,8 @@ LangGraph AgentState schema for the IP-Sakti multi-agent pipeline.
 See implementation_plan.md Phase 3.1 for the full state diagram.
 """
 
-from typing import Literal, NotRequired, TypedDict
+from typing import Literal, TypedDict
+from typing_extensions import NotRequired
 
 
 AgentName = Literal[
