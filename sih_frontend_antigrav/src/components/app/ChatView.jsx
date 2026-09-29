@@ -12,7 +12,9 @@
 import { AlertTriangle, ChevronDown, RotateCcw, Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { sendChatMessage } from '../../lib/api';
+import { CHAT_SUGGESTIONS } from '../../lib/suggestions';
 import Markdown from './Markdown';
+import SuggestionChips from './SuggestionChips';
 import './ChatView.css';
 
 function uid() {
@@ -209,6 +211,20 @@ export default function ChatView({ jurisdiction }) {
     e.target.style.height = `${Math.min(e.target.scrollHeight, 160)}px`;
   };
 
+  // Drop a suggestion into the composer without sending it, so the user can
+  // edit it first. The textarea sizes itself in onChange, which a
+  // programmatic setInput doesn't trigger, so resize it here too.
+  const applySuggestion = (text) => {
+    setInput(text);
+    const node = textareaRef.current;
+    if (!node) return;
+    node.focus();
+    requestAnimationFrame(() => {
+      node.style.height = 'auto';
+      node.style.height = `${Math.min(node.scrollHeight, 160)}px`;
+    });
+  };
+
   const pendingCount = messages.filter((m) => m.status === 'pending').length;
 
   return (
@@ -233,6 +249,13 @@ export default function ChatView({ jurisdiction }) {
           <Bubble key={m.id} message={m} onRetry={retry} />
         ))}
       </div>
+
+      <SuggestionChips
+        items={CHAT_SUGGESTIONS}
+        value={input}
+        onSelect={applySuggestion}
+        label={messages.length === 0 ? 'Try one of these' : 'Ask about'}
+      />
 
       <div className="chat-view__composer">
         <textarea

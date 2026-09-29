@@ -17,6 +17,8 @@ import {
   TARGET_MARKETS,
   US_ROUTES,
 } from '../../../lib/wizardConfig';
+import { WIZARD_QUERY_SUGGESTIONS } from '../../../lib/suggestions';
+import SuggestionChips from '../SuggestionChips';
 
 function useSpeechInput(onResult) {
   const [listening, setListening] = useState(false);
@@ -352,6 +354,11 @@ export default function StepIssuePicker({
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
           placeholder="e.g. We modified a classical Ashwagandha formulation with a novel liposomal extraction process — is it patentable?"
+        />
+        <SuggestionChips
+          items={WIZARD_QUERY_SUGGESTIONS}
+          value={query}
+          onSelect={onQueryChange}
         />
         {speech.supported && (
           <button
