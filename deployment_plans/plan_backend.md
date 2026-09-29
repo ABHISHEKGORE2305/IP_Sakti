@@ -1,14 +1,13 @@
-# FastAPI Backend — AWS App Runner Deployment Plan
+# FastAPI Backend — AWS ECS Deployment Plan
 
-This plan walks you through containerizing your Python backend with Docker and deploying it to **AWS App Runner**. By the end, your FastAPI server will be live on the internet with a secure HTTPS URL, zero cold starts, and fully covered by your AWS credits.
+This plan walks you through containerizing your Python backend with Docker and deploying it to **AWS Elastic Container Service (ECS)**. By the end, your FastAPI server will be live on the internet with zero cold starts, and fully covered by your AWS credits.
 
 ---
 
 ## The Cost Estimate (Using your $100 Credits)
-AWS App Runner is incredibly cost-efficient because it "pauses" your CPU when no one is using the app, but keeps your RAM warm so there are **no cold starts**.
-* **Memory (8GB kept warm 24/7):** ~$40.00 / month
-* **CPU (2 vCPUs charged only during active requests):** ~$1.00 / month
-* **Total Estimate:** **~$41.00 / month**. 
+AWS ECS (Fargate) is highly cost-efficient because we are going to run a single, small container instance to prevent cold starts without breaking the bank.
+* **Memory (8GB) & CPU (2 vCPUs) kept warm 24/7:** ~$30-40 / month
+* **Total Estimate:** **~$40.00 / month**. 
 Your $100 credits will easily keep this online for nearly **5 months**!
 
 ---
@@ -77,36 +76,35 @@ Your $100 credits will easily keep this online for nearly **5 months**!
 
 ---
 
-## Task 5: Deploy to AWS App Runner
+## Task 5: Deploy to AWS ECS Express Mode
 
-**What:** We will tell App Runner to take your uploaded image and turn it into a live web server.
-1. In the AWS Console search bar, type **App Runner** and click it.
-2. Click **Create an App Runner service**.
-3. **Source:** Select **Container registry**, then **Amazon ECR**.
-4. Click **Browse** and select the `ip-sakti-backend` image you just uploaded. 
-5. **Deployment trigger:** Select **Manual**.
-6. **ECR access role:** Select "Create new service role". Click **Next**.
+**What:** We will tell Amazon ECS to take your uploaded image and turn it into a live web server. (Note: Because App Runner was retired by AWS, ECS Express Mode is the modern replacement).
+**CRITICAL:** Make sure your AWS Console region in the top right is set to **Europe (Stockholm)**, since that is where you pushed your image!
 
-### Subtask 5.1: Configure the Service
-1. **Service name:** `ip-sakti-backend-api`
-2. **Virtual CPU & memory:** Select **2 vCPU and 8 GB**. *(Crucial: This provides enough RAM for your massive PyTorch AI models so they don't crash!).*
-3. **Auto-scaling:** Click "Custom auto-scaling configuration". Click "Add new". Set **Maximum concurrency** to 100, and **Maximum instances** to **1**. *(Crucial: This physically prevents AWS from cloning your server and doubling your bill if you get hit with heavy traffic).*
-4. **Port:** Type `7860` (This matches our Dockerfile configuration).
+1. In the AWS Console search bar, type **ECS** and click **Elastic Container Service**.
+2. Look for the button or banner for **ECS Express Mode** (or "Create Cluster").
+3. Follow the UI prompts to deploy a web application. 
+
+### Subtask 5.1: Key Configuration Settings
+When filling out the ECS deployment form, you must ensure these specific settings are chosen:
+* **Compute:** 2 vCPU and 8 GB RAM (Crucial to prevent PyTorch crashes).
+* **Port:** 7860 (Matches your Dockerfile).
+* **Auto-Scaling:** Set Maximum Instances to **1** (Crucial to prevent your bill from multiplying).
 
 ### Subtask 5.2: Add Environment Variables
-Scroll down to "Environment variables" and add the following keys. *(Do not skip these, or the app will crash!)*:
+You must add the following environment variables during setup so the container doesn't crash on startup:
 | Key | Value |
 |-----|-------|
 | `GEMINI_API_KEY` | Your Google Gemini API key from `.env` |
 | `QDRANT_URL` | Your Qdrant Cloud URL |
 | `QDRANT_API_KEY` | Your Qdrant Cloud API key |
-| `FRONTEND_URL` | *(Leave blank for now, you will update this after deploying the Vercel frontend)* |
+| `FRONTEND_URL` | *(Leave blank for now)* |
 
 ### Subtask 5.3: Launch!
-1. Scroll to the bottom and click **Next**, review your settings, and click **Create and deploy**.
-2. AWS will take about 5 minutes to provision the server and start your container.
-3. Once the status turns green (**Running**), you will see a **Default domain** URL (e.g., `https://xyz123.us-east-1.awsapprunner.com`). 
-4. Click it and add `/health` to the end of the URL to verify your backend is alive and the AI models loaded successfully!
+1. Click Deploy/Create.
+2. AWS will take about 5-10 minutes to provision the ECS Fargate server and start your container.
+3. Once running, find the **URL** or **Public IP** provided by the service. 
+4. Click it and add `/health` to the end of the URL to verify your backend is alive!
 
 ---
 
