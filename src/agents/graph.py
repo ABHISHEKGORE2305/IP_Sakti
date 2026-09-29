@@ -198,72 +198,119 @@ def verification_guardrail(state: AgentState) -> dict:
     }
 
 
+# snake_case engine keys that should not be naively title-cased when they are
+# turned into human-readable labels for the answer text.
+_KEY_ACRONYMS = {
+    "abs": "ABS",
+    "cdsco": "CDSCO",
+    "gi": "GI",
+    "gratk": "GRATK",
+    "ip": "IP",
+    "ipr": "IPR",
+    "tk": "TK",
+    "tkdl": "TKDL",
+    "who": "WHO",
+    "wipo": "WIPO",
+}
+
+
+def _humanize_key(key: str) -> str:
+    """"governing_law" -> "Governing Law"; "tkdl_note" -> "TKDL Note"."""
+
+    words = str(key).replace("-", "_").split("_")
+    return " ".join(_KEY_ACRONYMS.get(w.lower(), w.capitalize()) for w in words if w)
+
+
+def _humanize_value(value) -> str:
+    """Enum-ish values ("industrial_design") read as prose; others pass through."""
+
+    if isinstance(value, bool):
+        return "Yes" if value else "No"
+    if isinstance(value, str) and "_" in value and " " not in value.strip():
+        return _humanize_key(value)
+    return str(value)
+
+
 def _format_engine_results(engine_results: dict) -> str:
 
     if "classifier" in engine_results:
         c = engine_results["classifier"]
-        return "\n".join([
-            f"Statutory Classification: {c['label']}",
-            f"Statutory Basis: {c['statutory_basis']}",
-            f"Primary Regulator: {c['primary_regulator']}",
-            "Licensing Route: " + "; ".join(c["licensing_route"]),
-            f"Clinical Evidence: {c['clinical_evidence']}",
-            f"ABS/Biodiversity Triggers: {c['abs_biodiversity_triggers']}",
+        lines = [
+            f"**Statutory Classification**: {c['label']}",
+            f"**Statutory Basis**: {c['statutory_basis']}",
+            f"**Primary Regulator**: {c['primary_regulator']}",
+            "",
+            "**Licensing Route**:",
+            "",
+        ]
+        lines.extend(f"- {step}" for step in c["licensing_route"])
+        lines.extend([
+            "",
+            f"**Clinical Evidence**: {c['clinical_evidence']}",
+            f"**ABS/Biodiversity Triggers**: {c['abs_biodiversity_triggers']}",
         ])
+        return "\n".join(lines)
 
     if "market_pathway" in engine_results:
         p = engine_results["market_pathway"]
-        lines = [f"Market: {p.get('market')}"]
+        lines = [f"**Market**: {p.get('market')}"]
         if p.get("route"):
-            lines.append(f"Route: {p['route']}")
-        lines.append(f"Governing Framework: {p.get('governing_framework')}")
-        if p.get("requirements"):
-            lines.append("Requirements: " + "; ".join(p["requirements"]))
+            lines.append(f"**Route**: {p['route']}")
+        lines.append(f"**Governing Framework**: {p.get('governing_framework')}")
         if p.get("requirement"):
-            lines.append(f"Requirement: {p['requirement']}")
+            lines.append(f"**Requirement**: {p['requirement']}")
         if "eligible" in p:
-            lines.append(f"Eligible on facts given: {p['eligible']}")
-        lines.append(f"Finding: {p.get('finding')}")
+            lines.append(f"**Eligible on facts given**: {_humanize_value(p['eligible'])}")
+        lines.append(f"**Finding**: {p.get('finding')}")
         if p.get("recommendation"):
-            lines.append(f"Recommendation: {p['recommendation']}")
+            lines.append(f"**Recommendation**: {p['recommendation']}")
+        if p.get("requirements"):
+            lines.extend(["", "**Requirements**:", ""])
+            lines.extend(f"- {r}" for r in p["requirements"])
 
         gratk = engine_results.get("gratk_disclosure")
         if gratk:
             lines.append("")
-            lines.append(f"GRATK Disclosure Obligation Applicable: {gratk['applicable']}")
-            lines.append(f"Finding: {gratk['finding']}")
+            lines.append("### GRATK Disclosure")
+            lines.append(
+                f"**Obligation Applicable**: {_humanize_value(gratk['applicable'])}"
+            )
+            lines.append(f"**Finding**: {gratk['finding']}")
             if gratk.get("recommendation"):
-                lines.append(f"Recommendation: {gratk['recommendation']}")
+                lines.append(f"**Recommendation**: {gratk['recommendation']}")
 
         return "\n".join(lines)
 
     if "tk_patentability" in engine_results:
         analysis = engine_results["tk_patentability"]
-        lines = [f"Overall Risk: {analysis['overall_risk']}", ""]
+        lines = [f"**Overall Risk**: {analysis['overall_risk']}", ""]
         for finding in analysis["findings"]:
-            lines.append(f"{finding['section']} — {finding['risk']}")
-            lines.append(f"  Finding: {finding['finding']}")
+            lines.append(f"### {finding['section']} — {finding['risk']}")
+            lines.append(f"**Finding**: {finding['finding']}")
             if finding.get("recommendation"):
-                lines.append(f"  Recommendation: {finding['recommendation']}")
+                lines.append(f"**Recommendation**: {finding['recommendation']}")
             lines.append("")
         tkdl = analysis.get("tkdl_mitigation")
         if tkdl:
-            lines.append(f"{tkdl['topic']}: {tkdl['finding']}")
+            lines.append(f"### {tkdl['topic']}")
+            lines.append(tkdl["finding"])
             if tkdl.get("recommendation"):
-                lines.append(f"Recommendation: {tkdl['recommendation']}")
+                lines.append(f"**Recommendation**: {tkdl['recommendation']}")
         misappropriation = analysis.get("misappropriation_risk")
         if misappropriation:
             lines.append("")
-            lines.append(f"{misappropriation['topic']} ({misappropriation['level']}): {misappropriation['finding']}")
+            lines.append(f"### {misappropriation['topic']} ({misappropriation['level']})")
+            lines.append(misappropriation["finding"])
         return "\n".join(lines)
 
     if "abs_compliance" in engine_results:
         c = engine_results["abs_compliance"]
         lines = [
-            f"Entity Classification ({c['entity_classification']['governing_section']}): "
+            f"**Entity Classification** ({c['entity_classification']['governing_section']}): "
             f"{c['entity_classification']['finding']}",
             "",
-            "Compliance Checklist:",
+            "**Compliance Checklist**:",
+            "",
         ]
         lines.extend(f"- {step}" for step in c["compliance_checklist"])
         return "\n".join(lines)
@@ -271,30 +318,45 @@ def _format_engine_results(engine_results: dict) -> str:
     if "regulatory_pathway" in engine_results:
         p = engine_results["regulatory_pathway"]
         crosswalk = p["crosswalk"]
-        lines = [f"Regulatory Cross-Walk: {crosswalk['finding']}"]
-        for r in crosswalk.get("regulators", []):
-            lines.append(f"- {r['name']} ({r['governing_law']})")
+        lines = [f"**Regulatory Cross-Walk**: {crosswalk['finding']}"]
+        if crosswalk.get("regulators"):
+            lines.append("")
+            for r in crosswalk["regulators"]:
+                lines.append(f"- {r['name']} ({r['governing_law']})")
         ad = p.get("advertising_compliance")
         if ad:
             lines.append("")
-            lines.append(f"Advertising Compliance ({ad['risk']}): {ad['finding']}")
+            lines.append(f"**Advertising Compliance** ({ad['risk']}): {ad['finding']}")
             if ad.get("recommendation"):
-                lines.append(f"Recommendation: {ad['recommendation']}")
+                lines.append(f"**Recommendation**: {ad['recommendation']}")
         return "\n".join(lines)
 
     if "ipr_guidance" in engine_results:
         g = engine_results["ipr_guidance"]
 
         def _render(value, indent=0):
-            pad = "  " * indent
+            """Render the guidance dict as markdown.
+
+            The UI renders final_answer as markdown, so raw ``snake_case: value``
+            lines read as one run-on blob. Keys become bold, humanised labels and
+            nested structures become bullet lists.
+            """
+
+            # Two spaces per nesting level, but the first level of nesting sits
+            # flush left: 4+ leading spaces would make markdown read it as a
+            # code block rather than a list.
+            pad = "  " * max(0, indent - 1)
             rendered = []
             if isinstance(value, dict):
                 for k, v in value.items():
+                    label = _humanize_key(k)
                     if isinstance(v, (dict, list)):
-                        rendered.append(f"{pad}{k}:")
+                        rendered.append(f"{pad}**{label}**:")
+                        rendered.append("")
                         rendered.extend(_render(v, indent + 1))
+                        rendered.append("")
                     else:
-                        rendered.append(f"{pad}{k}: {v}")
+                        rendered.append(f"{pad}**{label}**: {_humanize_value(v)}")
             elif isinstance(value, list):
                 for item in value:
                     if isinstance(item, (dict, list)):
@@ -305,7 +367,13 @@ def _format_engine_results(engine_results: dict) -> str:
                 rendered.append(f"{pad}{value}")
             return rendered
 
-        return "\n".join(_render(g))
+        lines = _render(g)
+        # Collapse the blank lines the nested branches add at the edges.
+        while lines and not lines[0].strip():
+            lines.pop(0)
+        while lines and not lines[-1].strip():
+            lines.pop()
+        return "\n".join(lines)
 
     return str(engine_results)
 

@@ -12,6 +12,7 @@ import LawVersionTimeline from '../components/app/panels/LawVersionTimeline';
 import PrivacyDashboard from '../components/app/panels/PrivacyDashboard';
 import Sidebar from '../components/app/Sidebar';
 import Wizard from '../components/app/Wizard';
+import { uid } from '../lib/uid';
 import './AppPage.css';
 
 const THEME_KEY = 'ipsakti_theme';
@@ -23,6 +24,9 @@ export default function AppPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [wizardResetKey, setWizardResetKey] = useState(0);
   const [view, setView] = useState('wizard');
+  // The chat transcript lives here, not inside ChatView, so it survives
+  // switching tabs and can be seeded from the wizard's analysis.
+  const [chatMessages, setChatMessages] = useState([]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -33,7 +37,33 @@ export default function AppPage() {
 
   const startNewSession = () => {
     setWizardResetKey((k) => k + 1);
+    setChatMessages([]);
     setView('wizard');
+    setSidebarOpen(false);
+  };
+
+  // "Continue in chat" from the wizard's action step: carry the analysed
+  // question and its answer into the chat transcript as a completed turn, so
+  // follow-ups are sent with that context as `history` instead of starting
+  // from a blank slate.
+  const continueInChat = ({ query, answer, sources }) => {
+    setChatMessages((prev) => {
+      const alreadySeeded = prev.some((m) => m.seededFrom === 'wizard' && m.content === answer);
+      if (alreadySeeded) return prev;
+      return [
+        ...prev,
+        { id: uid(), role: 'user', content: query, seededFrom: 'wizard' },
+        {
+          id: uid(),
+          role: 'assistant',
+          status: 'done',
+          content: answer,
+          sources: sources || [],
+          seededFrom: 'wizard',
+        },
+      ];
+    });
+    setView('chat');
     setSidebarOpen(false);
   };
 
@@ -73,9 +103,16 @@ export default function AppPage() {
             jurisdiction={jurisdiction}
             onJurisdictionChange={setJurisdiction}
             language={language}
+            onContinueInChat={continueInChat}
           />
         )}
-        {view === 'chat' && <ChatView jurisdiction={jurisdiction} />}
+        {view === 'chat' && (
+          <ChatView
+            jurisdiction={jurisdiction}
+            messages={chatMessages}
+            onMessagesChange={setChatMessages}
+          />
+        )}
         {view === 'export-markets' && <ExportMarketCards />}
         {view === 'law-versions' && <LawVersionTimeline />}
         {view === 'privacy' && <PrivacyDashboard />}

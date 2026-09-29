@@ -113,3 +113,32 @@
   background: var(--app-bg-elevated);
   font-weight: 600;
 }
+
+/* GFM task lists ("- [ ] step") render as real checkboxes rather than
+   leaking the raw "[ ]" markers into the text. */
+.md-content ul:has(> li.task-list-item) {
+  list-style: none;
+  margin-left: 0;
+}
+
+.md-content li.task-list-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.md-content li.task-list-item input[type='checkbox'] {
+  appearance: none;
+  flex: 0 0 auto;
+  width: 13px;
+  height: 13px;
+  margin: 0;
+  border: 1px solid var(--emerald-light);
+  border-radius: 3px;
+  background: transparent;
+  transform: translateY(1px);
+}
+
+.md-content li.task-list-item input[type='checkbox']:checked {
+  background: var(--emerald-light);
+}
