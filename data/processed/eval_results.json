@@ -1,0 +1,68 @@
+{
+  "run_at": "2026-09-28T22:29:57.669800",
+  "total_passed": 49,
+  "total": 50,
+  "accuracy": 0.98,
+  "categories": [
+    {
+      "category": 1,
+      "name": "Classical single-plant formulations vs Section 3(p)",
+      "passed": 5,
+      "total": 5
+    },
+    {
+      "category": 2,
+      "name": "Novel synergistic herbal extracts vs Section 3(e)",
+      "passed": 5,
+      "total": 5
+    },
+    {
+      "category": 3,
+      "name": "Process patents for traditional preparation methods",
+      "passed": 5,
+      "total": 5
+    },
+    {
+      "category": 4,
+      "name": "ABS compliance triggers for foreign equity holders",
+      "passed": 5,
+      "total": 5
+    },
+    {
+      "category": 5,
+      "name": "Ayurvedic cosmetics vs Ayurvedic drugs regulatory boundaries",
+      "passed": 5,
+      "total": 5
+    },
+    {
+      "category": 6,
+      "name": "FSSAI Ayurveda-Aahar classification and health claims",
+      "passed": 5,
+      "total": 5
+    },
+    {
+      "category": 7,
+      "name": "Trademark distinctiveness for Sanskrit herbal terms",
+      "passed": 4,
+      "total": 5
+    },
+    {
+      "category": 8,
+      "name": "GI protection for regional medicinal crops",
+      "passed": 5,
+      "total": 5
+    },
+    {
+      "category": 9,
+      "name": "US FDA Botanical Drug guidance comparison",
+      "passed": 5,
+      "total": 5
+    },
+    {
+      "category": 10,
+      "name": "Safe abstention on ambiguous/unsupported queries",
+      "passed": 5,
+      "total": 5
+    }
+  ]
+}

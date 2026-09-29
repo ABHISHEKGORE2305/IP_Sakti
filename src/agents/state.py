@@ -8,7 +8,8 @@ LangGraph AgentState schema for the IP-Sakti multi-agent pipeline.
 See implementation_plan.md Phase 3.1 for the full state diagram.
 """
 
-from typing import Literal, NotRequired, TypedDict
+import operator
+from typing import Annotated, Literal, NotRequired, TypedDict
 
 
 AgentName = Literal[
@@ -25,7 +26,8 @@ class AgentState(TypedDict):
 
     # ---- input ----
     query: str
-    jurisdiction: NotRequired[str]                       # "India" | "International"
+    jurisdiction: NotRequired[str]                       # "India" | "International" | "Both"
+    persona: NotRequired[str]                             # "practitioner" | "researcher" | "startup_msme" | "cultivator"
     forced_agent: NotRequired[str]                         # explicit AgentName (e.g. the UI's issue picker)
     classification_inputs: NotRequired[dict]              # structured facts for classifier_agent
     target_market: NotRequired[str]                       # "US" | "EU" | "UK" for intl_agent
@@ -62,3 +64,10 @@ class AgentState(TypedDict):
     # ---- terminal ----
     final_answer: NotRequired[str]
     sources: NotRequired[list[dict]]
+
+    # ---- observability (winning_features.md item 11's "agent step
+    # trace" panel) — Annotated with operator.add so LangGraph
+    # concatenates each node's entries instead of the default
+    # last-write-wins merge; every node appends one {"node": ..., ...}
+    # dict rather than returning the whole list.
+    trace: NotRequired[Annotated[list[dict], operator.add]]

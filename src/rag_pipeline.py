@@ -11,7 +11,7 @@ Interactive demo:
 from final_retriever import AyurvedicIPRetriever
 from context_builder import ContextBuilder
 from llm import GeminiLLM, LLMError
-from prompt import SYSTEM_PROMPT
+from prompt import SYSTEM_PROMPT, history_block_text
 import config
 
 
@@ -50,6 +50,9 @@ class AyurvedicIPRAG:
         query: str,
         top_k: int | None = None,
         candidate_k: int | None = None,
+        jurisdiction_filter: str | None = None,
+        document_id_filter: str | None = None,
+        history: list[dict] | None = None,
     ) -> dict:
 
         query = (query or "").strip()
@@ -72,6 +75,8 @@ class AyurvedicIPRAG:
                 query=query,
                 top_k=top_k,
                 candidate_k=candidate_k,
+                jurisdiction_filter=jurisdiction_filter,
+                document_id_filter=document_id_filter,
             )
         except Exception as exc:  # noqa: BLE001
             return {
@@ -120,7 +125,12 @@ class AyurvedicIPRAG:
         ]
 
         # ---------------- generation ----------------
-        prompt = SYSTEM_PROMPT.format(context=context, query=query)
+        prompt = SYSTEM_PROMPT.format(
+            context=context,
+            query=query,
+            persona_guidance="",
+            history_block=history_block_text(history),
+        )
 
         try:
             answer_text = self.llm.generate(prompt)

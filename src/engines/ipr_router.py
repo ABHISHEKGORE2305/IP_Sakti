@@ -302,3 +302,62 @@ def advise_regime(regime: Regime | str, **kwargs) -> dict:
         return result
 
     return dispatch[regime]()
+
+
+# ----------------------------------------------------------------------
+# IP Route Planner (winning_features.md item 6) — "the user describes a
+# product and gets a personalized IP strategy map"
+# ----------------------------------------------------------------------
+
+# Section 3(p)/3(e)/3(d)/2(1)(j) risk (engines.tk_engine.Risk values) ->
+# patent-regime outlook for the strategy map.
+_TK_RISK_TO_OUTLOOK = {
+    "barred": "barred",
+    "high_risk": "caution",
+    "conditional": "conditional",
+    "clear": "available",
+}
+
+
+def plan_ip_route(ip_regimes: dict, tk_risk: str | None = None, is_region_linked: bool = False) -> list[dict]:
+    """
+    Synthesize a per-regime IP strategy list — NOT new legal facts, just
+    composing what engines.classifier.classify_product()'s `ip_regimes`
+    field and engines.tk_engine's Section 3(p) risk already established
+    into a single ranked-by-outlook list a frontend can render as a
+    decision tree/flow instead of a paragraph.
+
+    Args:
+        ip_regimes: the `ip_regimes` dict from classify_product()'s
+            output contract — {"patent": "<note>", "trademark": "<note>", ...}.
+        tk_risk: overall_risk from tk_engine.analyze_tk_patentability(),
+            if a TK analysis was run — sets the "patent" row's outlook.
+        is_region_linked: whether the product is tied to a specific
+            region — sets the "geographical_indication" row's outlook.
+
+    Returns: list of {"regime": str, "outlook": "available"|"conditional"|
+        "caution"|"barred", "note": str}, in a fixed presentation order
+        (patent first, since that's usually the highest-stakes question).
+    """
+
+    _ORDER = [
+        "patent", "trademark", "geographical_indication", "industrial_design",
+        "trade_secret", "copyright", "ppv_fr",
+    ]
+
+    plan = []
+    for regime in _ORDER:
+        note = ip_regimes.get(regime)
+        if note is None:
+            continue
+
+        if regime == "patent" and tk_risk:
+            outlook = _TK_RISK_TO_OUTLOOK.get(tk_risk, "available")
+        elif regime == "geographical_indication":
+            outlook = "available" if is_region_linked else "conditional"
+        else:
+            outlook = "available"
+
+        plan.append({"regime": regime, "outlook": outlook, "note": note})
+
+    return plan

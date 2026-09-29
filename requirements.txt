@@ -4,7 +4,12 @@ pymupdf
 sentence-transformers
 rank-bm25
 google-genai
+groq
 fastapi
 uvicorn
 langgraph
 langchain-core
+requests
+beautifulsoup4
+lxml
+python-multipart

@@ -13,6 +13,11 @@ AUTHORITY_WEIGHTS = {
     "patent_office_manual": 0.75,
     "tkdl_reference": 0.50,
     "ayurvedic_reference": 0.50,
+    # src/web_sources.py document types (periodic URL ingestion, src/ingest_web.py)
+    "treaty": 0.95,                # reserved for full treaty text, if/when actually ingested
+    "treaty_overview": 0.65,       # what's currently fetchable — a treaty-body's own summary page, not the full text
+    "international_guidance": 0.80,
+    "regulatory_notice": 0.75,
 }
 
 DEFAULT_AUTHORITY_WEIGHT = config.DEFAULT_AUTHORITY_WEIGHT
@@ -131,6 +136,52 @@ DOCUMENTS = [
         "document": "An Overview of Ayurveda",
         "document_type": "ayurvedic_reference",
         "jurisdiction": "India",
+        "language": "en",
+    },
+
+    # --- International treaty corpus (user-supplied PDFs, full text where available) ---
+    {
+        "filename": "cbd-en.pdf",
+        "document": "Convention on Biological Diversity (CBD), 1992 — Text and Annexes",
+        "document_type": "treaty",
+        "jurisdiction": "International",
+        "language": "en",
+    },
+    {
+        "filename": "nagoya-protocol-en.pdf",
+        "document": "Nagoya Protocol on Access to Genetic Resources and the Fair and Equitable Sharing of Benefits Arising from their Utilization, 2010",
+        "document_type": "treaty",
+        "jurisdiction": "International",
+        "language": "en",
+    },
+    {
+        "filename": "Botanical-Drug-Development--Guidance-for-Industry.pdf",
+        "document": "US FDA — Botanical Drug Development, Guidance for Industry",
+        "document_type": "international_guidance",
+        "jurisdiction": "United States",
+        "language": "en",
+    },
+    {
+        "filename": "gratk_dc_exsum.pdf",
+        # WIPO's own 2-page informal summary of the treaty, not the full
+        # treaty text (that wasn't supplied as a clean standalone PDF —
+        # see src/web_sources.py's wipo_gratk_treaty_2024 for the
+        # complementary web-fetched overview page).
+        "document": "WIPO Treaty on Intellectual Property, Genetic Resources and Associated Traditional Knowledge (GRATK), 2024 — Informal Summary",
+        "document_type": "treaty_overview",
+        "jurisdiction": "International",
+        "language": "en",
+    },
+    {
+        "filename": "gratk.pdf",
+        # Single-page excerpt from a WIPO General Assembly document
+        # listing treaty ratification/accession status — not the treaty
+        # text itself, but genuine, current (dated in the source) status
+        # data. Confirmed by content inspection, not assumed from the
+        # filename.
+        "document": "WIPO GRATK Treaty — Ratification/Accession Status",
+        "document_type": "treaty_overview",
+        "jurisdiction": "International",
         "language": "en",
     },
 ]

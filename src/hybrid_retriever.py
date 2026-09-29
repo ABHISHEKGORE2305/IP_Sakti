@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from retriever import AyurvedicRetriever
 from bm25_retriever import BM25Retriever
@@ -13,6 +14,7 @@ class AyurvedicHybridRetriever:
     def __init__(
         self,
         chunks_path: str = config.CHUNKS_PATH,
+        web_chunks_path: str = config.WEB_CHUNKS_PATH,
         qdrant_url: str = config.QDRANT_URL,
         collection_name: str = config.COLLECTION_NAME,
     ):
@@ -28,6 +30,20 @@ class AyurvedicHybridRetriever:
         ) as file:
 
             self.chunks = json.load(file)
+
+        # Periodically-fetched web sources (src/ingest_web.py) live in a
+        # separate file so the PDF pipeline's ingest.py never touches
+        # them. Merged in here if present — optional, so a fresh clone
+        # with no web corpus yet still works unchanged.
+        if Path(web_chunks_path).exists():
+
+            with open(
+                web_chunks_path,
+                "r",
+                encoding="utf-8",
+            ) as file:
+
+                self.chunks.extend(json.load(file))
 
 
         # --------------------------------
@@ -144,6 +160,8 @@ class AyurvedicHybridRetriever:
         query: str,
         top_k: int = config.TOP_K,
         candidate_k: int = config.CANDIDATE_K,
+        jurisdiction_filter: str | None = None,
+        document_id_filter: str | None = None,
     ):
 
         # --------------------------------
@@ -154,6 +172,8 @@ class AyurvedicHybridRetriever:
             self.dense_retriever.search(
                 query,
                 top_k=candidate_k,
+                jurisdiction_filter=jurisdiction_filter,
+                document_id_filter=document_id_filter,
             )
         )
 
@@ -166,6 +186,8 @@ class AyurvedicHybridRetriever:
             self.bm25_retriever.search(
                 query,
                 top_k=candidate_k,
+                jurisdiction_filter=jurisdiction_filter,
+                document_id_filter=document_id_filter,
             )
         )
 

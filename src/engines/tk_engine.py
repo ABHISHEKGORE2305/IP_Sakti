@@ -248,6 +248,50 @@ def tkdl_mitigation_strategy(cited_in_tkdl: bool) -> dict:
     }
 
 
+def misappropriation_risk(documented_in_classical_text: bool, cited_in_tkdl: bool) -> dict:
+    """
+    winning_features.md item 8's "Misappropriation risk" flag — a
+    deterministic read of the same two facts analyze_section_3p() and
+    tkdl_mitigation_strategy() already use, framed as the TK-protection/
+    community-knowledge-appropriation angle rather than the patentability
+    angle. Not a new legal determination; a relabeling of existing
+    findings for a different audience (the TKDL/prior-art pointer UI).
+    """
+
+    if documented_in_classical_text and cited_in_tkdl:
+        level = "high"
+        finding = (
+            "The formulation is both documented in a classical text and "
+            "has an identified TKDL citation — proceeding to claim it as a "
+            "novel invention without attribution/differentiation carries a "
+            "high risk of being characterized as misappropriation of "
+            "traditional/community knowledge, independent of the separate "
+            "Section 3(p) patentability bar."
+        )
+    elif documented_in_classical_text or cited_in_tkdl:
+        level = "moderate"
+        finding = (
+            "The formulation has one of (documented classical-text source, "
+            "TKDL citation) but not both confirmed — investigate the other "
+            "before treating the underlying knowledge as your own novel "
+            "contribution."
+        )
+    else:
+        level = "low"
+        finding = (
+            "No classical-text or TKDL match identified on the facts "
+            "given — low misappropriation risk on current information, "
+            "though a TKDL search should still be run before filing (see "
+            "tkdl_mitigation_strategy)."
+        )
+
+    return {
+        "topic": "Misappropriation Risk",
+        "level": level,
+        "finding": finding,
+    }
+
+
 _RISK_PRECEDENCE = [Risk.BARRED, Risk.HIGH_RISK, Risk.CONDITIONAL, Risk.CLEAR]
 
 
@@ -295,4 +339,5 @@ def analyze_tk_patentability(
         "overall_risk": overall_risk.value,
         "findings": findings,
         "tkdl_mitigation": tkdl_mitigation_strategy(cited_in_tkdl),
+        "misappropriation_risk": misappropriation_risk(documented_in_classical_text, cited_in_tkdl),
     }

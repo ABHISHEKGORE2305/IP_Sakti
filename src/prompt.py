@@ -23,6 +23,7 @@ Distinguish clearly between:
 
 Do not present general information as legal advice. For an actual filing or
 legal decision, recommend consulting a qualified patent professional.
+{persona_guidance}
 
 Structure your answer in exactly these five sections, using these
 headings verbatim (omit a section only if it is genuinely not
@@ -57,12 +58,74 @@ conflict with that verified data.
 
 Retrieved Sources:
 {context}
-
+{history_block}
 User Question:
 {query}
 
 Answer (grounded in the retrieved sources, with inline citations, in the five sections above):
 """
+
+
+def history_block_text(history: list[dict] | None, max_turns: int = 6) -> str:
+    """
+    Render prior chat turns as a "Conversation so far" block for
+    SYSTEM_PROMPT's {history_block} placeholder, or "" when there is no
+    history — keeps single-turn callers (agents/specialists.py) unaffected.
+
+    `history` is a list of {"role": "user"|"assistant", "content": str},
+    oldest first; only the last `max_turns` are kept so the prompt does not
+    grow unbounded over a long chat session.
+    """
+
+    if not history:
+        return ""
+
+    turns = history[-max_turns:]
+    lines = []
+    for turn in turns:
+        role = "User" if turn.get("role") == "user" else "Assistant"
+        content = (turn.get("content") or "").strip()
+        if content:
+            lines.append(f"{role}: {content}")
+
+    if not lines:
+        return ""
+
+    return "\nConversation so far (for follow-up context only — still answer " \
+        "using only the retrieved sources above):\n" + "\n".join(lines) + "\n"
+
+
+# winning_features.md item 14 — persona modes. Injected into SYSTEM_PROMPT's
+# {persona_guidance} placeholder; adjusts tone/depth only, never adds or
+# removes which legal facts get cited — that stays governed by the
+# retrieved sources regardless of persona.
+PERSONA_GUIDANCE = {
+    "practitioner": (
+        "The user is an Ayurvedic practitioner/Vaidya. Use plain language, "
+        "minimize legal jargon, and lead with what changes for their clinical "
+        "or dispensing practice."
+    ),
+    "researcher": (
+        "The user is a researcher. You may use precise legal/technical "
+        "terminology and cite provisions more densely; they want rigor over "
+        "simplification."
+    ),
+    "startup_msme": (
+        "The user is a startup/MSME founder. Lead with commercial "
+        "implications — cost, timeline, and filing sequence — before "
+        "doctrinal detail."
+    ),
+    "cultivator": (
+        "The user is a cultivator/farmer of medicinal plants. Use very "
+        "simple language, avoid legal jargon entirely where possible, and "
+        "prioritize ABS/biodiversity obligations over IP strategy unless "
+        "asked otherwise."
+    ),
+}
+
+
+def persona_guidance_text(persona: str | None) -> str:
+    return PERSONA_GUIDANCE.get(persona or "", "")
 
 
 TRANSLATION_PROMPT = """\

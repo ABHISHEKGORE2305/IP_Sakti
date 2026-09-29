@@ -3,14 +3,72 @@
 // so the stage list below is a UI-only progression timed against typical
 // latency, replaced the instant the real result comes back — it never
 // fabricates the answer itself, only the "what's happening" narration.
+//
+// jurisdiction="Both" (winning_features.md item 2) returns
+// {india: <result>, international: <result>} instead of a flat result —
+// rendered as two side-by-side panels below, never merged into one.
 
-import { AlertTriangle, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
+import { AlertTriangle, ChevronDown, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { ANALYSIS_STAGES } from '../../../lib/wizardConfig';
+import Markdown from '../Markdown';
 
 function ConfidenceBadge({ band }) {
   if (!band) return null;
   return <span className={`step__badge step__badge--${band}`}>{band} confidence</span>;
+}
+
+// winning_features.md item 11 — the REAL per-node agent step trace
+// (agents/state.py's `trace`, accumulated by every node in agents/graph.py),
+// not the simulated progress bar above. Collapsed by default since it's
+// a transparency/debugging aid, not primary reading content.
+function StepTracePanel({ trace }) {
+  const [open, setOpen] = useState(false);
+  if (!trace || trace.length === 0) return null;
+
+  return (
+    <div className="step-trace">
+      <button className="step-trace__toggle" onClick={() => setOpen((o) => !o)}>
+        <ChevronDown size={13} style={{ transform: open ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.15s' }} />
+        Agent step trace ({trace.length} steps) — the real backend record
+      </button>
+      {open && (
+        <ol className="step-trace__list">
+          {trace.map((t, i) => (
+            <li key={i} className="step-trace__item">
+              <span className="step-trace__node">{t.node}</span>
+              <span className="step-trace__summary">{t.summary}</span>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  );
+}
+
+function AnalysisPanel({ label, result }) {
+  return (
+    <div className="analysis-panel">
+      {label && <div className="analysis-panel__label">{label}</div>}
+      <div className="analysis-meta">
+        <ConfidenceBadge band={result.confidence?.band} />
+        {result.selected_agents?.length > 0 && (
+          <span className="step__badge" style={{ background: 'var(--app-bg-elevated)', color: 'var(--app-text-secondary)' }}>
+            {result.selected_agents.join(', ')}
+          </span>
+        )}
+        {result.citations && (
+          <span className="step__badge" style={{ background: 'var(--app-bg-elevated)', color: 'var(--app-text-secondary)' }}>
+            {result.citations.verified_citations}/{result.citations.total_citations} citations verified
+          </span>
+        )}
+      </div>
+      <div className="analysis-answer">
+        {result.final_answer ? <Markdown>{result.final_answer}</Markdown> : '—'}
+      </div>
+      <StepTracePanel trace={result.trace} />
+    </div>
+  );
 }
 
 export default function StepAnalysis({ loading, result, error, onBack, onNext, onRetry }) {
@@ -25,6 +83,8 @@ export default function StepAnalysis({ loading, result, error, onBack, onNext, o
     }, 1100);
     return () => clearInterval(interval);
   }, [loading]);
+
+  const isBoth = Boolean(result?.india || result?.international);
 
   return (
     <div>
@@ -58,24 +118,14 @@ export default function StepAnalysis({ loading, result, error, onBack, onNext, o
         </div>
       )}
 
-      {result && !loading && (
-        <>
-          <div className="analysis-meta">
-            <ConfidenceBadge band={result.confidence?.band} />
-            {result.selected_agents?.length > 0 && (
-              <span className="step__badge" style={{ background: 'var(--app-bg-elevated)', color: 'var(--app-text-secondary)' }}>
-                {result.selected_agents.join(', ')}
-              </span>
-            )}
-            {result.citations && (
-              <span className="step__badge" style={{ background: 'var(--app-bg-elevated)', color: 'var(--app-text-secondary)' }}>
-                {result.citations.verified_citations}/{result.citations.total_citations} citations verified
-              </span>
-            )}
-          </div>
-          <div className="analysis-answer">{result.final_answer || '—'}</div>
-        </>
+      {result && !loading && isBoth && (
+        <div className="analysis-both-grid">
+          <AnalysisPanel label="🇮🇳 India" result={result.india} />
+          <AnalysisPanel label="🌍 International" result={result.international} />
+        </div>
       )}
+
+      {result && !loading && !isBoth && <AnalysisPanel result={result} />}
 
       <div className="step__actions">
         <button className="step__btn step__btn--ghost" onClick={onBack} disabled={loading}>
