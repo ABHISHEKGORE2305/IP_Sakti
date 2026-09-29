@@ -1,194 +1,121 @@
-# FastAPI Backend — Docker & Hugging Face Deployment Plan
+# FastAPI Backend — AWS App Runner Deployment Plan
 
-This plan walks you through containerizing your Python backend with Docker and deploying it to Hugging Face Spaces. By the end, your FastAPI server will be live on the internet, accessible via a public URL.
+This plan walks you through containerizing your Python backend with Docker and deploying it to **AWS App Runner**. By the end, your FastAPI server will be live on the internet with a secure HTTPS URL, zero cold starts, and fully covered by your AWS credits.
+
+---
+
+## The Cost Estimate (Using your $100 Credits)
+AWS App Runner is incredibly cost-efficient because it "pauses" your CPU when no one is using the app, but keeps your RAM warm so there are **no cold starts**.
+* **Memory (8GB kept warm 24/7):** ~$40.00 / month
+* **CPU (2 vCPUs charged only during active requests):** ~$1.00 / month
+* **Total Estimate:** **~$41.00 / month**. 
+Your $100 credits will easily keep this online for nearly **5 months**!
 
 ---
 
 ## Prerequisites
 
-Before starting, make sure these one-time setup steps are done.
-
 ### PR-1: Ensure `.dockerignore` Exists
 **What:** A `.dockerignore` file tells Docker which files to skip when building the container image.
-**Where:** The `.dockerignore` file at the root of the repository.
-**Why:** Without it, Docker would copy everything into the container — including your `.env` file (which contains your Gemini API Key), the 14 MB of raw PDF files that aren't used at runtime, the frontend folders, and the local Qdrant database. This makes the image bloated and insecure.
-**How:** This has already been done. The `.dockerignore` now excludes `.env`, `data/raw/`, `frontend/`, `sih_frontend_antigrav/`, `qdrant_storage/`, `__pycache__/`, and documentation files.
+**How:** This is already done. It excludes `.env` and large unused folders to keep your AWS uploads small.
 
-### PR-2: Ensure Qdrant Cloud Migration is Complete
-**What:** Your backend won't be useful if there's no data in the cloud database.
-**Why:** The backend calls Qdrant to search for legal documents. If the cloud database is empty, every query will return zero results.
-**How:** Complete all tasks in the Qdrant deployment plan first, especially Task 4 (Data Migration).
+### PR-2: Install AWS CLI
+1. Ensure **Docker Desktop** is open and running on your Windows machine.
+2. Download and install the **AWS CLI** for Windows from [aws.amazon.com/cli](https://aws.amazon.com/cli/).
 
 ---
 
 ## Task 1: Create the Dockerfile
+*(This is already completed in your repository!)*
 
-**What:** We are writing a "recipe" that tells Docker exactly how to build and run our backend server.
-**Where:** A new file called `Dockerfile` (no file extension) at the root of the repository.
-**Why:** Docker containers are like portable, self-contained computers. This Dockerfile instructs Docker to: install the right version of Python, install all your Python libraries, copy your code, and start the web server. Hugging Face Spaces reads this file to automatically build and deploy your backend.
-
-### Subtask 1.1: Choose the Base Image
-- The first line of the Dockerfile specifies which operating system and Python version to start from.
-- Use `python:3.10-slim`. The `slim` variant is a lightweight version of Linux with Python 3.10 pre-installed. It keeps the image small (about 150 MB vs 900 MB for the full version).
-
-### Subtask 1.2: Set the Working Directory
-- Tell Docker that all subsequent commands should run inside a folder called `/app` inside the container.
-- This is like telling Docker "create a folder called `/app` and `cd` into it."
-
-### Subtask 1.3: Install Python Dependencies
-- Copy `requirements.txt` into the container first (before copying the rest of the code).
-- Run `pip install` with the `--no-cache-dir` flag. This flag tells pip not to save downloaded packages for future use, which saves about 200-500 MB of space in the image.
-- **Why copy `requirements.txt` separately?** Docker caches each step. If your code changes but `requirements.txt` doesn't, Docker will skip the slow `pip install` step and reuse the cached version. This makes subsequent builds much faster.
-
-### Subtask 1.4: Copy Your Source Code
-- Copy the `src/` folder into the container. This contains all your Python backend code.
-- Copy the `data/` folder into the container. Thanks to `.dockerignore`, only the `data/processed/` subfolder (containing `chunks.json`) will be copied. The raw PDFs are automatically excluded.
-
-### Subtask 1.5: Set the Python Path
-- Set the `PYTHONPATH` environment variable to `/app/src`.
-- **Why:** Your Python files use `import config`, `import llm`, etc. without specifying the full path. Python needs to know where to look for these files. Setting `PYTHONPATH` to the `src` directory tells Python "look in this folder when importing modules."
-
-### Subtask 1.6: Expose the Port
-- Tell Docker that the container will listen on port **7860**.
-- **Why 7860?** Hugging Face Spaces requires all web applications to serve traffic on this specific port. If you use any other port, Hugging Face won't be able to route traffic to your app.
-
-### Subtask 1.7: Define the Startup Command
-- The final line tells Docker what command to run when the container starts.
-- It should run `uvicorn` (the web server), pointing it to your FastAPI application object, listening on host `0.0.0.0` (meaning "accept connections from anywhere") and port `7860`.
+**What:** We wrote an optimized `Dockerfile` that tells AWS exactly how to build and run your backend server.
+- It uses `python:3.10-slim` to keep the image small.
+- It **pre-downloads your 3GB AI models** directly into the image (Stage 3). This guarantees that when AWS scales your app, it starts in seconds instead of minutes.
+- It exposes port `7860` (which we will configure App Runner to listen to).
 
 ---
 
-## Task 2: Fix Backend Port Configuration
+## Task 2: Configure AWS CLI
 
-**What:** Make the API port configurable via environment variables.
-**Where:** `src/config.py` and `src/api.py`.
-**Why:** Right now, `config.py` hardcodes `API_PORT = 8000`. But Hugging Face needs port 7860. If someone starts the server using `python src/api.py` (which reads `API_PORT` from the config), it would start on the wrong port. Making this an environment variable avoids the mismatch.
-
-### Subtask 2.1: Update `src/config.py`
-- Make `API_PORT` read from an environment variable called `PORT`, falling back to `8000` as the default.
-- This way, the Dockerfile can set `PORT=7860` and the code will respect it. On your local machine, it will still default to 8000.
-
----
-
-## Task 3: Configure CORS (Cross-Origin Resource Sharing)
-
-**What:** Update the backend to accept requests from your Vercel frontend.
-**Where:** `src/config.py` and `src/api.py`.
-**Why:** When your frontend (on `your-app.vercel.app`) tries to call your backend (on `your-space.hf.space`), the browser blocks it by default. This is a security feature called CORS. We need to explicitly tell the backend "it's okay to accept requests from this specific frontend URL."
-
-### Subtask 3.1: Make CORS Origins Configurable
-- In `src/config.py`, modify `CORS_ALLOW_ORIGINS` to read from an environment variable called `FRONTEND_URL`.
-- If `FRONTEND_URL` is set, use it as the single allowed origin.
-- If it's not set, fall back to `["*"]` (allow all origins) for local development convenience.
-
-### Subtask 3.2: Verify the Middleware
-- Open `src/api.py` and confirm that the `CORSMiddleware` on lines 86-90 reads from `config.CORS_ALLOW_ORIGINS`. It already does, so no change is needed here — just verify.
+**What:** We need to link your computer to your AWS account so you can upload the Docker image.
+1. Log into your AWS Console in the browser.
+2. In the top-right corner, click your username -> **Security Credentials**.
+3. Scroll down to **Access keys** and click **Create access key**. Save the Access Key ID and Secret Access Key.
+4. Open your computer's terminal (PowerShell) and run:
+   ```bash
+   aws configure
+   ```
+5. Paste your Access Key ID, then your Secret Access Key.
+6. For Default region name, type `us-east-1` (N. Virginia, matching your Qdrant cluster for low latency).
+7. For Default output format, press Enter to leave it blank.
 
 ---
 
-## Task 4: Handle the Legacy Frontend Folder
+## Task 3: Create an Amazon ECR Repository
 
-**What:** Decide what to do with the old `frontend/` folder.
-**Where:** The `frontend/` directory at the root of the repository.
-**Why:** Your project has two frontends:
-1. `sih_frontend_antigrav/` — the modern React/Vite app (this is what we're deploying).
-2. `frontend/` — an older, static HTML/JS frontend.
-
-The legacy `frontend/app.js` and `frontend/landing.js` contain the same broken `API_BASE` origin-detection logic that was identified in the audit. Since this frontend is NOT being deployed, the simplest fix is to make sure it never gets into the Docker image.
-
-### Subtask 4.1: Verify Docker Exclusion
-- Confirm that `.dockerignore` contains `frontend/`. It does — the legacy frontend will not be copied into the container.
-
-### Subtask 4.2: Verify Vite Plugin is Dev-Only
-- Open `sih_frontend_antigrav/vite.config.js`. Lines 33-48 contain a `serve-legacy-frontend` plugin that serves files from `../frontend/` during local development. On Vercel, the `../frontend/` folder won't exist, so this plugin will silently do nothing. No changes are strictly necessary, but if you want to be clean, you can wrap it in a check that only activates during development mode.
+**What:** ECR (Elastic Container Registry) is a private storage locker on AWS for your Docker images.
+1. In the AWS Console search bar, type **ECR** and click **Elastic Container Registry**.
+2. Click **Create repository**.
+3. Visibility settings: **Private**.
+4. Repository name: `ip-sakti-backend`.
+5. Scroll to the bottom and click **Create repository**.
+6. Click on your newly created `ip-sakti-backend` repository. In the top right, click the **"View push commands"** button. Keep this popup open; you will copy-paste these commands in the next step.
 
 ---
 
-## Task 5: Set Up the Hugging Face Space
+## Task 4: Push Your Code to AWS
 
-**What:** We are creating a cloud environment on Hugging Face that will build and host our Docker container.
-**Where:** The Hugging Face website.
-**Why:** Hugging Face Spaces is the only free platform that offers enough RAM (16 GB) to load your large AI models (`BAAI/bge-m3` embedding model and `BAAI/bge-reranker-v2-m3` cross-encoder).
-
-### Subtask 5.1: Create a Hugging Face Account
-1. Go to **https://huggingface.co/** and click **"Sign Up"**.
-2. Create an account using your email, Google, or GitHub.
-
-### Subtask 5.2: Create a New Space
-1. After logging in, click your profile picture in the top-right corner.
-2. Click **"New Space"**.
-3. Fill in the form:
-   - **Space name:** Choose something descriptive, like `ip-sakti-backend`.
-   - **License:** Choose any (e.g., MIT).
-   - **Space SDK:** Select **"Docker"**. This is critical — do NOT select Gradio or Streamlit.
-   - **Space hardware:** Select **"CPU basic (Free)"**. This gives you 16 GB of RAM.
-   - **Visibility:** Choose "Public" (free tier requires public spaces).
-4. Click **"Create Space"**.
-
-### Subtask 5.3: Add Your Secrets
-1. In your new Space, click the **"Settings"** tab at the top.
-2. Scroll down to the **"Variables and secrets"** section.
-3. Click **"New secret"** and add each of the following. Secrets are encrypted and never visible in logs or code:
-
-| Secret Name | Value | Where It Comes From |
-|-------------|-------|---------------------|
-| `GEMINI_API_KEY` | Your Google Gemini API key | Your `.env` file |
-| `QDRANT_URL` | Your Qdrant Cloud cluster URL | Qdrant Cloud dashboard (Task 1.3 of the Qdrant plan) |
-| `QDRANT_API_KEY` | Your Qdrant Cloud API key | Qdrant Cloud dashboard (Task 1.3 of the Qdrant plan) |
-| `FRONTEND_URL` | Your Vercel URL (add after frontend is deployed) | Vercel dashboard (after completing the Frontend plan) |
-| `PORT` | `7860` | Required by Hugging Face |
-
-### Subtask 5.4: Upload Your Code
-Hugging Face Spaces work like Git repositories. You push code to them.
-1. In your Space page, click the **"Files"** tab. You'll see instructions for cloning the Space repository.
-2. Clone the Space repo to your local machine using the provided Git URL.
-3. Copy your project files into the cloned folder: the `Dockerfile`, `requirements.txt`, `src/` folder, and `data/` folder.
-4. Commit and push the files.
+**What:** We are going to build the Docker image locally and upload it to your ECR locker.
+1. Open your terminal and ensure you are in your project folder (`C:\Users\Lenovo\Desktop\IP-Sakti\IP_Sakti`).
+2. Copy **Command 1** from the AWS "View push commands" popup and paste it into your terminal. (This logs Docker into AWS).
+3. Build the image locally (this will take 5-10 minutes as it downloads your AI models):
+   ```bash
+   docker build -t ip-sakti-backend .
+   ```
+4. Copy **Command 3** from AWS to tag your image.
+5. Copy **Command 4** from AWS to push your image. (This will take a few minutes to upload to the cloud).
 
 ---
 
-## Task 6: Deploy and Verify
+## Task 5: Deploy to AWS App Runner
 
-**What:** We are triggering the build and making sure everything starts correctly.
-**Where:** The Hugging Face Spaces dashboard.
-**Why:** The first build will take 10-15 minutes because Docker needs to download Python, install all your libraries (including PyTorch and Sentence Transformers), and then the app needs to download and load the AI models into memory.
+**What:** We will tell App Runner to take your uploaded image and turn it into a live web server.
+1. In the AWS Console search bar, type **App Runner** and click it.
+2. Click **Create an App Runner service**.
+3. **Source:** Select **Container registry**, then **Amazon ECR**.
+4. Click **Browse** and select the `ip-sakti-backend` image you just uploaded. 
+5. **Deployment trigger:** Select **Manual**.
+6. **ECR access role:** Select "Create new service role". Click **Next**.
 
-### Subtask 6.1: Monitor the Build
-1. After pushing your code, go to your Space page on Hugging Face.
-2. Click on the **"Logs"** button (usually at the bottom or in a "Factory" tab).
-3. Watch the build logs. You should see:
-   - `pip install` running through your requirements.
-   - The container being built successfully.
-   - Then the app starting and printing messages like "Loading embedding model: BAAI/bge-m3" and "RAG system ready!"
-4. If the build fails, the logs will show you exactly which step failed and why.
+### Subtask 5.1: Configure the Service
+1. **Service name:** `ip-sakti-backend-api`
+2. **Virtual CPU & memory:** Select **2 vCPU and 8 GB**. *(Crucial: This provides enough RAM for your massive PyTorch AI models so they don't crash!).*
+3. **Auto-scaling:** Click "Custom auto-scaling configuration". Click "Add new". Set **Maximum concurrency** to 100, and **Maximum instances** to **1**. *(Crucial: This physically prevents AWS from cloning your server and doubling your bill if you get hit with heavy traffic).*
+4. **Port:** Type `7860` (This matches our Dockerfile configuration).
 
-### Subtask 6.2: Test the Health Endpoint
-1. Once the Space shows a green "Running" status, you'll see a URL at the top of the page (something like `https://your-username-ip-sakti-backend.hf.space`).
-2. Open a new browser tab and go to: `https://your-username-ip-sakti-backend.hf.space/health`
-3. You should see a JSON response containing `"status": "ok"` and `"rag_ready": true`. If `rag_ready` is `false`, it means the RAG pipeline failed to initialize — check the logs for error messages.
+### Subtask 5.2: Add Environment Variables
+Scroll down to "Environment variables" and add the following keys. *(Do not skip these, or the app will crash!)*:
+| Key | Value |
+|-----|-------|
+| `GEMINI_API_KEY` | Your Google Gemini API key from `.env` |
+| `QDRANT_URL` | Your Qdrant Cloud URL |
+| `QDRANT_API_KEY` | Your Qdrant Cloud API key |
+| `FRONTEND_URL` | *(Leave blank for now, you will update this after deploying the Vercel frontend)* |
 
-### Subtask 6.3: Save Your Backend URL
-- Copy the Space URL. You will need it for the Frontend deployment plan (it goes into the `VITE_API_URL` environment variable).
-
----
-
-## Important: Hugging Face Sleep Behavior
-
-Free Hugging Face Spaces automatically go to sleep after approximately 48 hours of inactivity (no incoming requests). When asleep:
-- The first request after sleeping will take **30-60 seconds** while the Space wakes up and reloads the AI models.
-- All subsequent requests will be fast (< 5 seconds).
-
-**How to prevent sleeping:** Use a free uptime monitoring service like **UptimeRobot** (https://uptimerobot.com/). Create a free account and set up a monitor that pings your `/health` endpoint every 30 minutes. This keeps the Space awake indefinitely.
+### Subtask 5.3: Launch!
+1. Scroll to the bottom and click **Next**, review your settings, and click **Create and deploy**.
+2. AWS will take about 5 minutes to provision the server and start your container.
+3. Once the status turns green (**Running**), you will see a **Default domain** URL (e.g., `https://xyz123.us-east-1.awsapprunner.com`). 
+4. Click it and add `/health` to the end of the URL to verify your backend is alive and the AI models loaded successfully!
 
 ---
 
-## Troubleshooting
+## Task 6: Set Up an AWS Billing Alarm (Optional but Recommended)
 
-| Problem | Likely Cause | How to Fix |
-|---------|-------------|------------|
-| Build fails with "no space left on device" | Docker image is too large | Make sure `.dockerignore` is present and excludes `data/raw/`, `frontend/`, etc. |
-| Build succeeds but app crashes immediately | Missing environment variable | Check that all secrets in Subtask 5.3 are correctly set |
-| App starts but prints "GEMINI_API_KEY not found" | The secret name is misspelled | Go to Settings → Secrets and verify the exact name is `GEMINI_API_KEY` |
-| App starts but "RAG initialization failed" | Qdrant Cloud connection issue | Verify `QDRANT_URL` and `QDRANT_API_KEY` secrets are correct |
-| App works but frontend gets CORS errors | `FRONTEND_URL` secret not set | Add your Vercel URL as the `FRONTEND_URL` secret |
-| App responds with empty results | Cloud database has no data | Complete Task 4 of the Qdrant plan (Data Migration) |
+**What:** We are telling AWS to email you if your account ever spends more than $30 of your credits.
+**Why:** To guarantee you never accidentally get charged on your actual card if you forget to shut this down next month!
+
+1. In the AWS Console search bar, type **Budgets** and click **AWS Budgets**.
+2. Click **Create budget** -> **Use a template (simplified)** -> **Zero spend budget** (or create a custom one for $30).
+3. Enter your email address and click **Create budget**.
+4. You will now get an instant email alert if AWS ever tries to charge you beyond your free credits!
