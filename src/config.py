@@ -5,13 +5,10 @@ every consumer still accepts constructor/call overrides, so tests and
 one-off scripts can override without touching this file.
 """
 
-import os
-
 # --------------------------------------------------------------------
 # Qdrant
 # --------------------------------------------------------------------
-QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
-QDRANT_API_KEY = os.getenv("QDRANT_API_KEY", None)
+QDRANT_URL = "http://localhost:6333"
 COLLECTION_NAME = "medical_documents"
 VECTOR_SIZE = 1024
 
@@ -61,14 +58,8 @@ RERANK_STEEPNESS = 12.0
 # API server
 # --------------------------------------------------------------------
 API_HOST = "0.0.0.0"
-API_PORT = int(os.getenv("PORT", "8000"))
-_frontend_url = os.getenv("FRONTEND_URL")
-if _frontend_url and _frontend_url.strip():
-    # Browsers send Origin headers without trailing slashes. 
-    # If the user accidentally included one in their HF secret, this strips it to prevent CORS errors.
-    CORS_ALLOW_ORIGINS = [_frontend_url.strip().rstrip("/")]
-else:
-    CORS_ALLOW_ORIGINS = ["*"]
+API_PORT = 8000
+CORS_ALLOW_ORIGINS = ["*"]
 
 # --------------------------------------------------------------------
 # Persistence (src/db.py) — audit log, consent, corpus admin. No-login,

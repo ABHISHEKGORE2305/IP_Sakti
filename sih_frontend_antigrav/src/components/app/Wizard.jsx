@@ -15,7 +15,7 @@ import StepJurisdiction from './steps/StepJurisdiction';
 import StepSources from './steps/StepSources';
 import './Wizard.css';
 
-export default function Wizard({ jurisdiction, onJurisdictionChange, language }) {
+export default function Wizard({ jurisdiction, onJurisdictionChange, language, onContinueInChat }) {
   const [stepIndex, setStepIndex] = useState(0);
 
   const [classificationResult, setClassificationResult] = useState(null);
@@ -157,6 +157,16 @@ export default function Wizard({ jurisdiction, onJurisdictionChange, language })
       result={result}
       language={language}
       onBack={back}
+      onContinueInChat={
+        onContinueInChat && result?.final_answer
+          ? () =>
+              onContinueInChat({
+                query,
+                answer: result.final_answer,
+                sources: result.sources || [],
+              })
+          : null
+      }
     />,
   ];
 

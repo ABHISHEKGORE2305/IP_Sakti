@@ -235,3 +235,13 @@
     max-width: 92%;
   }
 }
+
+/* Turns seeded from the wizard's case brief, so it is clear they came from
+   the guided analysis rather than from something typed in the chat. */
+.chat-bubble__badge {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--emerald-light);
+  margin-bottom: 6px;
+}

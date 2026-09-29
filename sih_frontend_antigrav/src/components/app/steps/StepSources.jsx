@@ -9,6 +9,8 @@
 import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, ExternalLink, GitBranch, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { fetchKnowledgeGraph, fetchReferences } from '../../../lib/api';
+import { BIOLOGICAL_RESOURCE_SUGGESTIONS, INGREDIENT_SUGGESTIONS } from '../../../lib/suggestions';
+import SuggestionChips from '../SuggestionChips';
 import IPRoutePlanner from './IPRoutePlanner';
 import KnowledgeGraphExplorer from './KnowledgeGraphExplorer';
 
@@ -134,6 +136,18 @@ function KnowledgeGraphPanel({ jurisdiction, classificationInputs, absInputs }) 
           <GitBranch size={14} /> {loading ? 'Building…' : 'Build graph'}
         </button>
       </div>
+      <SuggestionChips
+        items={INGREDIENT_SUGGESTIONS}
+        value={ingredient}
+        onSelect={setIngredient}
+        label="Common ingredients"
+      />
+      <SuggestionChips
+        items={BIOLOGICAL_RESOURCE_SUGGESTIONS}
+        value={biologicalResource}
+        onSelect={setBiologicalResource}
+        label="Common sources"
+      />
       {error && <div className="step__error">{error}</div>}
       <KnowledgeGraphExplorer graph={graph} />
     </div>

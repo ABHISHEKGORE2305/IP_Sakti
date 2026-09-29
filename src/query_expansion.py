@@ -27,6 +27,11 @@ a lawyer would search for to answer it — provision names, the legal tests
 involved, and the terms of art the statute itself uses. Name specific sections
 or rules only when you are confident they are the governing ones.
 
+Always write a provision with the instrument it belongs to ("Section 3(p) of
+the Patents Act, 1970"), never as a bare "Section 3(p)" or "Section 8". A bare
+number matches the same number in every other Act in the corpus and drowns the
+search in unrelated instruments.
+
 Do not answer the question. Output at most 90 words, as plain prose with no
 headings, no markdown and no preamble.
 
