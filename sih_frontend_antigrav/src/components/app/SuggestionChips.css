@@ -1,0 +1,55 @@
+.suggestion-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.suggestion-chips__label {
+  font-size: 0.72rem;
+  color: var(--app-text-muted);
+  letter-spacing: 0.02em;
+}
+
+.suggestion-chips__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.suggestion-chips__chip {
+  max-width: 100%;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--app-border);
+  background: var(--app-bg-elevated);
+  color: var(--app-text-secondary);
+  font-family: inherit;
+  font-size: 0.78rem;
+  line-height: 1.3;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.suggestion-chips__chip:hover {
+  border-color: var(--emerald);
+  color: var(--app-text);
+  background: var(--emerald-glow);
+}
+
+.suggestion-chips__chip:focus-visible {
+  outline: 2px solid var(--emerald);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  /* Long question chips would otherwise each wrap to three or four lines and
+     push the input off-screen on a phone. */
+  .suggestion-chips__chip {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

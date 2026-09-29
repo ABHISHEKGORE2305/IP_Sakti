@@ -3,6 +3,8 @@
 // backend result (never fabricated placeholder data), and exports it as
 // Markdown, JSON, or a printable view (for "Save as PDF").
 
+import { markdownToHtml } from './markdownToHtml';
+
 function today() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -227,39 +229,149 @@ export function downloadJson(wizard, result) {
  * approach — it is NOT a server-rendered PDF.
  */
 function printMarkdownDocument(title, markdown) {
-  const html = markdown
-    .split('\n')
-    .map((l) => {
-      if (l.startsWith('# ')) return `<h1>${l.slice(2)}</h1>`;
-      if (l.startsWith('### ')) return `<h3>${l.slice(4)}</h3>`;
-      if (l.startsWith('- [ ] ')) return `<div class="checklist-item">☐ ${l.slice(6)}</div>`;
-      if (l.startsWith('* [ ] ')) return `<div class="checklist-item">☐ ${l.slice(6)}</div>`;
-      if (l.startsWith('* ')) return `<div class="brief-line">${l.slice(2)}</div>`;
-      if (/^\d+\.\s/.test(l)) return `<div class="brief-line">${l}</div>`;
-      if (!l.trim()) return '<br/>';
-      return `<p>${l}</p>`;
-    })
-    .join('\n');
+  // The first two lines are the document title + byline; they are rendered as
+  // a letterhead rather than as ordinary body content.
+  const lines = String(markdown).split('\n');
+  const docTitle = (lines[0] || '').replace(/^#\s+/, '').trim() || title;
+  const byline = (lines[1] || '').replace(/\*\*/g, '').trim();
+  const body = markdownToHtml(lines.slice(2).join('\n'));
 
-  const win = window.open('', '_blank', 'width=800,height=1000');
-  if (!win) return;
+  const win = window.open('', '_blank', 'width=900,height=1100');
+  if (!win) {
+    window.alert('Please allow pop-ups for this site to export the PDF.');
+    return;
+  }
 
   win.document.write(`<!doctype html>
 <html><head><title>${title}</title>
 <meta charset="utf-8" />
 <style>
-  body { font-family: Georgia, 'Cormorant Garamond', serif; max-width: 760px; margin: 40px auto; color: #1c1c1c; line-height: 1.6; }
-  h1 { font-size: 1.6rem; border-bottom: 2px solid #2f9e6e; padding-bottom: 8px; }
-  h3 { font-size: 1.1rem; margin-top: 24px; color: #2f9e6e; }
-  .checklist-item { margin: 4px 0; }
-  .brief-line { margin: 2px 0; }
-  strong { color: #111; }
-  @media print { body { margin: 0; } }
+  @page { size: A4; margin: 18mm 16mm 16mm; }
+
+  :root {
+    --ink: #1a1a18;
+    --ink-soft: #4a4a44;
+    --rule: #d8d4c8;
+    --accent: #1f6f4e;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+    max-width: 720px;
+    margin: 32px auto 48px;
+    padding: 0 24px;
+    color: var(--ink);
+    font-size: 11.5pt;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header.letterhead {
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 12px;
+    margin-bottom: 28px;
+  }
+  header.letterhead .doc-title {
+    font-size: 19pt;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin: 0 0 6px;
+    line-height: 1.25;
+  }
+  header.letterhead .byline {
+    font-size: 9pt;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  h1, h2, h3, h4 {
+    font-weight: 600;
+    line-height: 1.3;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  h1 { font-size: 15pt; margin: 26px 0 10px; }
+  h2 { font-size: 13pt; margin: 24px 0 8px; }
+  h3 {
+    font-size: 11.5pt;
+    margin: 22px 0 8px;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 4px;
+  }
+  h4 { font-size: 11pt; margin: 16px 0 6px; }
+
+  p { margin: 0 0 9px; orphans: 2; widows: 2; }
+
+  ul, ol { margin: 0 0 12px; padding-left: 20px; }
+  li { margin: 0 0 5px; break-inside: avoid; page-break-inside: avoid; }
+  ol { padding-left: 22px; }
+  ol li::marker { color: var(--ink-soft); }
+  ul li::marker { color: var(--accent); }
+
+  ul.checklist { list-style: none; padding-left: 2px; }
+  ul.checklist li { display: flex; gap: 8px; align-items: baseline; }
+  ul.checklist .box { color: var(--accent); font-size: 12pt; flex: 0 0 auto; }
+
+  strong { font-weight: 600; color: #000; }
+  em { color: var(--ink-soft); }
+
+  code {
+    font-family: 'SFMono-Regular', Menlo, Consolas, monospace;
+    font-size: 9.5pt;
+    background: #f2efe7;
+    border-radius: 3px;
+    padding: 0.1em 0.35em;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+
+  footer.colophon {
+    margin-top: 36px;
+    padding-top: 10px;
+    border-top: 1px solid var(--rule);
+    font-size: 8.5pt;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  @media print {
+    body { margin: 0 auto; padding: 0; }
+    a { color: var(--ink); }
+    footer.colophon { break-inside: avoid; page-break-inside: avoid; }
+  }
 </style>
-</head><body>${html}</body></html>`);
+</head>
+<body>
+  <header class="letterhead">
+    <p class="doc-title">${docTitle}</p>
+    ${byline ? `<p class="byline">${byline}</p>` : ''}
+  </header>
+  ${body}
+  <footer class="colophon">
+    Generated by IP-Sakti — an AI-assisted research aid for Ayurveda IPR and regulatory
+    questions. Informational only; not legal advice. Verify every statutory citation
+    against its primary source before relying on it.
+  </footer>
+</body></html>`);
   win.document.close();
   win.focus();
-  win.print();
+
+  const print = () => {
+    win.print();
+  };
+  if (win.document.readyState === 'complete') {
+    // Give the print window a frame to lay out the fonts before the dialog opens.
+    win.setTimeout(print, 120);
+  } else {
+    win.addEventListener('load', () => win.setTimeout(print, 120));
+  }
 }
 
 /**

@@ -16,8 +16,7 @@ VECTOR_SIZE = config.VECTOR_SIZE
 # --------------------------------
 
 client = QdrantClient(
-    url=QDRANT_URL,
-    api_key=config.QDRANT_API_KEY,
+    url=QDRANT_URL
 )
 
 print("Connected to Qdrant")

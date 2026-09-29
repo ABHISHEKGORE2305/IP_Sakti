@@ -1,3 +1,5 @@
+import threading
+
 from hybrid_retriever import AyurvedicHybridRetriever
 from reranker import AyurvedicIPReranker
 from legal_reference import extract_legal_references, match_reference
@@ -36,6 +38,17 @@ class AyurvedicIPRetriever:
         print("\nInitializing cross-encoder reranker...")
 
         self.reranker = AyurvedicIPReranker()
+
+        # FastAPI runs the sync /api/chat/ endpoint in a worker threadpool, and
+        # the chat UI deliberately lets a user send a second question before the
+        # first reply lands — so concurrent calls into these shared torch models
+        # are normal, not an edge case. They are not thread-safe, and the work is
+        # CPU-bound anyway: running four at once oversubscribed every core and
+        # wedged the server so badly that even /health stopped responding.
+        # Serialising costs nothing in throughput on a single CPU box and keeps
+        # the process responsive. The LLM call is left outside this lock, so
+        # generation for several chats still overlaps.
+        self._inference_lock = threading.Lock()
 
         print("\nFinal retriever ready!")
 
@@ -162,40 +175,44 @@ class AyurvedicIPRetriever:
             reference_query if reference_query is not None else query
         )
 
-        # --------------------------------
-        # STEP 1: Hybrid retrieval
-        # --------------------------------
+        with self._inference_lock:
 
-        candidates = self.hybrid_retriever.search(
-            query=query,
-            top_k=candidate_k,
-            candidate_k=candidate_k,
-            jurisdiction_filter=jurisdiction_filter,
-            document_id_filter=document_id_filter,
-        )
+            # --------------------------------
+            # STEP 1: Hybrid retrieval
+            # --------------------------------
 
-        # --------------------------------
-        # No explicit legal reference -> unchanged behaviour
-        # --------------------------------
-
-        if not references:
-            return self.reranker.rerank(
+            candidates = self.hybrid_retriever.search(
                 query=query,
-                results=candidates,
-                top_k=top_k,
+                top_k=candidate_k,
+                candidate_k=candidate_k,
+                jurisdiction_filter=jurisdiction_filter,
+                document_id_filter=document_id_filter,
             )
 
-        # --------------------------------
-        # Explicit legal reference -> targeted handling
-        # --------------------------------
+            # --------------------------------
+            # No explicit legal reference -> unchanged behaviour
+            # --------------------------------
 
-        candidates = self._inject_exact_matches(references, candidates, jurisdiction_filter, document_id_filter)
+            if not references:
+                return self.reranker.rerank(
+                    query=query,
+                    results=candidates,
+                    top_k=top_k,
+                )
 
-        reranked = self.reranker.rerank(
-            query=query,
-            results=candidates,
-            top_k=len(candidates),
-        )
+            # --------------------------------
+            # Explicit legal reference -> targeted handling
+            # --------------------------------
+
+            candidates = self._inject_exact_matches(
+                references, candidates, jurisdiction_filter, document_id_filter
+            )
+
+            reranked = self.reranker.rerank(
+                query=query,
+                results=candidates,
+                top_k=len(candidates),
+            )
 
         reranked = self._apply_legal_boost(references, reranked)
 

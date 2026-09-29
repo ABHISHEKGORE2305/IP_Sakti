@@ -2,7 +2,17 @@
 // Renders the Phase 5.4 case brief, exports it (PDF/Markdown/JSON), and
 // offers on-demand translation (POST /api/translate) + text-to-speech.
 
-import { ChevronLeft, FileDown, FileJson, FileText, Languages, Leaf, Send, Volume2 } from 'lucide-react';
+import {
+  ChevronLeft,
+  FileDown,
+  FileJson,
+  FileText,
+  Languages,
+  Leaf,
+  MessageSquare,
+  Send,
+  Volume2,
+} from 'lucide-react';
 import { useState } from 'react';
 import { escalateCase, translateText } from '../../../lib/api';
 import {
@@ -16,7 +26,7 @@ import {
 import { LANGUAGES } from '../../../lib/wizardConfig';
 import Markdown from '../Markdown';
 
-export default function StepAction({ wizardState, result, language, onBack }) {
+export default function StepAction({ wizardState, result, language, onBack, onContinueInChat }) {
   const [translated, setTranslated] = useState(null);
   const [translating, setTranslating] = useState(false);
   const [translateError, setTranslateError] = useState(null);
@@ -124,7 +134,9 @@ export default function StepAction({ wizardState, result, language, onBack }) {
       )}
 
       <label className="step__label">Case brief preview</label>
-      <div className="action-plan__brief">{brief}</div>
+      <div className="action-plan__brief">
+        <Markdown className="action-plan__brief-body">{brief}</Markdown>
+      </div>
 
       <div className="action-plan__export-row">
         <button className="step__btn step__btn--ghost" onClick={() => printCaseBrief(wizardState, result)}>
@@ -175,6 +187,23 @@ export default function StepAction({ wizardState, result, language, onBack }) {
       </div>
       {escalateStatus && (
         <div className={escalateStatus.ok ? 'step__success' : 'step__error'}>{escalateStatus.message}</div>
+      )}
+
+      {onContinueInChat && (
+        <div className={`action-plan__continue${escalateStatus?.ok ? ' action-plan__continue--highlight' : ''}`}>
+          <div>
+            <div className="action-plan__continue-title">
+              {escalateStatus?.ok ? 'Sent — anything else?' : 'Still have questions?'}
+            </div>
+            <p className="action-plan__continue-desc">
+              Carry this question and its answer into the chat and keep asking follow-ups with the
+              same context.
+            </p>
+          </div>
+          <button className="step__btn step__btn--primary" onClick={onContinueInChat}>
+            <MessageSquare size={14} /> Continue in Chat
+          </button>
+        </div>
       )}
 
       <div className="step__actions">

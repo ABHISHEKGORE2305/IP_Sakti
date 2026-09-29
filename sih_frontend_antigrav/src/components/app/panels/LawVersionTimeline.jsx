@@ -7,6 +7,8 @@
 import { Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getLawFamilies, queryLawVersion } from '../../../lib/api';
+import { LAW_QUESTION_SUGGESTIONS } from '../../../lib/suggestions';
+import SuggestionChips from '../SuggestionChips';
 
 function VersionAnswer({ version, query, trigger }) {
   const [result, setResult] = useState(null);
@@ -104,6 +106,7 @@ export default function LawVersionTimeline() {
             Compare versions
           </button>
         </div>
+        <SuggestionChips items={LAW_QUESTION_SUGGESTIONS} value={query} onSelect={setQuery} />
       </div>
 
       {family && trigger > 0 && (

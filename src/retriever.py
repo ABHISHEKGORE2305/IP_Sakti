@@ -60,12 +60,10 @@ class AyurvedicRetriever:
         self,
         qdrant_url: str = config.QDRANT_URL,
         collection_name: str = config.COLLECTION_NAME,
-        api_key: str | None = config.QDRANT_API_KEY,
     ):
 
         self.client = QdrantClient(
-            url=qdrant_url,
-            api_key=api_key,
+            url=qdrant_url
         )
 
         self.collection_name = (

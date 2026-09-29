@@ -12,12 +12,11 @@
 import { AlertTriangle, ChevronDown, RotateCcw, Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { sendChatMessage } from '../../lib/api';
+import { uid } from '../../lib/uid';
+import { CHAT_SUGGESTIONS } from '../../lib/suggestions';
 import Markdown from './Markdown';
+import SuggestionChips from './SuggestionChips';
 import './ChatView.css';
-
-function uid() {
-  return crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
-}
 
 // Phrases describing what the RAG pipeline is doing while a reply is in
 // flight. Words are revealed one at a time (~0.5s apart) so the user sees
@@ -101,6 +100,9 @@ function Bubble({ message, onRetry }) {
   return (
     <div className={`chat-row${isUser ? ' chat-row--user' : ''}`}>
       <div className={`chat-bubble${isUser ? ' chat-bubble--user' : ' chat-bubble--assistant'}`}>
+        {!isUser && message.seededFrom === 'wizard' && (
+          <div className="chat-bubble__badge">Carried over from your case brief</div>
+        )}
         {isUser && <div className="chat-bubble__text">{message.content}</div>}
 
         {!isUser && message.status === 'pending' && <ProcessAnimation />}
@@ -126,8 +128,13 @@ function Bubble({ message, onRetry }) {
   );
 }
 
-export default function ChatView({ jurisdiction }) {
-  const [messages, setMessages] = useState([]);
+// `messages`/`onMessagesChange` let the shell own the transcript, so it
+// survives switching tabs and can be seeded from the wizard's analysis
+// ("Continue in chat"). Uncontrolled (no props) it keeps its own state.
+export default function ChatView({ jurisdiction, messages: messagesProp, onMessagesChange }) {
+  const [localMessages, setLocalMessages] = useState([]);
+  const messages = messagesProp ?? localMessages;
+  const setMessages = onMessagesChange ?? setLocalMessages;
   const [input, setInput] = useState('');
   const listRef = useRef(null);
   const textareaRef = useRef(null);
@@ -209,6 +216,20 @@ export default function ChatView({ jurisdiction }) {
     e.target.style.height = `${Math.min(e.target.scrollHeight, 160)}px`;
   };
 
+  // Drop a suggestion into the composer without sending it, so the user can
+  // edit it first. The textarea sizes itself in onChange, which a
+  // programmatic setInput doesn't trigger, so resize it here too.
+  const applySuggestion = (text) => {
+    setInput(text);
+    const node = textareaRef.current;
+    if (!node) return;
+    node.focus();
+    requestAnimationFrame(() => {
+      node.style.height = 'auto';
+      node.style.height = `${Math.min(node.scrollHeight, 160)}px`;
+    });
+  };
+
   const pendingCount = messages.filter((m) => m.status === 'pending').length;
 
   return (
@@ -233,6 +254,13 @@ export default function ChatView({ jurisdiction }) {
           <Bubble key={m.id} message={m} onRetry={retry} />
         ))}
       </div>
+
+      <SuggestionChips
+        items={CHAT_SUGGESTIONS}
+        value={input}
+        onSelect={applySuggestion}
+        label={messages.length === 0 ? 'Try one of these' : 'Ask about'}
+      />
 
       <div className="chat-view__composer">
         <textarea
