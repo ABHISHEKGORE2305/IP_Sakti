@@ -1,3 +1,0 @@
-Ask most AI about Section 3(p) of the Patents Act and it will invent one.
-
-I built IP-Sakti — ask whether your Ayurvedic formulation is patentable and it answers with the Act, the section and the page, verifies the citations, then hands you a case brief PDF for your IP facilitator.
