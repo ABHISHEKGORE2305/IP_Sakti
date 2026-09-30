@@ -8,7 +8,10 @@ one-off scripts can override without touching this file.
 # --------------------------------------------------------------------
 # Qdrant
 # --------------------------------------------------------------------
-QDRANT_URL = "http://localhost:6333"
+import os
+
+QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY", None)
 COLLECTION_NAME = "medical_documents"
 VECTOR_SIZE = 1024
 
