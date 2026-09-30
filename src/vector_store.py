@@ -27,7 +27,8 @@ class QdrantVectorStore:
         self.vector_size = vector_size
 
         self.client = QdrantClient(
-            url=url
+            url=url,
+            api_key=config.QDRANT_API_KEY,
         )
 
         self._create_collection_if_needed()
