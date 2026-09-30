@@ -47,7 +47,7 @@ export default function StepAction({ wizardState, result, language, onBack, onCo
         replyTo: replyTo || undefined,
       });
       if (res.sent) {
-        setEscalateStatus({ ok: true, message: 'Sent to your IP facilitator.' });
+        setEscalateStatus({ ok: true, message: 'Sent to your IP facilitator as a PDF report.' });
       } else {
         setEscalateStatus({ ok: false, message: res.error || 'Escalation failed.' });
       }
@@ -170,7 +170,7 @@ export default function StepAction({ wizardState, result, language, onBack, onCo
 
       <label className="step__label">Escalate to IP Facilitator</label>
       <p className="step__subheading" style={{ marginTop: -4 }}>
-        Emails this case brief to the IP facilitator for human review.
+        Emails this case brief to the IP facilitator for human review, attached as a PDF report.
       </p>
       <div className="action-plan__translate-row">
         <input

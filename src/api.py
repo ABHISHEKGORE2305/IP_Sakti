@@ -23,7 +23,8 @@ Endpoints:
                           the implementation for the real Bhashini API when
                           credentials are available.
     POST /api/escalate -> Emails a case brief to the configured IP
-                          facilitator inbox (see escalation.py). Returns
+                          facilitator inbox as a PDF report (see
+                          case_brief_pdf.py, escalation.py). Returns
                           error="not_configured" until SMTP_HOST/SMTP_USER/
                           SMTP_PASSWORD/ESCALATION_EMAIL_TO are set in .env.
     GET  /api/references -> Deep links to free official portals (IP India,
@@ -46,6 +47,7 @@ from agents import specialists as agent_specialists
 from llm import LLMError
 from prompt import TRANSLATION_PROMPT
 from rag_pipeline import AyurvedicIPRAG
+from case_brief_pdf import build_case_brief_pdf, case_brief_filename
 from escalation import EscalationError, is_configured as escalation_is_configured, send_case_brief
 from references import REFERENCE_CATEGORIES
 from freshness import freshness_note, web_freshness_note
@@ -694,8 +696,34 @@ def api_escalate(request: EscalateRequest) -> EscalateResponse:
     subject_query = (request.query or "").strip()
     subject = f"IP-Sakti case escalation — {subject_query[:80]}" if subject_query else "IP-Sakti case escalation"
 
+    # The facilitator gets the brief as a formatted PDF report; the message
+    # body is a short covering note. If rendering fails for any reason the
+    # escalation still goes out, with the markdown brief as the body.
+    attachment = None
     try:
-        send_case_brief(subject=subject, body_markdown=brief, reply_to=request.reply_to)
+        attachment = (case_brief_filename(), build_case_brief_pdf(brief))
+    except Exception as exc:  # noqa: BLE001 - never block an escalation on layout
+        print(f"[api] case brief PDF rendering failed, sending markdown body: {exc}")
+
+    if attachment:
+        body_text = (
+            "A case brief has been escalated from IP-Sakti for human review.\n\n"
+            f"Question: {subject_query or 'n/a'}\n"
+            f"Reply-To: {request.reply_to or 'not provided'}\n\n"
+            f"The full brief is attached as {attachment[0]}.\n\n"
+            "This brief is informational only and is not legal advice."
+        )
+    else:
+        body_text = brief
+
+    try:
+        send_case_brief(
+            subject=subject,
+            body_markdown=brief,
+            reply_to=request.reply_to,
+            attachment=attachment,
+            body_text=body_text,
+        )
     except EscalationError as exc:
         return EscalateResponse(sent=False, error=str(exc))
 
