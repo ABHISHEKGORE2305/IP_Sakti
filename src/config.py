@@ -34,7 +34,7 @@ RERANKER_MODEL_NAME = "BAAI/bge-reranker-v2-m3"
 # then ABS duties under the BD Act). At top_k=6 the later regimes were being
 # crowded out of the context entirely.
 TOP_K = 12                   # final chunks returned to the LLM
-CANDIDATE_K = 40             # candidates pulled per retriever before fusion/rerank
+CANDIDATE_K = 12             # candidates pulled per retriever before fusion/rerank
 RRF_K = 60                   # reciprocal-rank-fusion smoothing constant
 DEFAULT_AUTHORITY_WEIGHT = 0.50
 MAX_CONTEXT_CHARS = 24000
