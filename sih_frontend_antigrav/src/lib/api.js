@@ -32,7 +32,7 @@ function withSessionHeaders(extra = {}) {
   return { 'X-Session-Id': getSessionId(), ...extra };
 }
 
-async function postJson(path, body, { timeoutMs = 60000 } = {}) {
+async function postJson(path, body, { timeoutMs = 120000 } = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
