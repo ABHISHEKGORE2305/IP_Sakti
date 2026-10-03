@@ -4,6 +4,14 @@
 // in production (behind nginx), localhost:8000 fallback for local dev.
 
 const API_BASE = (() => {
+  // Deployed split (frontend on Vercel, backend elsewhere): VITE_API_URL is
+  // baked in at build time, so it must be set in the Vercel project settings
+  // BEFORE the build. Without it requests go to Vercel itself and fail with 405.
+  const configured = (import.meta.env.VITE_API_URL || '').trim().replace(/\/+$/, '');
+  if (configured) {
+    return configured;
+  }
+
   const origin = window.location.origin || '';
   if (origin.startsWith('http')) {
     if (!origin.includes('://localhost') && !origin.includes('://127.0.0.1')) {
