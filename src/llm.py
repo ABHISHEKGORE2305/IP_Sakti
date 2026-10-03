@@ -153,7 +153,10 @@ class GroqLLM:
                         "You are a professional Ayurvedic & Indian Patent law research AI."
                         + (
                             f" Keep the complete answer under {words} words and "
-                            "finish every section within that limit."
+                            "finish every section within that limit. Every important "
+                            "legal claim MUST end with an inline citation in the form "
+                            "[Document, Section/Rule, p.N] naming a provided source; "
+                            "an answer without inline citations is rejected."
                             if words
                             else ""
                         )
