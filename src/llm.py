@@ -9,18 +9,27 @@ except Exception:  # noqa: BLE001 - some interpreters lack a caller frame
     pass
 
 
-GROQ_DEFAULT_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
+# Default and fallback models for Groq. llama-3.3-70b-versatile,
+# llama-3.1-8b-instant, mixtral-8x7b-32768 and gemma2-9b-it have all been
+# decommissioned/removed from the Groq catalog (confirmed via GET
+# https://api.groq.com/openai/v1/models against this project's key) and
+# were 404/400-ing on every request. openai/gpt-oss-120b (and its smaller
+# sibling) are the current text-generation models Groq actually serves.
+GROQ_DEFAULT_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
 GROQ_FALLBACK_MODELS = [
-    "llama-3.1-8b-instant",
-    "llama3-8b-8192",
-    "mixtral-8x7b-32768",
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "qwen/qwen3.8-27b",
 ]
 
-# Fallback models for Gemini
-GEMINI_DEFAULT_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+# Fallback models for Gemini (if Gemini is used as fallback). gemini-1.5-flash
+# and gemini-2.0-flash-exp are retired for keys created after their
+# retirement (404 NOT_FOUND) - confirmed via client.models.list().
+GEMINI_DEFAULT_MODEL = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
 GEMINI_FALLBACK_MODELS = [
-    "gemini-1.5-flash",
-    "gemini-1.5-pro",
+    "gemini-flash-latest",
+    "gemini-3.5-flash",
+    "gemini-flash-lite-latest",
 ]
 
 
@@ -112,6 +121,17 @@ class GroqLLM:
         return text.strip()
 
     def generate(self, prompt: str, max_attempts: int = 3) -> str:
+        start = time.perf_counter()
+        try:
+            return self._generate(prompt, max_attempts)
+        finally:
+            print(
+                f"[timing] llm.generate {time.perf_counter() - start:.2f}s "
+                f"prompt_chars={len(prompt)}",
+                flush=True,
+            )
+
+    def _generate(self, prompt: str, max_attempts: int = 3) -> str:
         last_error = None
 
         if self.provider == "groq":

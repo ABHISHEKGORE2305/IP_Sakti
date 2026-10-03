@@ -1,47 +1,40 @@
 # ============================================================
-# IP-Sakti Backend — Optimized Dockerfile
+# IP-Sakti Backend (deployment branch) - CPU-only, cache-friendly
+# Layer order: torch -> requirements -> model weights -> code
+# so editing src/ rebuilds in seconds without re-downloading models.
+# Build on the EC2 host itself (no registry push needed).
 # ============================================================
-# Layer order is tuned for maximum Docker cache reuse:
-#   1. System deps        (rarely change)
-#   2. Python packages    (change occasionally)
-#   3. ML model download  (change almost never)
-#   4. Application code   (changes frequently)
-#
-# This means editing a Python file does NOT re-download
-# 2+ GB of ML models or re-install pip packages.
-# ============================================================
-
-# --- Stage 1: Base image ---
 FROM python:3.10-slim
+
+# Unbuffered stdout so print() / [timing] lines reach `docker logs` immediately.
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    HF_HOME=/opt/hf \
+    PYTHONPATH=/app/src
 
 WORKDIR /app
 
-# --- Stage 2: Python dependencies (cached unless requirements.txt changes) ---
+# CPU-only torch first: otherwise pip resolves the CUDA build (several GB of
+# nvidia libraries this host can never use). Version matches the tested env.
+RUN pip install --no-cache-dir torch==2.11.0 --extra-index-url https://download.pytorch.org/whl/cpu
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# --- Stage 3: Pre-download ML models (cached unless model names change) ---
-# Without this step, sentence_transformers downloads these 2-3 GB models
-# every single time the container starts. By baking them into the image,
-# the app starts in seconds instead of minutes.
+# Bake the model weights into the image (cached unless model names change).
 RUN python -c "\
 from sentence_transformers import SentenceTransformer, CrossEncoder; \
 SentenceTransformer('BAAI/bge-m3'); \
 CrossEncoder('BAAI/bge-reranker-v2-m3')"
 
-# --- Stage 4: Application code (rebuilt on every code change, but fast) ---
 COPY src/ ./src/
+COPY healthcheck.py .
 
-# Create the data directory structure so the app can write runtime files
-# (e.g. web chunks, eval results, SQLite db). chunks.json is served via
-# Qdrant Cloud — BM25 gracefully degrades if the file is absent.
+# chunks.json feeds BM25; it MUST be the same file that was synced to Qdrant
+# (scripts/sync_qdrant.py), otherwise dense and BM25 retrieve different chunks.
 RUN mkdir -p data/processed
 COPY data/processed/chunks.json data/processed/
 
-# Tell Python where to find our modules (e.g. import config, import llm)
-ENV PYTHONPATH=/app/src
-
-# Hugging Face Spaces requires port 7860
 EXPOSE 7860
 
-CMD ["uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "7860", "--workers", "1"]

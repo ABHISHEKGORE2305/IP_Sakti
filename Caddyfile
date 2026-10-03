@@ -1,0 +1,13 @@
+# Replace the site address with your hostname, e.g. api.example.com or
+# <elastic-ip-with-dashes>.nip.io. Caddy obtains the TLS certificate itself.
+ipsakti.duckdns.org {
+	# The admin upload route has no auth in api.py; never expose it publicly.
+	@admin path /api/admin/*
+	respond @admin 403
+
+	reverse_proxy api:7860 {
+		transport http {
+			response_header_timeout 180s
+		}
+	}
+}

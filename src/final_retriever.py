@@ -1,4 +1,5 @@
 import threading
+import time
 
 from hybrid_retriever import AyurvedicHybridRetriever
 from reranker import AyurvedicIPReranker
@@ -181,6 +182,7 @@ class AyurvedicIPRetriever:
             # STEP 1: Hybrid retrieval
             # --------------------------------
 
+            _t0 = time.perf_counter()
             candidates = self.hybrid_retriever.search(
                 query=query,
                 top_k=candidate_k,
@@ -193,12 +195,21 @@ class AyurvedicIPRetriever:
             # No explicit legal reference -> unchanged behaviour
             # --------------------------------
 
+            _t1 = time.perf_counter()
+
             if not references:
-                return self.reranker.rerank(
+                reranked = self.reranker.rerank(
                     query=query,
                     results=candidates,
                     top_k=top_k,
                 )
+                print(
+                    f"[timing] retrieval hybrid={_t1 - _t0:.2f}s "
+                    f"rerank={time.perf_counter() - _t1:.2f}s "
+                    f"candidates={len(candidates)}",
+                    flush=True,
+                )
+                return reranked
 
             # --------------------------------
             # Explicit legal reference -> targeted handling
@@ -212,6 +223,12 @@ class AyurvedicIPRetriever:
                 query=query,
                 results=candidates,
                 top_k=len(candidates),
+            )
+            print(
+                f"[timing] retrieval hybrid={_t1 - _t0:.2f}s "
+                f"rerank={time.perf_counter() - _t1:.2f}s "
+                f"candidates={len(candidates)} (exact-reference path)",
+                flush=True,
             )
 
         reranked = self._apply_legal_boost(references, reranked)
