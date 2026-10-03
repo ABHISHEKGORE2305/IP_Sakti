@@ -73,7 +73,7 @@ class QueryExpander:
 
         try:
             expansion = llm.generate(
-                EXPANSION_PROMPT.format(query=query), max_attempts=1
+                EXPANSION_PROMPT.format(query=query), max_attempts=1, max_tokens=600
             ).strip()
         except (LLMError, Exception):  # noqa: BLE001 - never fail retrieval
             return query

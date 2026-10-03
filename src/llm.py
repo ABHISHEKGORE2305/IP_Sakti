@@ -1,3 +1,4 @@
+import math
 import os
 import time
 
@@ -37,6 +38,41 @@ class LLMError(RuntimeError):
     """Raised when the LLM call cannot be completed."""
 
 
+# Groq free-tier tokens-per-minute limit per model. A request is rejected with
+# 413 when input tokens + max_tokens exceed it, so every call is sized to fit.
+# Override a model with GROQ_TPM_LIMITS="model=limit,model=limit". Models not
+# listed use GROQ_DEFAULT_TPM_LIMIT.
+GROQ_DEFAULT_TPM_LIMIT = int(os.getenv("GROQ_DEFAULT_TPM_LIMIT", "6000"))
+GROQ_TPM_LIMITS = {
+    "openai/gpt-oss-120b": 8000,
+    "openai/gpt-oss-20b": 8000,
+    "qwen/qwen3.8-27b": 7000,
+}
+for _pair in filter(None, os.getenv("GROQ_TPM_LIMITS", "").split(",")):
+    _name, _, _value = _pair.partition("=")
+    if _value.strip().isdigit():
+        GROQ_TPM_LIMITS[_name.strip()] = int(_value)
+
+
+def _output_budget(model: str, prompt: str, requested: int | None) -> int:
+    """Max output tokens that keeps input + output under the model's limit.
+    Raises LLMError when even the minimum output cannot fit (caller then moves
+    to the next model instead of sending a request that would 413)."""
+    import config
+
+    limit = GROQ_TPM_LIMITS.get(model, GROQ_DEFAULT_TPM_LIMIT)
+    est_input = math.ceil(len(prompt) / config.LLM_CHARS_PER_TOKEN) + 50  # + system msg
+    room = limit - est_input - config.LLM_TOKEN_MARGIN
+    wanted = requested if requested is not None else config.LLM_MAX_OUTPUT_TOKENS
+    minimum = min(wanted, config.LLM_MIN_OUTPUT_TOKENS)
+    if room < minimum:
+        raise LLMError(
+            f"prompt (~{est_input} tokens) too large for {model} budget "
+            f"(limit {limit}, need >= {minimum} output tokens)"
+        )
+    return min(wanted, room)
+
+
 def _is_rate_limit(message: str) -> bool:
     m = message.lower()
     return "429" in m or "rate limit" in m or "resource_exhausted" in m or "quota" in m
@@ -63,7 +99,16 @@ class GroqLLM:
         if self.provider == "groq":
             try:
                 from groq import Groq
-                self.groq_client = Groq(api_key=self.groq_api_key)
+                # A hung, slow or rate-limited model should fall through to the
+                # next one rather than stall the request: fail after GROQ_TIMEOUT
+                # seconds (default 20) and never wait/retry inside the SDK. Each
+                # Groq model has its own tokens-per-minute bucket, so moving to
+                # the next model is faster than waiting for this one to refill.
+                self.groq_client = Groq(
+                    api_key=self.groq_api_key,
+                    timeout=float(os.getenv("GROQ_TIMEOUT", "20")),
+                    max_retries=0,
+                )
             except ImportError:
                 raise LLMError("groq package not installed. Run: pip install groq")
 
@@ -86,12 +131,33 @@ class GroqLLM:
             ]
             print(f"Gemini LLM initialized (fallback): {self.model}")
 
-    def _call_groq(self, model: str, prompt: str) -> str:
+    def _call_groq(self, model: str, prompt: str, max_tokens: int | None = None) -> str:
+        out_tokens = _output_budget(model, prompt, max_tokens)
+        # Long answers only: a word hint leaves room for reasoning tokens that
+        # also count against the cap. Short calls (e.g. query expansion) skip it.
+        words = int((out_tokens - 300) * 0.7) if out_tokens >= 1000 else 0
+        extra = {}
+        # gpt-oss models reason before answering; "low"/"medium"/"high" trades
+        # answer depth for latency (reasoning tokens count toward the output
+        # cap). Default "low"; set GROQ_REASONING_EFFORT="" for provider default.
+        effort = os.getenv("GROQ_REASONING_EFFORT", "low")
+        if effort and model.startswith("openai/gpt-oss"):
+            extra["reasoning_effort"] = effort
+
         chat_completion = self.groq_client.chat.completions.create(
+            **extra,
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a professional Ayurvedic & Indian Patent law research AI.",
+                    "content": (
+                        "You are a professional Ayurvedic & Indian Patent law research AI."
+                        + (
+                            f" Keep the complete answer under {words} words and "
+                            "finish every section within that limit."
+                            if words
+                            else ""
+                        )
+                    ),
                 },
                 {
                     "role": "user",
@@ -103,9 +169,19 @@ class GroqLLM:
             # The five-section answer format with a framework table and a
             # checklist runs long; without an explicit ceiling the provider
             # default truncated answers mid-sentence.
-            max_tokens=4096,
+            max_tokens=out_tokens,
         )
-        text = chat_completion.choices[0].message.content
+        choice = chat_completion.choices[0]
+        usage = getattr(chat_completion, "usage", None)
+        if usage:
+            print(
+                f"[llm:groq] {model} in={usage.prompt_tokens} "
+                f"out={usage.completion_tokens} cap={out_tokens}",
+                flush=True,
+            )
+        if getattr(choice, "finish_reason", None) == "length":
+            print(f"[llm:groq] {model} hit the {out_tokens}-token output cap", flush=True)
+        text = choice.message.content
         if not text:
             raise LLMError("Groq returned an empty response.")
         return text.strip()
@@ -120,10 +196,12 @@ class GroqLLM:
             raise LLMError("Gemini returned an empty response.")
         return text.strip()
 
-    def generate(self, prompt: str, max_attempts: int = 3) -> str:
+    def generate(
+        self, prompt: str, max_attempts: int = 3, max_tokens: int | None = None
+    ) -> str:
         start = time.perf_counter()
         try:
-            return self._generate(prompt, max_attempts)
+            return self._generate(prompt, max_attempts, max_tokens)
         finally:
             print(
                 f"[timing] llm.generate {time.perf_counter() - start:.2f}s "
@@ -131,21 +209,19 @@ class GroqLLM:
                 flush=True,
             )
 
-    def _generate(self, prompt: str, max_attempts: int = 3) -> str:
+    def _generate(
+        self, prompt: str, max_attempts: int = 3, max_tokens: int | None = None
+    ) -> str:
         last_error = None
 
         if self.provider == "groq":
             for model in self._models:
                 for attempt in range(1, max_attempts + 1):
                     try:
-                        return self._call_groq(model, prompt)
+                        return self._call_groq(model, prompt, max_tokens)
                     except Exception as exc:  # noqa: BLE001
                         message = str(exc)
                         last_error = exc
-
-                        if _is_rate_limit(message) and attempt < max_attempts:
-                            time.sleep(1.5 * attempt)
-                            continue
 
                         print(f"[llm:groq] {model} issue ({message[:80]}); trying next model...")
                         break
