@@ -48,12 +48,21 @@ def send_case_brief(
     subject: str,
     body_markdown: str,
     reply_to: str | None = None,
+    attachment: tuple[str, bytes] | None = None,
+    body_text: str | None = None,
 ) -> None:
     """
-    Email `body_markdown` (already-formatted case brief text) to
-    ESCALATION_EMAIL_TO. Raises EscalationError on missing config or any
-    SMTP failure — callers should surface that as a clean error field,
-    not a 500, the same way LLMError is handled elsewhere in api.py.
+    Email the case brief to ESCALATION_EMAIL_TO.
+
+    `attachment` is an optional (filename, pdf_bytes) pair — /api/escalate
+    passes the rendered PDF report so the facilitator gets a formatted
+    document instead of raw markdown. `body_text` is the covering message;
+    it defaults to `body_markdown`, which is also the fallback body when
+    the PDF could not be rendered.
+
+    Raises EscalationError on missing config or any SMTP failure — callers
+    should surface that as a clean error field, not a 500, the same way
+    LLMError is handled elsewhere in api.py.
     """
 
     missing = _missing_vars()
@@ -76,7 +85,16 @@ def send_case_brief(
     message["To"] = recipient
     if reply_to:
         message["Reply-To"] = reply_to
-    message.set_content(body_markdown)
+    message.set_content(body_text or body_markdown)
+
+    if attachment:
+        filename, payload = attachment
+        message.add_attachment(
+            payload,
+            maintype="application",
+            subtype="pdf",
+            filename=filename,
+        )
 
     try:
         with smtplib.SMTP(host, port, timeout=15) as smtp:
