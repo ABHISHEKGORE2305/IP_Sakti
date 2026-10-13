@@ -1,4 +1,5 @@
 // src/pages/LandingPage.jsx
+import AvailabilityNotice from '../components/AvailabilityNotice';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import ProblemSection from '../components/ProblemSection';
@@ -11,6 +12,7 @@ import Footer from '../components/Footer';
 export default function LandingPage() {
   return (
     <>
+      <AvailabilityNotice />
       <Navbar />
       <main>
         <Hero />

@@ -1,0 +1,196 @@
+/* ============================================================
+   AvailabilityNotice.css — backend availability modal
+   Matches the AyurX design system (index.css tokens).
+   ============================================================ */
+
+.avail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(5, 10, 7, 0.62);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.avail-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card), var(--shadow-gold);
+  padding: 32px 30px 28px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: avail-in 0.25s var(--ease-out);
+}
+
+@keyframes avail-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.avail-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  transition: all 0.25s var(--ease-out);
+}
+
+.avail-close:hover {
+  color: var(--text-gold);
+  border-color: var(--border-gold);
+  background: var(--gold-glow);
+}
+
+.avail-close:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.avail-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-gold);
+  margin-bottom: 10px;
+}
+
+.avail-eyebrow::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.avail-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.45rem, 3vw, 1.8rem);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  margin-bottom: 14px;
+  padding-right: 32px;
+}
+
+.avail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.avail-body strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.avail-schedule {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-gold);
+  background: var(--gold-glow);
+  color: var(--text-gold);
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.avail-schedule strong {
+  font-weight: 600;
+}
+
+.avail-schedule__icon {
+  flex-shrink: 0;
+}
+
+.avail-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.avail-thanks {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-size: 1.02rem;
+}
+
+.avail-cta {
+  padding: 10px 26px;
+  font-size: 0.88rem;
+  flex-shrink: 0;
+}
+
+.avail-cta:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 560px) {
+  .avail-overlay {
+    padding: 16px;
+    align-items: center;
+  }
+
+  .avail-dialog {
+    padding: 26px 22px 22px;
+  }
+
+  .avail-footer {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .avail-cta {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avail-dialog {
+    animation: none;
+  }
+}
