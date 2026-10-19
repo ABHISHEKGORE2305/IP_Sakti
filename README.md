@@ -6,9 +6,7 @@ Access-and-Benefit-Sharing duties it triggers — and get back an answer where e
 claim carries the Act, section and page it came from, plus a formal case brief PDF
 you can send to an IP facilitator.
 
-Built for Smart India Hackathon 2026, problem statement **26045**.
-
----
+--
 
 ## The problem
 
