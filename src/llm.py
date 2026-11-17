@@ -1,5 +1,6 @@
 import math
 import os
+import re
 import time
 
 from dotenv import load_dotenv
@@ -22,6 +23,12 @@ GROQ_FALLBACK_MODELS = [
     "openai/gpt-oss-20b",
     "qwen/qwen3.8-27b",
 ]
+# Comma-separated override, e.g. to keep one model's rate-limit bucket free
+# for the eval_answers.py judge while the API generates on the others.
+if os.getenv("GROQ_FALLBACK_MODELS"):
+    GROQ_FALLBACK_MODELS = [
+        m.strip() for m in os.environ["GROQ_FALLBACK_MODELS"].split(",") if m.strip()
+    ]
 
 # Fallback models for Gemini (if Gemini is used as fallback). gemini-1.5-flash
 # and gemini-2.0-flash-exp are retired for keys created after their
@@ -48,6 +55,12 @@ GROQ_TPM_LIMITS = {
     "openai/gpt-oss-20b": 8000,
     "qwen/qwen3.8-27b": 7000,
 }
+# Separate output-tokens-per-minute caps. qwen3.8-27b rejects any request
+# whose max_tokens exceeds 1000 ("Request too large ... (OTPM): Limit
+# 1000"), so without this it could never serve as an answer fallback.
+GROQ_OUTPUT_TPM_LIMITS = {
+    "qwen/qwen3.8-27b": 1000,
+}
 for _pair in filter(None, os.getenv("GROQ_TPM_LIMITS", "").split(",")):
     _name, _, _value = _pair.partition("=")
     if _value.strip().isdigit():
@@ -64,6 +77,8 @@ def _output_budget(model: str, prompt: str, requested: int | None) -> int:
     est_input = math.ceil(len(prompt) / config.LLM_CHARS_PER_TOKEN) + 50  # + system msg
     room = limit - est_input - config.LLM_TOKEN_MARGIN
     wanted = requested if requested is not None else config.LLM_MAX_OUTPUT_TOKENS
+    if model in GROQ_OUTPUT_TPM_LIMITS:
+        wanted = min(wanted, GROQ_OUTPUT_TPM_LIMITS[model] - 50)
     minimum = min(wanted, config.LLM_MIN_OUTPUT_TOKENS)
     if room < minimum:
         raise LLMError(
@@ -71,6 +86,14 @@ def _output_budget(model: str, prompt: str, requested: int | None) -> int:
             f"(limit {limit}, need >= {minimum} output tokens)"
         )
     return min(wanted, room)
+
+
+def _retry_after_seconds(message: str) -> float:
+    """Groq 429 bodies say 'Please try again in 12.345s' (or '1m3.2s')."""
+    m = re.search(r"try again in (?:(\d+)m)?([\d.]+)s", message)
+    if not m:
+        return 10.0
+    return int(m.group(1) or 0) * 60 + float(m.group(2)) + 0.5
 
 
 def _is_rate_limit(message: str) -> bool:
@@ -218,16 +241,28 @@ class GroqLLM:
         last_error = None
 
         if self.provider == "groq":
-            for model in self._models:
-                for attempt in range(1, max_attempts + 1):
+            # Free-tier limits are per minute and reset within seconds, so
+            # when every model is rate-limited, wait for the soonest reset
+            # Groq reports and go round once more rather than failing the
+            # user's question outright. GROQ_RATE_LIMIT_WAIT=0 disables it.
+            max_wait = float(os.getenv("GROQ_RATE_LIMIT_WAIT", "30"))
+            for round_number in (1, 2):
+                waits = []
+                for model in self._models:
                     try:
                         return self._call_groq(model, prompt, max_tokens)
                     except Exception as exc:  # noqa: BLE001
                         message = str(exc)
                         last_error = exc
+                        if _is_rate_limit(message):
+                            waits.append(_retry_after_seconds(message))
 
-                        print(f"[llm:groq] {model} issue ({message[:80]}); trying next model...")
-                        break
+                        print(f"[llm:groq] {model} issue ({message[:160]}); trying next model...")
+
+                if round_number == 2 or not waits or min(waits) > max_wait:
+                    break
+                print(f"[llm:groq] all models rate-limited; retrying in {min(waits):.1f}s")
+                time.sleep(min(waits))
 
             # If all Groq models failed and Gemini key is available, attempt
             # Gemini fallback - try every fallback model, not just the first,

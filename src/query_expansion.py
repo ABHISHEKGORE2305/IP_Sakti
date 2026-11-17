@@ -71,9 +71,14 @@ class QueryExpander:
         if llm is None:
             return query
 
+        # gpt-oss reasons before it answers and the reasoning counts against
+        # max_tokens: at 600, about 1 in 4 expansions spent the whole budget
+        # thinking and came back empty (expansions themselves run ~300
+        # tokens). Stay under 1000, where llm._call_groq starts adding its
+        # answer-length/citation system hint.
         try:
             expansion = llm.generate(
-                EXPANSION_PROMPT.format(query=query), max_attempts=1, max_tokens=600
+                EXPANSION_PROMPT.format(query=query), max_attempts=1, max_tokens=900
             ).strip()
         except (LLMError, Exception):  # noqa: BLE001 - never fail retrieval
             return query

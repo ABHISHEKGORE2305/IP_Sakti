@@ -34,7 +34,12 @@ RERANKER_MODEL_NAME = "BAAI/bge-reranker-v2-m3"
 # then ABS duties under the BD Act). At top_k=6 the later regimes were being
 # crowded out of the context entirely.
 TOP_K = 12                   # final chunks returned to the LLM
-CANDIDATE_K = 12             # candidates pulled per retriever before fusion/rerank
+# candidates pulled per retriever before fusion/rerank. On the 40-query
+# retrieval suite (benchmark_retrieval_comparison.py), 12 -> 24 raised
+# relevant chunks in the top 12 from 8.4 to 9.2 and hit@12 from 39 to 40, for
+# +1.6s/query on an M4; 40 added 0.1 more at double the rerank time. The
+# EC2 deployment ran 12 to stay inside its request timeout.
+CANDIDATE_K = int(os.getenv("CANDIDATE_K", "24"))
 RRF_K = 60                   # reciprocal-rank-fusion smoothing constant
 # International-scope queries also search India-labelled sources (the TKDL
 # factsheet, the Patents Act's PCT/Budapest provisions and the Trade Marks
@@ -50,9 +55,14 @@ DEFAULT_AUTHORITY_WEIGHT = 0.50
 # The answer prompt is capped so input (~11k context chars + ~4.5k chars of
 # instructions/query = ~5k tokens) + LLM_MAX_OUTPUT_TOKENS stays under it.
 # See llm.py for the per-model enforcement. Raise both only on a paid Groq tier.
-MAX_CONTEXT_CHARS = 11000
+#
+# The 3.0 chars/token estimate was far too cautious for gpt-oss: a real
+# 15.8k-char answer prompt measured 3,636 prompt tokens (4.3 chars/token).
+# At 3.6 the estimate still overcounts by ~20%, and the freed room goes to
+# context: 14k chars fits ~11 of the 12 retrieved chunks instead of ~8.
+MAX_CONTEXT_CHARS = 14000
 LLM_MAX_OUTPUT_TOKENS = 2000   # hard ceiling on generated tokens (incl. reasoning)
-LLM_CHARS_PER_TOKEN = 3.0      # conservative; legal text measures 3.3-3.9
+LLM_CHARS_PER_TOKEN = 3.6      # still conservative; gpt-oss measures ~4.3 on this corpus
 LLM_TOKEN_MARGIN = 300         # slack under each model's limit
 LLM_MIN_OUTPUT_TOKENS = 600    # below this a model is skipped, not squeezed
 

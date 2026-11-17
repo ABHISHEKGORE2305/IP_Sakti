@@ -279,28 +279,43 @@ def generate(args) -> None:
     for q in questions:
         if q["id"] in done:
             continue
-        started = time.perf_counter()
-        case = dict(q, actual_answer="", actual_citations=[], api_error=None)
-        try:
-            resp = requests.post(
-                url,
-                json={"query": q["query"], "jurisdiction": q["jurisdiction"]},
-                timeout=args.timeout,
-            )
-            resp.raise_for_status()
-            body = resp.json()
-            case["actual_answer"] = body.get("answer", "")
-            case["actual_citations"] = body.get("citations", [])
-            case["api_error"] = body.get("error")
-        except Exception as exc:  # network error, 5xx, timeout
-            case["api_error"] = f"{type(exc).__name__}: {exc}"
-        case["latency_s"] = round(time.perf_counter() - started, 2)
+        for attempt in range(args.retries + 1):
+            started = time.perf_counter()
+            case = dict(q, actual_answer="", actual_citations=[], api_error=None)
+            try:
+                resp = requests.post(
+                    url,
+                    json={"query": q["query"], "jurisdiction": q["jurisdiction"]},
+                    timeout=args.timeout,
+                )
+                resp.raise_for_status()
+                body = resp.json()
+                case["actual_answer"] = body.get("answer", "")
+                case["actual_citations"] = body.get("citations", [])
+                case["api_error"] = body.get("error")
+            except Exception as exc:  # network error, 5xx, timeout
+                case["api_error"] = f"{type(exc).__name__}: {exc}"
+            case["latency_s"] = round(time.perf_counter() - started, 2)
+            # An LLM failure on a free tier is almost always a per-minute
+            # token limit; waiting for the bucket to refill beats recording
+            # the fallback message as the answer.
+            if not _retryable(case["api_error"]) or attempt == args.retries:
+                break
+            print(f"  [{q['id']:>3}] {case['api_error'][:60]} - retrying in {args.backoff:.0f}s")
+            time.sleep(args.backoff)
         done[q["id"]] = case
         _save_run(out, sorted(done.values(), key=lambda c: c["id"]))
         status = case["api_error"] or "ok"
         print(f"  [{q['id']:>3}] {case['latency_s']:>6.1f}s  {status}")
         if args.delay:
             time.sleep(args.delay)
+
+
+def _retryable(error: str | None) -> bool:
+    if not error:
+        return False
+    e = error.lower()
+    return any(t in e for t in ("llm_failed", "not_ready", "rate", "429", "timeout", "unavailable"))
 
 
 # ----------------------------------------------------------------------
@@ -380,16 +395,22 @@ def _make_judge(model: str | None):
     return GroqLLM(model=model)
 
 
-def _grade_cases(cases: list[dict], llm, save, delay: float, force: bool) -> None:
+def _grade_cases(cases: list[dict], llm, save, delay: float, force: bool,
+                 retries: int = 3, backoff: float = 60) -> None:
     for case in cases:
         if case.get("judge") and not force:
             continue
-        if case.get("api_error") and not case.get("actual_answer"):
+        if case.get("api_error"):
             continue  # generation failed; regenerate rather than grade
-        try:
-            case["judge"] = judge_case(llm, case)
-        except Exception as exc:
-            print(f"  [{case['id']:>3}] judge error: {exc}")
+        for attempt in range(retries + 1):
+            try:
+                case["judge"] = judge_case(llm, case)
+                break
+            except Exception as exc:
+                print(f"  [{case['id']:>3}] judge error: {str(exc)[:100]}")
+                if attempt < retries and _retryable(str(exc)):
+                    time.sleep(backoff)
+        if not case.get("judge"):
             continue
         save()
         j = case["judge"]
@@ -532,6 +553,8 @@ def main():
     p.add_argument("--api-url", default=os.getenv("EVAL_API_URL", "http://127.0.0.1:8000"))
     p.add_argument("--timeout", type=float, default=180)
     p.add_argument("--delay", type=float, default=0, help="seconds between requests")
+    p.add_argument("--retries", type=int, default=4, help="retries after an LLM/rate-limit failure")
+    p.add_argument("--backoff", type=float, default=60, help="seconds to wait before a retry")
     p.set_defaults(func=generate)
 
     p = sub.add_parser("grade")
