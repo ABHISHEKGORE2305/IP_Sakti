@@ -36,6 +36,14 @@ RERANKER_MODEL_NAME = "BAAI/bge-reranker-v2-m3"
 TOP_K = 12                   # final chunks returned to the LLM
 CANDIDATE_K = 12             # candidates pulled per retriever before fusion/rerank
 RRF_K = 60                   # reciprocal-rank-fusion smoothing constant
+# International-scope queries also search India-labelled sources (the TKDL
+# factsheet, the Patents Act's PCT/Budapest provisions and the Trade Marks
+# Act's Madrid chapter describe the international mechanisms), but rank them
+# below international sources by this much on the 0-1 reranker scale. On the
+# 26 International benchmark cases with findable evidence, a hard India
+# exclusion found it in 12; this soft penalty in 16 (a strict superset) with
+# ~0.6 of 12 slots going to India sources. India scope stays a hard filter.
+OFF_JURISDICTION_PENALTY = 0.2
 DEFAULT_AUTHORITY_WEIGHT = 0.50
 # Groq free tier allows 8,000 tokens/min for gpt-oss-120b/20b (7,000 for qwen) and
 # rejects (HTTP 413) any single request whose input + max_tokens exceeds that.

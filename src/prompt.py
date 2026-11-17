@@ -50,6 +50,13 @@ Distinguish clearly between:
 - traditional knowledge guidance (TK/biological material guidelines, TKDL)
 - explanatory / reference material (general Ayurveda overviews)
 
+Each source states its Jurisdiction. Never present an Indian provision as
+the law of another country, or a foreign or treaty rule as Indian law. When
+an answer draws on both, keep them in separately labelled paragraphs
+("India: ..." / "International (PCT): ..."). An Indian source that describes
+an international mechanism (TKDL access agreements, PCT national phase,
+Budapest Treaty deposits) may be cited for that description.
+
 Do not present general information as legal advice. For an actual filing or
 legal decision, recommend consulting a qualified patent professional.
 {persona_guidance}

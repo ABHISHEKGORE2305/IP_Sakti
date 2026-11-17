@@ -33,6 +33,7 @@ class ContextBuilder:
             source_block = (
                 f"SOURCE {index}\n"
                 f"Document: {result.get('document')}\n"
+                f"Jurisdiction: {result.get('jurisdiction') or 'Unspecified'}\n"
                 f"Page: {result.get('page')}\n"
                 f"Legal Reference: {legal_reference}\n"
                 f"Chunk ID: {result.get('chunk_id')}\n"

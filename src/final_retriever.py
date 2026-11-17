@@ -13,6 +13,7 @@ import config
 EXACT_REFERENCE_BONUS = config.EXACT_REFERENCE_BONUS
 SAME_SECTION_BONUS = config.SAME_SECTION_BONUS
 STATUTORY_SOURCE_BONUS = config.STATUTORY_SOURCE_BONUS
+OFF_JURISDICTION_PENALTY = config.OFF_JURISDICTION_PENALTY
 
 # Ceiling on chunks force-injected into the reranker pool by the
 # exact-reference path — see _inject_exact_matches.
@@ -116,6 +117,55 @@ class AyurvedicIPRetriever:
 
         return candidates
 
+    def _hybrid_candidates(self, query, candidate_k, jurisdiction_filter, document_id_filter):
+        """
+        Hybrid candidates for the reranker. An International-scope query
+        searches twice - international sources only, then unfiltered - and
+        pools both: the international corpus is small, and India-labelled
+        sources (TKDL factsheet, the Patents Act's PCT and Budapest
+        provisions) are often the only text describing an international
+        mechanism. _apply_jurisdiction_penalty then ranks those India
+        sources below international ones. India scope stays a hard filter.
+        """
+
+        def search(jurisdiction):
+            return self.hybrid_retriever.search(
+                query=query,
+                top_k=candidate_k,
+                candidate_k=candidate_k,
+                jurisdiction_filter=jurisdiction,
+                document_id_filter=document_id_filter,
+            )
+
+        candidates = search(jurisdiction_filter)
+        if jurisdiction_filter != "International":
+            return candidates
+
+        present = {c.get("chunk_id") for c in candidates}
+        for candidate in search(None):
+            if candidate.get("chunk_id") not in present:
+                candidates.append(candidate)
+                present.add(candidate.get("chunk_id"))
+        return candidates
+
+    def _apply_jurisdiction_penalty(self, results, jurisdiction_filter):
+
+        if jurisdiction_filter != "International":
+            return results
+
+        for result in results:
+            if result.get("jurisdiction") == "India":
+                result["jurisdiction_penalty"] = OFF_JURISDICTION_PENALTY
+                result["reranker_score"] = (
+                    result.get("reranker_score", 0.0) - OFF_JURISDICTION_PENALTY
+                )
+
+        results.sort(
+            key=lambda r: r.get("reranker_score", 0.0),
+            reverse=True,
+        )
+        return results
+
     def _apply_legal_boost(self, references, results):
 
         for result in results:
@@ -183,12 +233,8 @@ class AyurvedicIPRetriever:
             # --------------------------------
 
             _t0 = time.perf_counter()
-            candidates = self.hybrid_retriever.search(
-                query=query,
-                top_k=candidate_k,
-                candidate_k=candidate_k,
-                jurisdiction_filter=jurisdiction_filter,
-                document_id_filter=document_id_filter,
+            candidates = self._hybrid_candidates(
+                query, candidate_k, jurisdiction_filter, document_id_filter
             )
 
             # --------------------------------
@@ -201,8 +247,11 @@ class AyurvedicIPRetriever:
                 reranked = self.reranker.rerank(
                     query=query,
                     results=candidates,
-                    top_k=top_k,
+                    top_k=len(candidates),
                 )
+                reranked = self._apply_jurisdiction_penalty(
+                    reranked, jurisdiction_filter
+                )[:top_k]
                 print(
                     f"[timing] retrieval hybrid={_t1 - _t0:.2f}s "
                     f"rerank={time.perf_counter() - _t1:.2f}s "
@@ -232,5 +281,6 @@ class AyurvedicIPRetriever:
             )
 
         reranked = self._apply_legal_boost(references, reranked)
+        reranked = self._apply_jurisdiction_penalty(reranked, jurisdiction_filter)
 
         return reranked[:top_k]
