@@ -63,7 +63,8 @@ class AyurvedicRetriever:
     ):
 
         self.client = QdrantClient(
-            url=qdrant_url
+            url=qdrant_url,
+            api_key=config.QDRANT_API_KEY,
         )
 
         self.collection_name = (

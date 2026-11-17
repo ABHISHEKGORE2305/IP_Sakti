@@ -9,7 +9,8 @@ See implementation_plan.md Phase 3.1 for the full state diagram.
 """
 
 import operator
-from typing import Annotated, Literal, NotRequired, TypedDict
+from typing import Annotated, Literal
+from typing_extensions import NotRequired, TypedDict
 
 
 AgentName = Literal[

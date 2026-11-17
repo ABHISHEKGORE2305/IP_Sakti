@@ -8,7 +8,10 @@ one-off scripts can override without touching this file.
 # --------------------------------------------------------------------
 # Qdrant
 # --------------------------------------------------------------------
-QDRANT_URL = "http://localhost:6333"
+import os
+
+QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY", None)
 COLLECTION_NAME = "medical_documents"
 VECTOR_SIZE = 1024
 
@@ -31,10 +34,19 @@ RERANKER_MODEL_NAME = "BAAI/bge-reranker-v2-m3"
 # then ABS duties under the BD Act). At top_k=6 the later regimes were being
 # crowded out of the context entirely.
 TOP_K = 12                   # final chunks returned to the LLM
-CANDIDATE_K = 40             # candidates pulled per retriever before fusion/rerank
+CANDIDATE_K = 12             # candidates pulled per retriever before fusion/rerank
 RRF_K = 60                   # reciprocal-rank-fusion smoothing constant
 DEFAULT_AUTHORITY_WEIGHT = 0.50
-MAX_CONTEXT_CHARS = 24000
+# Groq free tier allows 8,000 tokens/min for gpt-oss-120b/20b (7,000 for qwen) and
+# rejects (HTTP 413) any single request whose input + max_tokens exceeds that.
+# The answer prompt is capped so input (~11k context chars + ~4.5k chars of
+# instructions/query = ~5k tokens) + LLM_MAX_OUTPUT_TOKENS stays under it.
+# See llm.py for the per-model enforcement. Raise both only on a paid Groq tier.
+MAX_CONTEXT_CHARS = 11000
+LLM_MAX_OUTPUT_TOKENS = 2000   # hard ceiling on generated tokens (incl. reasoning)
+LLM_CHARS_PER_TOKEN = 3.0      # conservative; legal text measures 3.3-3.9
+LLM_TOKEN_MARGIN = 300         # slack under each model's limit
+LLM_MIN_OUTPUT_TOKENS = 600    # below this a model is skipped, not squeezed
 
 # Score bonuses added on top of the cross-encoder score when the query
 # names an explicit statutory provision (Section/Rule/Form).
