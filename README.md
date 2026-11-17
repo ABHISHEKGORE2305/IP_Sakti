@@ -284,7 +284,6 @@ src/
   guardrails/            PII sanitizer, injection filter, confidence scoring
   test_*.py              suite-per-layer checks
 sih_frontend_antigrav/   React 19 + Vite frontend (landing + /app product shell)
-frontend/                legacy static prototype, superseded
 data/raw/                21 source PDFs
 data/processed/          chunks.json (3,078), chunks_web.json, app.db, eval_results.json
 benchmark_questions/     400 authored test questions

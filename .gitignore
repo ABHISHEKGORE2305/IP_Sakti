@@ -34,3 +34,7 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Scratch output
+scratch_*.png
+brag-output/

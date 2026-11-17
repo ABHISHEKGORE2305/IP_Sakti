@@ -3,7 +3,7 @@ from chunker import create_chunks
 from embedding_model import EmbeddingModel
 
 
-PDF_PATH = "/Users/aspa/Desktop/abhishek/sih_26_manual/medical-rag/data/raw/An_Overview_of_Ayurveda.pdf"
+PDF_PATH = "data/raw/An_Overview_of_Ayurveda.pdf"
 
 
 # -------------------------------
