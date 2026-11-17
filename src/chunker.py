@@ -283,7 +283,13 @@ def create_chunks(
             # silently inheriting a page-7 cutoff that only made sense
             # for that one PDF.
 
-            if page_number > toc_skip_pages:
+            # `structure_parsing: False` turns it off for a whole document
+            # whose numbered lines are not provisions of that document: an
+            # amending notification ("12. In rule 131 of the said rules ...")
+            # or an EU directive's numbered recitals. A wrong provision label
+            # is worse than none - the exact-reference path trusts it.
+
+            if page_number > toc_skip_pages and page.get("structure_parsing", True):
 
                 legal_parsing_enabled = True
 

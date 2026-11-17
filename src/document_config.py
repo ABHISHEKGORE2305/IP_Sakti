@@ -44,14 +44,45 @@ DOCUMENTS = [
     },
 
     {
-        "filename": "3_Patents_Amendment_Rules_2024_16-03-2024.pdf",
+        # G.S.R. 211(E), 15 March 2024 — the amendment that made Form 27
+        # three-yearly (rule 131(2)), moved the Form 3 deadline (rule 12)
+        # and cut the examination-request window. Bilingual Gazette copy
+        # from ipindia.gov.in; pp.1-21 are Hindi, pp.22-40 English. Only
+        # the English half is ingested so the provisions parse cleanly.
+        "filename": "1_Patents_Amendment_Rules_2024_15-03-2024.pdf",
         "document": "The Patents (Amendment) Rules, 2024",
+        "document_type": "rules",
+        "jurisdiction": "India",
+        "language": "en",
+        "page_range": (22, 40),
+        # Its numbered paragraphs are amendment instructions ("12. In rule
+        # 131 ...") and fee-table rows, not rules; see chunker.create_chunks.
+        "structure_parsing": False,
+    },
+
+    {
+        # G.S.R. 215(E), 16 March 2024 — adjudication of penalties (rule
+        # 107A) under the Jan Vishwas amendments. Previously mislabelled as
+        # "The Patents (Amendment) Rules, 2024"; it contains nothing on
+        # Form 27 or Form 3.
+        "filename": "3_Patents_Amendment_Rules_2024_16-03-2024.pdf",
+        "document": "The Patents (Second Amendment) Rules, 2024",
         "document_type": "rules",
         "jurisdiction": "India",
         # Bilingual Gazette notification (Hindi pp.1-5, English pp.6-9).
         # Only the English pages structure-parse into section/clause
         # metadata; the Hindi pages still embed and are searchable, just
         # without that precision.
+        "language": "en",
+    },
+
+    {
+        # Office of the CGPDTM, 26 August 2024 — official guidance on the
+        # three-yearly Form 27 regime, with the filing windows worked out.
+        "filename": "ipo_faqs_form27_2024-08-26.pdf",
+        "document": "IP India — FAQs on Form 27 (Statement of Working of Patents), 2024",
+        "document_type": "patent_guidelines",
+        "jurisdiction": "India",
         "language": "en",
     },
 
@@ -243,6 +274,28 @@ DOCUMENTS = [
         "document_type": "treaty_overview",
         "jurisdiction": "International",
         "language": "en",
+    },
+    {
+        # wto.org/english/docs_e/legal_e/31bis_trips_e.pdf — consolidated
+        # text including the Article 31bis amendment. Covers Art. 22-24
+        # (GIs), 27.3(b) (plant/animal exclusions) and 39 (undisclosed
+        # information / trade secrets).
+        "filename": "wto_trips_agreement_amended_2017.pdf",
+        "document": "Agreement on Trade-Related Aspects of Intellectual Property Rights (TRIPS), as amended 23 January 2017",
+        "document_type": "treaty",
+        "jurisdiction": "International",
+        "language": "en",
+    },
+    {
+        # EUR-Lex CELEX 32004L0024 (OJ L 136, 30.4.2004, p.85) — the EU
+        # traditional-use registration route for herbal medicines.
+        "filename": "eu_directive_2004_24_ec_thmpd.pdf",
+        "document": "Directive 2004/24/EC on Traditional Herbal Medicinal Products (amending Directive 2001/83/EC)",
+        "document_type": "treaty",
+        "jurisdiction": "European Union",
+        "language": "en",
+        # Numbered recitals would otherwise parse as "Section N".
+        "structure_parsing": False,
     },
 ]
 

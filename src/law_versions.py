@@ -27,9 +27,14 @@ LAW_FAMILIES = [
         "versions": [
             {"document_id": "patent_rules_2003", "year": 2003, "label": "The Patents Rules, 2003"},
             {
-                "document_id": "3_Patents_Amendment_Rules_2024_16-03-2024",
+                "document_id": "1_Patents_Amendment_Rules_2024_15-03-2024",
                 "year": 2024,
                 "label": "The Patents (Amendment) Rules, 2024",
+            },
+            {
+                "document_id": "3_Patents_Amendment_Rules_2024_16-03-2024",
+                "year": 2024,
+                "label": "The Patents (Second Amendment) Rules, 2024",
             },
         ],
         "note": None,

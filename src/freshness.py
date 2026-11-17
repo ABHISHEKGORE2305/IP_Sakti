@@ -27,6 +27,7 @@ import config
 KNOWN_YEAR_BY_DOCUMENT_ID = {
     "patents_act_1970": 1970,
     "patent_rules_2003": 2003,
+    "1_Patents_Amendment_Rules_2024_15-03-2024": 2024,
     "3_Patents_Amendment_Rules_2024_16-03-2024": 2024,
     "pharmaceuticals_guidelines_2014": 2014,
     "traditional_knowledge_guidelines_2012": 2012,

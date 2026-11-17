@@ -51,6 +51,12 @@ def test_every_question_has_a_query_and_benchmark_answer():
         assert q["ground_truth"], f"case {q['id']} has no benchmark answer"
 
 
+# Benchmark answers corrected after the sprint snapshots were taken.
+# 26: Form 27 is due within six months of each three-year period, not three
+#     (rule 131(2) as substituted by G.S.R. 211(E), 15 March 2024).
+CORRECTED_GROUND_TRUTH = {26}
+
+
 def test_parsed_questions_match_the_hand_graded_sprint_data():
     """The sprint raw files were built from the same markdown; any drift
     means the parser is reading the wrong field."""
@@ -60,7 +66,8 @@ def test_parsed_questions_match_the_hand_graded_sprint_data():
         q = parsed[raw["id"]]
         assert _norm(q["query"]) == _norm(raw["query"]), raw["id"]
         assert q["jurisdiction"] == raw["jurisdiction"], raw["id"]
-        assert _norm(q["ground_truth"])[:150] == _norm(raw["ground_truth"])[:150], raw["id"]
+        if raw["id"] not in CORRECTED_GROUND_TRUTH:
+            assert _norm(q["ground_truth"])[:150] == _norm(raw["ground_truth"])[:150], raw["id"]
 
 
 def test_multilingual_query_drops_the_english_gloss():

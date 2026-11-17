@@ -35,7 +35,7 @@ def combined_query_filter(jurisdiction_filter: str | None, document_id_filter: s
     jurisdiction_query_filter — used by the Law Version Timeline
     (winning_features.md item 9) to scope a query to exactly one known
     version of a law (e.g. "patent_rules_2003" vs
-    "3_Patents_Amendment_Rules_2024_16-03-2024"), so the demo moment of
+    "1_Patents_Amendment_Rules_2024_15-03-2024"), so the demo moment of
     "ask under the old law vs the current law" is retrieval-enforced, not
     just prompt-suggested — same reasoning as jurisdiction_query_filter.
     """

@@ -274,7 +274,7 @@ Each benchmark test case is structured as follows:
 * **Jurisdiction Toggle:** India (National)
 * **Formulation Category:** Patent Post-Grant Compliance
 * **Benchmarked Answer:** 
-  Under **Rule 131 of the Patents (Amendment) Rules, 2024**, **Form 27** must be filed once every **three financial years** (instead of annually), within three months from the expiry of that three-year period.
+  Under **Rule 131 of the Patents (Amendment) Rules, 2024**, **Form 27** must be filed once every **three financial years** (instead of annually), within six months from the expiry of that three-year period (rule 131(2) as substituted by G.S.R. 211(E), 15 March 2024).
 * **Validation Criteria:** Cite Patents Amendment Rules 2024 Rule 131; state 3-year reporting cycle; High Confidence (🟢).
 
 ---
