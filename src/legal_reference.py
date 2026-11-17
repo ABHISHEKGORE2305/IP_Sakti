@@ -22,6 +22,35 @@ _RULE_RE = re.compile(
 
 _PAREN_RE = re.compile(r"\(\s*([0-9A-Za-z]+)\s*\)")
 
+# "the Patents (Amendment) Rules 2024" is a title, not Rule 2024.
+_YEAR_RE = re.compile(r"(?:19|20)\d{2}")
+
+# Provision numbers repeat across instruments: "Section 8" exists in the
+# Patents Act, the BD Act and the D&C Act, and every chunk carrying that
+# label used to get the exact-reference bonus - so a question about
+# Section 8 of the Patents Act surfaced Section 8 of four Acts. When the
+# query names an instrument family, only chunks whose document title is in
+# one of the named families count as a match. A query naming no family
+# keeps the old behaviour.
+INSTRUMENT_FAMILIES = {
+    # The Patent Office's Ayush examination guidelines omit "patent" from
+    # their title.
+    "patents": re.compile(r"\bpatent|ayush related inventions", re.I),
+    "drugs_cosmetics": re.compile(
+        r"drugs?\s*(?:and|&)\s*cosmetics|\bd\s*&\s*c\b|\bdrugs?\s+rules\b", re.I
+    ),
+    "biodiversity": re.compile(
+        r"biological\s+diversity|\bbd\s*a(?:ct)?\b|\bbd\s+rules\b|\bnba\b|\bsbb\b", re.I
+    ),
+    "trade_marks": re.compile(r"trade\s*-?\s*marks?", re.I),
+    "plant_varieties": re.compile(r"plant\s+variet|ppv\s*&?\s*fr|farmers'?\s+rights", re.I),
+    "food_safety": re.compile(r"fssai|food\s+safety|aahara?", re.I),
+}
+
+
+def instrument_families(text: str) -> list[str]:
+    return [name for name, rx in INSTRUMENT_FAMILIES.items() if rx.search(text or "")]
+
 
 def _canonical(kind: str, number: str, parens: str) -> dict:
 
@@ -57,7 +86,13 @@ def extract_legal_references(query: str) -> list[dict]:
         references.append(_canonical("Section", number, parens))
 
     for number, parens in _RULE_RE.findall(query or ""):
+        if _YEAR_RE.fullmatch(number) and not parens:
+            continue
         references.append(_canonical("Rule", number, parens))
+
+    families = instrument_families(query)
+    for ref in references:
+        ref["families"] = families
 
     # de-duplicate by label, keep order
     seen = set()
@@ -107,6 +142,12 @@ def match_reference(ref: dict, chunk: dict) -> str | None:
 
     chunk_label = _chunk_reference_label(chunk)
     if not chunk_label:
+        return None
+
+    families = ref.get("families")
+    if families and not any(
+        INSTRUMENT_FAMILIES[f].search(chunk.get("document") or "") for f in families
+    ):
         return None
 
     if _normalise(chunk_label) == _normalise(ref["label"]):
