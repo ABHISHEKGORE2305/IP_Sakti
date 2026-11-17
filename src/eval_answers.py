@@ -253,10 +253,29 @@ def _load_run(path: Path) -> list[dict]:
     return []
 
 
-def _save_run(path: Path, cases: list[dict]) -> None:
+def _save_run(path: Path, cases: list[dict], answers_win: bool = False) -> None:
+    """Merge `cases` into the run file rather than overwrite it, so a
+    `generate` and a `grade` working on the same file concurrently cannot
+    erase each other's results. answers_win=True (generate) replaces the
+    stored answer; otherwise (grade) a judgement is only stored against the
+    exact answer it was given for."""
+
+    merged = {c["id"]: c for c in _load_run(path)}
+    for case in cases:
+        stored = merged.get(case["id"])
+        if stored is None:
+            merged[case["id"]] = case
+        elif answers_win:
+            same = stored.get("actual_answer") == case.get("actual_answer")
+            keep = stored.get("judge") if same and not case.get("judge") else case.get("judge")
+            merged[case["id"]] = dict(case, **({"judge": keep} if keep else {}))
+        elif case.get("judge") and stored.get("actual_answer") == case.get("actual_answer"):
+            merged[case["id"]] = dict(stored, judge=case["judge"])
+
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(".tmp")
-    tmp.write_text(json.dumps(cases, indent=2, ensure_ascii=False), encoding="utf-8")
+    tmp = path.with_suffix(f".{os.getpid()}.tmp")
+    out = sorted(merged.values(), key=lambda c: c["id"])
+    tmp.write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
     tmp.replace(path)
 
 
@@ -304,7 +323,7 @@ def generate(args) -> None:
             print(f"  [{q['id']:>3}] {case['api_error'][:60]} - retrying in {args.backoff:.0f}s")
             time.sleep(args.backoff)
         done[q["id"]] = case
-        _save_run(out, sorted(done.values(), key=lambda c: c["id"]))
+        _save_run(out, [case], answers_win=True)
         status = case["api_error"] or "ok"
         print(f"  [{q['id']:>3}] {case['latency_s']:>6.1f}s  {status}")
         if args.delay:

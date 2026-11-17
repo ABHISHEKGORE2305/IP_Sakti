@@ -169,6 +169,31 @@ def test_grade_cases_skips_graded_and_failed_generations():
     assert cases[2]["judge"]["tags"] == ["over_abstention"]
 
 
+def test_concurrent_generate_and_grade_saves_do_not_erase_each_other():
+    import tempfile
+    from pathlib import Path
+
+    path = Path(tempfile.mkdtemp()) / "run.json"
+    # grade loaded the file when only case 1 existed ...
+    stale = [{"id": 1, "actual_answer": "a1"}]
+    ea._save_run(path, stale, answers_win=True)
+    # ... generate adds case 2 meanwhile ...
+    ea._save_run(path, [{"id": 2, "actual_answer": "a2"}], answers_win=True)
+    # ... then grade saves its stale list with a verdict for case 1.
+    stale[0]["judge"] = {"verdict": "PASS"}
+    ea._save_run(path, stale)
+    run = {c["id"]: c for c in ea._load_run(path)}
+    assert set(run) == {1, 2}, "grade must not drop answers generated meanwhile"
+    assert run[1]["judge"]["verdict"] == "PASS"
+
+    # A regenerated answer drops the verdict given for the old one; a
+    # verdict for a stale answer is not attached to the new one.
+    ea._save_run(path, [{"id": 1, "actual_answer": "a1-new"}], answers_win=True)
+    assert "judge" not in ea._load_run(path)[0]
+    ea._save_run(path, [{"id": 1, "actual_answer": "a1", "judge": {"verdict": "FAIL"}}])
+    assert "judge" not in ea._load_run(path)[0]
+
+
 # ------------------------------------------------------------------
 # Report / calibration maths
 # ------------------------------------------------------------------
