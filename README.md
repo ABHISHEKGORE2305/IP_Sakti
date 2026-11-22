@@ -1,5 +1,7 @@
 # IP-Sakti (आयुरX) — Ayurveda IPR & Regulatory Intelligence
 
+[![CI](https://github.com/ABHISHEKGORE2305/IP_Sakti/actions/workflows/ci.yml/badge.svg)](https://github.com/ABHISHEKGORE2305/IP_Sakti/actions/workflows/ci.yml)
+
 A citation-grounded AI assistant for Ayurvedic intellectual property and regulatory
 law. Ask whether a formulation is patentable, which regulator owns it, or what
 Access-and-Benefit-Sharing duties it triggers — and get back an answer where every
@@ -92,6 +94,38 @@ verified/total count.
   `0.40·rerank + 0.30·retrieval_density + 0.20·authority + 0.10·query_term_coverage`,
   banded High (≥0.75) / Medium (≥0.50) / Low.
 
+### API security (`src/server/security.py`)
+
+- **Admin authentication** — `/api/admin/*` requires an `X-Admin-Key` header matching
+  `ADMIN_API_KEY`, compared in constant time. With the variable unset the routes answer
+  503: they fail closed, never open.
+- **Upload hardening** — the corpus upload reduces the client's filename to a safe bare
+  name (`../../src/x.pdf` cannot escape `data/raw/`), checks the `%PDF-` magic bytes,
+  enforces `MAX_UPLOAD_BYTES` while streaming rather than trusting `Content-Length`, and
+  refuses to overwrite an existing file, so the statutes already in the corpus cannot be
+  replaced.
+- **Rate limiting** — per-client-IP sliding windows: LLM-backed routes (30/min), escalation
+  email (5/hour), admin (10/min, checked *before* the key so it cannot be brute-forced).
+  In-memory and per-process, which is correct for the single-worker deployment; the
+  counters move to Redis before scaling out.
+
+### Observability (`src/observability.py`, `src/server/middleware.py`)
+
+Every log line is one JSON object stamped with the request's id. Each request gets an
+`X-Request-Id` (a client-supplied one is kept if it is safe to log) and one access-log line
+with per-stage timings:
+
+```json
+{"level": "INFO", "logger": "access", "msg": "request", "request_id": "9c1e…",
+ "method": "POST", "path": "/api/chat/", "status": 200, "duration_ms": 9312.4,
+ "stages_ms": {"query_expansion": 610.2, "hybrid_retrieval": 402.8, "rerank": 4710.5,
+               "context_build": 1.9, "llm_generate": 3466.0}}
+```
+
+The same breakdown goes out as a standard `Server-Timing` header, so browser devtools show
+where a slow answer spent its time. Each LLM call also logs prompt and completion token
+counts, enough to compute cost per request. `LOG_FORMAT=text` gives readable lines locally.
+
 ### Frontend (`sih_frontend_antigrav/`)
 
 React 19 + Vite, dark/light themed, deep-green-and-gold Ayurvedic design system
@@ -155,7 +189,8 @@ bracketed statutory citations in English.
 
 ## API
 
-Base URL `http://127.0.0.1:8000`. Full docstrings at the top of `src/api.py`.
+Base URL `http://127.0.0.1:8000`. Interactive OpenAPI docs at `/docs`. `src/api.py`
+assembles the app; each product area is a router in `src/server/routers/`.
 
 | Method | Path | Purpose |
 |---|---|---|
@@ -172,14 +207,16 @@ Base URL `http://127.0.0.1:8000`. Full docstrings at the top of `src/api.py`.
 | `GET` | `/api/eval-results` | Benchmark dashboard data |
 | `GET` | `/api/references` | Deep links to official portals (IP India, WIPO, GI Registry, TKDL, AYUSH, FSSAI, NBA) |
 | `GET`/`POST` | `/api/consent` · `/api/audit-log` · `/api/privacy/summary` · `/api/privacy/delete` | DPDP dashboard |
-| `GET`/`POST` | `/api/admin/corpus` · `/api/admin/corpus/upload` | Corpus admin |
+| `GET`/`POST` | `/api/admin/corpus` · `/api/admin/corpus/upload` | Corpus admin (`X-Admin-Key` required) |
 
 ---
 
 ## Running it
 
-**Prerequisites:** Python 3.14 + `venv`, Node **≥ 22**, Docker (for Qdrant),
-`GROQ_API_KEY` or `GEMINI_API_KEY` in `.env`.
+**Prerequisites:** Python **3.10+**, Node **≥ 22**, Docker (for Qdrant), and
+`GROQ_API_KEY` or `GEMINI_API_KEY` in `.env` (copy `.env.example`). The Docker image and
+CI run Python 3.10, which is what `requirements.txt` is pinned and verified against;
+local development has also been run on 3.14.
 
 ```bash
 # 1. Qdrant — start once, it persists
@@ -209,6 +246,22 @@ curl http://localhost:8000/health
 curl http://localhost:6333/collections
 ```
 
+### Corpus data
+
+`data/` is not in git: the 21 source PDFs (~30 MB) and `chunks.json` with stored
+embeddings (~90 MB) are binary, never diff, and every committed version would live in
+every clone forever. They are versioned as GitHub Release assets instead:
+
+```bash
+python scripts/data_bundle.py fetch            # latest bundle -> data/, SHA-256 verified
+python scripts/sync_qdrant.py --apply          # load the stored vectors into Qdrant
+
+python scripts/data_bundle.py pack             # maintainers: bundle data/ for a new release
+```
+
+To rebuild from the PDFs alone (re-chunks and re-embeds everything):
+`PYTHONPATH=src python src/ingest.py && python scripts/sync_qdrant.py --apply --prune`.
+
 ### Environment variables
 
 | Variable | Purpose |
@@ -218,14 +271,39 @@ curl http://localhost:6333/collections
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` | Escalation email |
 | `ESCALATION_EMAIL_TO` | IP facilitator inbox |
 | Bhashini credentials | Optional; TTS/STT degrade gracefully without them |
+| `ADMIN_API_KEY` | Enables `/api/admin/*`; unset means admin routes are disabled |
+| `RATE_LIMIT_LLM_PER_MIN`, `RATE_LIMIT_ESCALATE_PER_HOUR`, `RATE_LIMIT_ADMIN_PER_MIN` | Per-client limits (0 disables) |
+| `LOG_FORMAT`, `LOG_LEVEL` | `json` (default) or `text`; standard level names |
 
 ### Tests and evaluation
 
 ```bash
-PYTHONPATH=src python src/test_engines.py     # deterministic engine checks
-PYTHONPATH=src python src/test_agents.py      # agent + guardrail checks
+pip install -r requirements-dev.txt
+
+pytest                                   # fast tier: 174 tests, ~5 s, no services needed
+pytest --cov                             # with coverage
+pytest -m integration                    # real PDFs, models and Qdrant (skips what's missing)
+pytest -m "integration and llm"          # end-to-end answer with a real LLM (spends tokens)
+
+ruff check src scripts tests             # lint
+mypy src tests                           # type check
+
 PYTHONPATH=src python src/eval_benchmark.py   # 50-question golden benchmark
+PYTHONPATH=src python src/eval_answers.py     # end-to-end answer grading (see below)
 ```
+
+Tests live in `tests/`, split into two tiers by pytest marker:
+
+- **Fast** (default) — the deterministic engines, guardrails, agent routing, the legal
+  parser, the HTTP layer (including the security tests above) and logging. No models, no
+  Qdrant, no network. This is what CI runs on every push.
+- **Integration** (`-m integration`) — chunking checks against the real Patents Act PDF,
+  BM25/embedding/reranker/hybrid retrieval on the real corpus, and an LLM-graded answer.
+  Each test skips with a reason when its dependency (PDF, model weights, Qdrant, API key)
+  is missing.
+
+**CI** (`.github/workflows/ci.yml`) runs ruff, mypy and the fast tier on Python 3.10 with
+the pinned requirements, plus the frontend's oxlint and production build.
 
 ---
 
@@ -269,7 +347,14 @@ second is not.
 
 ```
 src/
-  api.py                 FastAPI server, all endpoints
+  api.py                 FastAPI app: startup model loading, middleware, router wiring
+  server/
+    routers/             one module per area: chat, agent, language, escalate,
+                         law_versions, privacy, admin, system
+    security.py          admin auth, upload validation, rate limiting
+    middleware.py        request ids, access log, Server-Timing
+    state.py             shared pipeline state and request helpers
+  observability.py       JSON logging, request context, stage timers
   rag_pipeline.py        query → retrieval → rerank → LLM → grounded answer
   final_retriever.py     hybrid retrieval + RRF + rerank + authority weighting
   hybrid_retriever.py    dense + BM25
@@ -282,7 +367,7 @@ src/
   agents/                LangGraph graph, supervisor, 6 specialists, citation agent
   engines/               7 deterministic legal engines
   guardrails/            PII sanitizer, injection filter, confidence scoring
-  test_*.py              suite-per-layer checks
+tests/                   pytest suite (fast tier) + tests/integration/
 sih_frontend_antigrav/   React 19 + Vite frontend (landing + /app product shell)
 data/raw/                21 source PDFs
 data/processed/          chunks.json (3,078), chunks_web.json, app.db, eval_results.json
