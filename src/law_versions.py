@@ -20,7 +20,9 @@ literally "ask the same question under the old law vs the current law"
 to exactly one version — not a fabricated diff.
 """
 
-LAW_FAMILIES = [
+from typing import Any
+
+LAW_FAMILIES: list[dict[str, Any]] = [
     {
         "family_id": "patents_rules",
         "label": "Patents Rules",

@@ -2,7 +2,6 @@ from qdrant_client import QdrantClient
 
 import config
 
-
 QDRANT_URL = config.QDRANT_URL
 COLLECTION_NAME = config.COLLECTION_NAME
 

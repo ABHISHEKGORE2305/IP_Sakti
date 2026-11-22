@@ -94,7 +94,7 @@ def _parse_set_1_100(text: str) -> list[dict]:
         # (the benchmarked answer is an indented paragraph).
         fields = {}
         parts = re.split(r"^\* \*\*([^*]+?):?\*\*:?", body, flags=re.M)
-        for name, value in zip(parts[1::2], parts[2::2]):
+        for name, value in zip(parts[1::2], parts[2::2], strict=True):
             value = value.split("\n---")[0]
             fields[name.strip().rstrip(":")] = _clean(value)
 
@@ -129,7 +129,7 @@ def _parse_set_101_200(text: str) -> list[dict]:
         body = re.split(r"^Section \d+:", body, flags=re.M)[0]
 
         def field(name: str) -> str:
-            m = re.search(rf"^{name}:\s*(.*)$", body, flags=re.M)
+            m = re.search(rf"^{name}:\s*(.*)$", body, flags=re.M)  # noqa: B023 - called within this iteration
             return m.group(1).strip() if m else ""
 
         answer = body.split("Benchmark Answer:", 1)[1] if "Benchmark Answer:" in body else ""
@@ -153,7 +153,7 @@ def _parse_set_301_400(text: str) -> list[dict]:
 
     cases = []
     sections = re.split(r"^## ([A-L]\. .+)$", text, flags=re.M)
-    for section, section_body in zip(sections[1::2], sections[2::2]):
+    for section, section_body in zip(sections[1::2], sections[2::2], strict=True):
         for block in re.split(r"^### Q", section_body, flags=re.M)[1:]:
             header, _, body = block.partition("\n")
             m = re.match(r"(\d+)\.\s*(.+)", header)
@@ -163,7 +163,7 @@ def _parse_set_301_400(text: str) -> list[dict]:
             def field(name: str) -> str:
                 fm = re.search(
                     rf"^\*\*{name}:\*\*\s*(.*?)(?=^\*\*[A-Z][\w ]+:\*\*|\Z)",
-                    body,
+                    body,  # noqa: B023 - called within this iteration
                     flags=re.M | re.S,
                 )
                 return _clean(fm.group(1)) if fm else ""
@@ -210,7 +210,7 @@ def parse_ids(spec: str | None) -> set[int] | None:
 
     if not spec:
         return None
-    ids = set()
+    ids: set[int] = set()
     for part in spec.split(","):
         part = part.strip()
         if "-" in part:
@@ -473,7 +473,7 @@ def _print_summary(cases: list[dict]) -> None:
         for tag, n in tags.most_common():
             print(f"  {tag:<20} {n:>4}")
 
-    by_cat = defaultdict(Counter)
+    by_cat: defaultdict[str, Counter] = defaultdict(Counter)
     for c in graded:
         by_cat[c.get("category") or "-"][c["judge"]["verdict"]] += 1
     print("\nBy category (PASS / PARTIAL / FAIL):")
@@ -486,7 +486,7 @@ _RANK = {"FAIL": 0, "PARTIAL": 1, "PASS": 2}
 
 def diff_verdicts(new: dict[int, str], old: dict[int, str]) -> dict[str, list]:
     shared = sorted(set(new) & set(old))
-    out = {"improved": [], "regressed": [], "same": []}
+    out: dict[str, list] = {"improved": [], "regressed": [], "same": []}
     for cid in shared:
         delta = _RANK[new[cid]] - _RANK[old[cid]]
         key = "improved" if delta > 0 else "regressed" if delta < 0 else "same"

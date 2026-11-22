@@ -1,6 +1,7 @@
-from pathlib import Path
-import pymupdf
 import re
+from pathlib import Path
+
+import pymupdf
 
 
 def clean_text(text: str) -> str:
@@ -22,14 +23,14 @@ def load_pdf(
     metadata: dict | None = None,
 ):
 
-    pdf_path = Path(pdf_path)
+    path = Path(pdf_path)
 
-    if not pdf_path.exists():
+    if not path.exists():
         raise FileNotFoundError(
-            f"PDF not found: {pdf_path}"
+            f"PDF not found: {path}"
         )
 
-    document = pymupdf.open(pdf_path)
+    document = pymupdf.open(path)
 
     pages = []
 
@@ -40,7 +41,7 @@ def load_pdf(
     # "Section N" vs "Rule N" correctly rather than all as sections.
     page_range = (metadata or {}).get("page_range")
 
-    for page_number, page in enumerate(document):
+    for page_number, page in enumerate(document):  # type: ignore[arg-type,var-annotated]  # pymupdf stubs omit __iter__
 
         if page_range and not (page_range[0] <= page_number + 1 <= page_range[1]):
             continue
@@ -56,8 +57,8 @@ def load_pdf(
         page_data = {
             "text": text,
             "page": page_number + 1,
-            "source": pdf_path.name,
-            "document_id": pdf_path.stem,
+            "source": path.name,
+            "document_id": path.stem,
         }
 
         # Add document-level metadata

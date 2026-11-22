@@ -78,6 +78,8 @@ def send_case_brief(
     password = os.getenv("SMTP_PASSWORD")
     sender = os.getenv("SMTP_FROM") or user
     recipient = os.getenv("ESCALATION_EMAIL_TO")
+    # Guaranteed by the is_configured() check above; narrows str | None.
+    assert host and user and password
 
     message = EmailMessage()
     message["Subject"] = subject

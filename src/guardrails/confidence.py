@@ -20,7 +20,6 @@ import re
 
 import config
 
-
 ABSTENTION_MESSAGE = (
     "I could not locate sufficiently authoritative statutory provisions "
     "or official guidelines to answer this specific query with certainty. "

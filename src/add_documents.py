@@ -26,11 +26,10 @@ import argparse
 import json
 from pathlib import Path
 
+import config
 from chunker import consolidate_chunks, create_chunks
 from document_config import DOCUMENTS
 from document_loader import load_pdf
-import config
-
 
 RAW_DIR = Path("data/raw")
 
@@ -88,7 +87,7 @@ def main():
     from vector_store import QdrantVectorStore
 
     vectors = EmbeddingModel().embed_documents([c["text"] for c in new_chunks])
-    for chunk, vector in zip(new_chunks, vectors):
+    for chunk, vector in zip(new_chunks, vectors, strict=True):
         chunk["vector"] = vector
 
     replaced = set(args.document_ids)

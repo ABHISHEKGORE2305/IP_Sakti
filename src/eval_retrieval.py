@@ -14,7 +14,6 @@ import sys
 
 from final_retriever import AyurvedicIPRetriever
 
-
 QUERIES = [
     "What is Section 3(p) of the Patents Act?",
     "Can traditional knowledge be patented in India?",

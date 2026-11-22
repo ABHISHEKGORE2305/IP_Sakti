@@ -9,7 +9,6 @@ and the semantic pipeline is left completely unchanged.
 
 import re
 
-
 _SECTION_RE = re.compile(
     r"\bsection[s]?\s+(\d+[A-Za-z]?)\s*((?:\(\s*[0-9A-Za-z]+\s*\))*)",
     re.IGNORECASE,

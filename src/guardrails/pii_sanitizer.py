@@ -17,7 +17,6 @@ own); that is a known limitation, not a gap to be silently assumed away.
 
 import re
 
-
 REDACTION_TAG = {
     "aadhaar": "[REDACTED-AADHAAR]",
     "pan": "[REDACTED-PAN]",

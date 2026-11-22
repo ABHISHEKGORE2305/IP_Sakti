@@ -3,7 +3,6 @@ from qdrant_client.models import Distance, VectorParams
 
 import config
 
-
 QDRANT_URL = config.QDRANT_URL
 
 COLLECTION_NAME = config.COLLECTION_NAME

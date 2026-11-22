@@ -44,7 +44,6 @@ from engines.tk_engine import analyze_tk_patentability
 from final_retriever import AyurvedicIPRetriever
 from guardrails.confidence import evaluate_confidence
 
-
 # ----------------------------------------------------------------------
 # Check primitives
 # ----------------------------------------------------------------------
@@ -100,7 +99,7 @@ def check_confidence_low(query, top_k=6):
 # 50 golden questions, 5 per Phase 6.2 category
 # ----------------------------------------------------------------------
 
-GOLDEN_QUESTIONS = []
+GOLDEN_QUESTIONS: list[dict] = []
 
 
 def _q(category, query, check_type, **kwargs):

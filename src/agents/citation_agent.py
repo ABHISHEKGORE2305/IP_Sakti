@@ -21,7 +21,6 @@ rather than being counted as zero citations and force-abstained.
 
 import re
 
-
 _CITATION_RE = re.compile(r"\[([^\[\]]+?)\]")
 _SOURCE_REF_RE = re.compile(r"[\[【]?\s*SOURCE\s+(\d+)\s*[\]】]?", re.IGNORECASE)
 _REFERENCE_MARKER_RE = re.compile(r"^(section|rule)\b", re.IGNORECASE)
@@ -179,12 +178,10 @@ def strip_unverified_citations(answer_text: str, report: dict) -> str:
             continue
 
         if "source_number" in verdict:
-            cleaned = _SOURCE_REF_RE.sub(
-                lambda m, n=verdict["source_number"]: (
-                    "[unverified citation removed]" if int(m.group(1)) == n else m.group(0)
-                ),
-                cleaned,
-            )
+            def _drop_ref(m: re.Match, n: int = verdict["source_number"]) -> str:
+                return "[unverified citation removed]" if int(m.group(1)) == n else m.group(0)
+
+            cleaned = _SOURCE_REF_RE.sub(_drop_ref, cleaned)
             continue
 
         page_part = f", p.{verdict['page']}" if verdict.get("page") is not None else ""

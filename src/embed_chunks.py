@@ -1,7 +1,6 @@
-from document_loader import load_pdf
 from chunker import create_chunks
+from document_loader import load_pdf
 from embedding_model import EmbeddingModel
-
 
 PDF_PATH = "data/raw/An_Overview_of_Ayurveda.pdf"
 
@@ -64,7 +63,8 @@ vectors = embedding_model.embed_documents(
 
 for chunk, vector in zip(
     chunks,
-    vectors
+    vectors,
+    strict=True,
 ):
 
     chunk["vector"] = vector

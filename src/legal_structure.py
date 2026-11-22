@@ -1,6 +1,5 @@
 import re
 
-
 # Prefixes that mark an amendment / footnote line rather than a
 # real statutory section heading. Footnote lines in the Patents
 # Act PDF are numbered too (they restart per page), e.g.

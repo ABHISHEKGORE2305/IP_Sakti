@@ -132,12 +132,13 @@ def main() -> int:
         import random
 
         import numpy as np
+
         from embedding_model import EmbeddingModel
 
         model = EmbeddingModel()
         picks = random.sample(chunks, min(args.verify, len(chunks)))
         vecs = np.array(model.embed_documents([c["text"] for c in picks]))
-        sims = [float(v @ np.array(c["vector"])) for v, c in zip(vecs, picks)]
+        sims = [float(v @ np.array(c["vector"])) for v, c in zip(vecs, picks, strict=True)]
         print(f"verify: cosine(local re-embed, stored vector) min={min(sims):.4f} "
               f"mean={sum(sims) / len(sims):.4f}  (expect >0.99)")
         if min(sims) < 0.99:

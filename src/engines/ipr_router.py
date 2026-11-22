@@ -292,7 +292,7 @@ def advise_regime(regime: Regime | str, **kwargs) -> dict:
 
     if regime == Regime.TRADEMARK:
         # Trademark has two independent sub-checks; run whichever kwargs support.
-        result = {"regime": Regime.TRADEMARK.value}
+        result: dict = {"regime": Regime.TRADEMARK.value}
         if "product_type" in kwargs:
             result["nice_class"] = trademark_nice_class(kwargs["product_type"])
         if "is_generic_or_descriptive_ayurvedic_term" in kwargs:

@@ -1,13 +1,12 @@
-from pathlib import Path
 import json
+from pathlib import Path
 
+import config
+from chunker import consolidate_chunks, create_chunks
+from document_config import DOCUMENTS
 from document_loader import load_pdf
-from chunker import create_chunks, consolidate_chunks
 from embedding_model import EmbeddingModel
 from vector_store import QdrantVectorStore
-from document_config import DOCUMENTS
-import config
-
 
 RAW_DIR = Path("data/raw")
 PROCESSED_DIR = Path("data/processed")
@@ -93,6 +92,7 @@ vectors = embedding_model.embed_documents(
 for chunk, vector in zip(
     all_chunks,
     vectors,
+    strict=True,
 ):
     chunk["vector"] = vector
 

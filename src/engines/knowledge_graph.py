@@ -22,9 +22,9 @@ provided, not looked up or fact-checked, since no such reference data
 exists yet in this system.
 """
 
+from engines.abs_engine import analyze_abs_compliance
 from engines.classifier import classify_product
 from engines.tk_engine import analyze_tk_patentability
-from engines.abs_engine import analyze_abs_compliance
 
 
 def _node(node_id: str, kind: str, label: str, **extra) -> dict:

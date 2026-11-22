@@ -64,8 +64,8 @@ def _discover_pipeline(task_type: str, source_lang: str, target_lang: str | None
     endpoint + its own API key. # VERIFY payload shape.
     """
 
-    user_id = os.getenv("BHASHINI_USER_ID")
-    api_key = os.getenv("BHASHINI_API_KEY")
+    user_id = os.getenv("BHASHINI_USER_ID", "")
+    api_key = os.getenv("BHASHINI_API_KEY", "")
     pipeline_id = os.getenv("BHASHINI_PIPELINE_ID", "64392f96daac500b55c543cd")  # VERIFY — public default pipeline id
 
     task_config: dict = {"taskType": task_type}

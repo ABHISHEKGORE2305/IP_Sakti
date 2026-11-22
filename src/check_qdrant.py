@@ -2,7 +2,6 @@ from qdrant_client import QdrantClient
 
 import config
 
-
 QDRANT_URL = config.QDRANT_URL
 COLLECTION_NAME = config.COLLECTION_NAME
 
@@ -61,40 +60,40 @@ for point in points:
 
     print(
         "Chunk ID:",
-        point.payload.get("chunk_id")
+        (point.payload or {}).get("chunk_id")
     )
 
     print(
         "Document:",
-        point.payload.get("document")
+        (point.payload or {}).get("document")
     )
 
     print(
         "Document Type:",
-        point.payload.get("document_type")
+        (point.payload or {}).get("document_type")
     )
 
     print(
         "Jurisdiction:",
-        point.payload.get("jurisdiction")
+        (point.payload or {}).get("jurisdiction")
     )
 
     print(
         "Page:",
-        point.payload.get("page")
+        (point.payload or {}).get("page")
     )
 
     print(
         "Language:",
-        point.payload.get("language")
+        (point.payload or {}).get("language")
     )
 
     print(
         "Section:",
-        point.payload.get("section")
+        (point.payload or {}).get("section")
     )
 
-    text = point.payload.get(
+    text = (point.payload or {}).get(
         "text",
         ""
     )

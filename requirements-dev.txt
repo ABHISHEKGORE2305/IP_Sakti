@@ -1,0 +1,7 @@
+# Test and lint tooling, on top of requirements.txt:
+#   pip install -r requirements.txt -r requirements-dev.txt
+pytest==9.2.0
+pytest-cov==7.1.0
+httpx==0.28.1        # fastapi.testclient
+ruff==0.17.6
+mypy==2.4.1

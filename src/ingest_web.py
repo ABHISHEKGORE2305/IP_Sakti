@@ -24,13 +24,12 @@ import json
 from datetime import date
 from pathlib import Path
 
+import config
 from chunker import create_chunks
 from embedding_model import EmbeddingModel
 from vector_store import QdrantVectorStore
 from web_loader import WebFetchError, load_url
 from web_sources import WEB_SOURCES
-import config
-
 
 PROCESSED_DIR = Path("data/processed")
 WEB_CHUNKS_PATH = Path(config.WEB_CHUNKS_PATH)
@@ -45,7 +44,7 @@ def _content_hash(pages: list[dict]) -> str:
 def _load_json(path: Path, default):
     if not path.exists():
         return default
-    with open(path, "r", encoding="utf-8") as file:
+    with open(path, encoding="utf-8") as file:
         return json.load(file)
 
 
@@ -112,7 +111,7 @@ def main() -> None:
         vectors = embedding_model.embed_documents(texts)
 
         fetched_at = date.today().isoformat()
-        for chunk, vector in zip(chunks, vectors):
+        for chunk, vector in zip(chunks, vectors, strict=True):
             chunk["vector"] = vector
             chunk["fetched_at"] = fetched_at
 

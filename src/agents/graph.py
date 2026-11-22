@@ -12,6 +12,7 @@ Run interactively:
 """
 
 import time
+from typing import cast
 
 from langgraph.graph import END, StateGraph
 
@@ -142,7 +143,7 @@ def supervisor_router(state: AgentState) -> dict:
 
 def _run_specialist(agent_name: str):
     def node(state: AgentState) -> dict:
-        result = SPECIALISTS[agent_name](state)
+        result = SPECIALISTS[agent_name](cast(dict, state))
         n_retrieved = len(result.get("retrieved") or [])
         summary = (
             f"ran {agent_name}; error={result['error']}" if result.get("error")
@@ -524,14 +525,14 @@ def run(query: str, jurisdiction: str = "India", **extra) -> dict:
     """
 
     if jurisdiction == "Both":
-        india_state: AgentState = {"query": query, "jurisdiction": "India", **extra}
-        intl_state: AgentState = {"query": query, "jurisdiction": "International", **extra}
+        india_state = cast(AgentState, {"query": query, "jurisdiction": "India", **extra})
+        intl_state = cast(AgentState, {"query": query, "jurisdiction": "International", **extra})
         return {
             "both": True,
             "india": get_graph().invoke(india_state),
             "international": get_graph().invoke(intl_state),
         }
 
-    initial_state: AgentState = {"query": query, "jurisdiction": jurisdiction, **extra}
+    initial_state = cast(AgentState, {"query": query, "jurisdiction": jurisdiction, **extra})
 
     return get_graph().invoke(initial_state)

@@ -1,10 +1,9 @@
 import json
 from pathlib import Path
 
-from retriever import AyurvedicRetriever
-from bm25_retriever import BM25Retriever
 import config
-
+from bm25_retriever import BM25Retriever
+from retriever import AyurvedicRetriever
 
 DEFAULT_AUTHORITY_WEIGHT = config.DEFAULT_AUTHORITY_WEIGHT
 
@@ -25,7 +24,6 @@ class AyurvedicHybridRetriever:
 
         with open(
             chunks_path,
-            "r",
             encoding="utf-8",
         ) as file:
 
@@ -39,7 +37,6 @@ class AyurvedicHybridRetriever:
 
             with open(
                 web_chunks_path,
-                "r",
                 encoding="utf-8",
             ) as file:
 
@@ -84,7 +81,7 @@ class AyurvedicHybridRetriever:
         educational overview ranked #1 by both.
         """
 
-        fused_scores = {}
+        fused_scores: dict[str, float] = {}
         result_data = {}
 
         for results in result_lists:
@@ -122,7 +119,7 @@ class AyurvedicHybridRetriever:
 
         ranked_chunk_ids = sorted(
             fused_scores,
-            key=fused_scores.get,
+            key=lambda chunk_id: fused_scores[chunk_id],
             reverse=True,
         )
 

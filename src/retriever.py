@@ -1,8 +1,8 @@
 from qdrant_client import QdrantClient
-from qdrant_client.models import Filter, FieldCondition, MatchValue
+from qdrant_client.models import Condition, FieldCondition, Filter, MatchValue
 
-from embedding_model import EmbeddingModel
 import config
+from embedding_model import EmbeddingModel
 
 
 def jurisdiction_query_filter(jurisdiction_filter: str | None) -> "Filter | None":
@@ -40,7 +40,7 @@ def combined_query_filter(jurisdiction_filter: str | None, document_id_filter: s
     just prompt-suggested — same reasoning as jurisdiction_query_filter.
     """
 
-    conditions = []
+    conditions: list[Filter] = []
     jurisdiction_part = jurisdiction_query_filter(jurisdiction_filter)
     if jurisdiction_part is not None:
         conditions.append(jurisdiction_part)
@@ -51,7 +51,8 @@ def combined_query_filter(jurisdiction_filter: str | None, document_id_filter: s
         return None
     if len(conditions) == 1:
         return conditions[0]
-    return Filter(must=conditions)
+    must: list[Condition] = [*conditions]
+    return Filter(must=must)
 
 
 class AyurvedicRetriever:
@@ -127,7 +128,7 @@ class AyurvedicRetriever:
 
         for result in results:
 
-            payload = result.payload
+            payload = result.payload or {}
 
             formatted_results.append({
 

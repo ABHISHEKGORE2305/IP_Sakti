@@ -17,8 +17,8 @@ from urllib.parse import urlparse
 import requests
 from bs4 import BeautifulSoup
 
-from document_loader import clean_text, load_pdf
 from chunker import split_into_paragraphs
+from document_loader import clean_text, load_pdf
 
 USER_AGENT = "IP-Sakti-CorpusUpdater/1.0 (+https://github.com/; contact: repo maintainer)"
 REQUEST_TIMEOUT = 20
@@ -88,7 +88,7 @@ def _split_into_synthetic_pages(text: str, max_chars: int = _SYNTHETIC_PAGE_CHAR
         return [text] if text else []
 
     pages = []
-    current = []
+    current: list[str] = []
     current_len = 0
 
     for para in paragraphs:

@@ -70,7 +70,9 @@ they're easy to find and fix once a corrected URL/fetch approach exists
 status with wrong/boilerplate content is worse than a skipped source).
 """
 
-WEB_SOURCES = [
+from typing import Any
+
+WEB_SOURCES: list[dict[str, Any]] = [
     # --- Treaties / international instruments (verified: overview pages, not full text) ---
     {
         "source_id": "wipo_gratk_treaty_2024",
