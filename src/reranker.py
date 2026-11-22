@@ -1,8 +1,11 @@
+import logging
 import os
 
 from sentence_transformers import CrossEncoder
 
 import config
+
+logger = logging.getLogger(__name__)
 
 
 MODEL_NAME = config.RERANKER_MODEL_NAME
@@ -11,7 +14,7 @@ MODEL_NAME = config.RERANKER_MODEL_NAME
 class AyurvedicIPReranker:
 
     def __init__(self):
-        print(f"Loading reranker model: {MODEL_NAME}")
+        logger.info("loading reranker model", extra={"model": MODEL_NAME})
 
         # bf16 is ~3.5x faster than fp32 on CPUs with bf16 support (AMX/
         # AVX512-bf16, e.g. AWS c7i): 12 passages took 16.3s in fp32 vs 4.7s
@@ -27,9 +30,9 @@ class AyurvedicIPReranker:
                     max_length=512,
                     model_kwargs={"torch_dtype": torch.bfloat16},
                 )
-                print("Reranker running in bf16")
+                logger.info("reranker running in bf16")
             except Exception as exc:  # noqa: BLE001
-                print(f"[reranker] bf16 unavailable ({exc}); using fp32")
+                logger.warning("reranker bf16 unavailable, using fp32: %s", exc)
 
         if self.model is None:
             self.model = CrossEncoder(
@@ -37,7 +40,7 @@ class AyurvedicIPReranker:
                 max_length=512,
             )
 
-        print("Reranker model loaded!")
+        logger.info("reranker model loaded")
 
     def rerank(
         self,
@@ -60,7 +63,7 @@ class AyurvedicIPReranker:
 
         reranked_results = []
 
-        for result, score in zip(results, scores):
+        for result, score in zip(results, scores, strict=True):
 
             reranked_result = result.copy()
 

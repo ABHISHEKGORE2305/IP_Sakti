@@ -18,6 +18,16 @@ qdrant_storage/
 frontend/
 sih_frontend_antigrav/
 
+# Local virtualenv, tests, CI, media and evaluation artefacts (not needed at runtime)
+venv/
+tests/
+.github/
+*.mp4
+video_production/
+brag-output/
+benchmark_questions/
+benchmark_results/
+
 # Python caches
 __pycache__/
 *.py[cod]

@@ -37,4 +37,10 @@ COPY data/processed/chunks.json data/processed/
 
 EXPOSE 7860
 
-CMD ["uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "7860", "--workers", "1"]
+# --proxy-headers: Caddy is the only client that can reach this port, so trust
+# its X-Forwarded-For; the per-client rate limits then see real user IPs.
+# --no-access-log: the app writes its own structured access log with request
+# ids and per-stage timings (src/server/middleware.py).
+# One worker: the rate limiter and the loaded models are per-process.
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "7860", "--workers", "1", \
+     "--proxy-headers", "--forwarded-allow-ips=*", "--no-access-log"]

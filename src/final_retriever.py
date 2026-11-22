@@ -1,11 +1,14 @@
+import logging
 import threading
-import time
 
-from hybrid_retriever import AyurvedicHybridRetriever
-from reranker import AyurvedicIPReranker
-from legal_reference import extract_legal_references, match_reference
-from bm25_retriever import _jurisdiction_matches
 import config
+from bm25_retriever import _jurisdiction_matches
+from hybrid_retriever import AyurvedicHybridRetriever
+from legal_reference import extract_legal_references, match_reference
+from observability import stage
+from reranker import AyurvedicIPReranker
+
+logger = logging.getLogger(__name__)
 
 
 # Score bonuses added on top of the cross-encoder score when the query
@@ -29,7 +32,7 @@ class AyurvedicIPRetriever:
         collection_name: str = config.COLLECTION_NAME,
     ):
 
-        print("\nInitializing hybrid retriever...")
+        logger.info("initializing hybrid retriever")
 
         self.hybrid_retriever = AyurvedicHybridRetriever(
             chunks_path=chunks_path,
@@ -37,7 +40,7 @@ class AyurvedicIPRetriever:
             collection_name=collection_name,
         )
 
-        print("\nInitializing cross-encoder reranker...")
+        logger.info("initializing cross-encoder reranker")
 
         self.reranker = AyurvedicIPReranker()
 
@@ -52,7 +55,7 @@ class AyurvedicIPRetriever:
         # generation for several chats still overlaps.
         self._inference_lock = threading.Lock()
 
-        print("\nFinal retriever ready!")
+        logger.info("final retriever ready")
 
     # ------------------------------------------------------------------
     # Helpers
@@ -232,32 +235,25 @@ class AyurvedicIPRetriever:
             # STEP 1: Hybrid retrieval
             # --------------------------------
 
-            _t0 = time.perf_counter()
-            candidates = self._hybrid_candidates(
-                query, candidate_k, jurisdiction_filter, document_id_filter
-            )
+            with stage("hybrid_retrieval", candidate_k=candidate_k):
+                candidates = self._hybrid_candidates(
+                    query, candidate_k, jurisdiction_filter, document_id_filter
+                )
 
             # --------------------------------
             # No explicit legal reference -> unchanged behaviour
             # --------------------------------
 
-            _t1 = time.perf_counter()
-
             if not references:
-                reranked = self.reranker.rerank(
-                    query=query,
-                    results=candidates,
-                    top_k=len(candidates),
-                )
+                with stage("rerank", candidates=len(candidates)):
+                    reranked = self.reranker.rerank(
+                        query=query,
+                        results=candidates,
+                        top_k=len(candidates),
+                    )
                 reranked = self._apply_jurisdiction_penalty(
                     reranked, jurisdiction_filter
                 )[:top_k]
-                print(
-                    f"[timing] retrieval hybrid={_t1 - _t0:.2f}s "
-                    f"rerank={time.perf_counter() - _t1:.2f}s "
-                    f"candidates={len(candidates)}",
-                    flush=True,
-                )
                 return reranked
 
             # --------------------------------
@@ -268,17 +264,12 @@ class AyurvedicIPRetriever:
                 references, candidates, jurisdiction_filter, document_id_filter
             )
 
-            reranked = self.reranker.rerank(
-                query=query,
-                results=candidates,
-                top_k=len(candidates),
-            )
-            print(
-                f"[timing] retrieval hybrid={_t1 - _t0:.2f}s "
-                f"rerank={time.perf_counter() - _t1:.2f}s "
-                f"candidates={len(candidates)} (exact-reference path)",
-                flush=True,
-            )
+            with stage("rerank", candidates=len(candidates), path="exact_reference"):
+                reranked = self.reranker.rerank(
+                    query=query,
+                    results=candidates,
+                    top_k=len(candidates),
+                )
 
         reranked = self._apply_legal_boost(references, reranked)
         reranked = self._apply_jurisdiction_penalty(reranked, jurisdiction_filter)

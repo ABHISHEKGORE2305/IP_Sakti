@@ -1,9 +1,14 @@
+import logging
 import math
 import os
 import re
 import time
 
 from dotenv import load_dotenv
+
+from observability import stage
+
+logger = logging.getLogger(__name__)
 
 try:
     load_dotenv()
@@ -133,26 +138,26 @@ class GroqLLM:
                     max_retries=0,
                 )
             except ImportError:
-                raise LLMError("groq package not installed. Run: pip install groq")
+                raise LLMError("groq package not installed. Run: pip install groq") from None
 
             self.model = model or GROQ_DEFAULT_MODEL
             self._models = [self.model] + [
                 m for m in GROQ_FALLBACK_MODELS if m != self.model
             ]
-            print(f"Groq LLM initialized: {self.model}")
+            logger.info("LLM initialized", extra={"provider": "groq", "model": self.model})
 
         else:
             try:
                 from google import genai
                 self.gemini_client = genai.Client(api_key=self.gemini_api_key)
             except ImportError:
-                raise LLMError("google-genai package not installed.")
+                raise LLMError("google-genai package not installed.") from None
 
             self.model = model or GEMINI_DEFAULT_MODEL
             self._models = [self.model] + [
                 m for m in GEMINI_FALLBACK_MODELS if m != self.model
             ]
-            print(f"Gemini LLM initialized (fallback): {self.model}")
+            logger.info("LLM initialized", extra={"provider": "gemini", "model": self.model})
 
     def _call_groq(self, model: str, prompt: str, max_tokens: int | None = None) -> str:
         out_tokens = _output_budget(model, prompt, max_tokens)
@@ -167,7 +172,9 @@ class GroqLLM:
         if effort and model.startswith("openai/gpt-oss"):
             extra["reasoning_effort"] = effort
 
-        chat_completion = self.groq_client.chat.completions.create(
+        # The SDK types messages as per-role TypedDicts; plain dicts are what it
+        # accepts at runtime.
+        chat_completion = self.groq_client.chat.completions.create(  # type: ignore[call-overload]
             **extra,
             messages=[
                 {
@@ -200,13 +207,17 @@ class GroqLLM:
         choice = chat_completion.choices[0]
         usage = getattr(chat_completion, "usage", None)
         if usage:
-            print(
-                f"[llm:groq] {model} in={usage.prompt_tokens} "
-                f"out={usage.completion_tokens} cap={out_tokens}",
-                flush=True,
-            )
+            # One line per call with token counts: enough to compute cost per
+            # request by grouping on request_id.
+            logger.info("llm usage", extra={
+                "provider": "groq",
+                "model": model,
+                "prompt_tokens": usage.prompt_tokens,
+                "completion_tokens": usage.completion_tokens,
+                "max_tokens": out_tokens,
+            })
         if getattr(choice, "finish_reason", None) == "length":
-            print(f"[llm:groq] {model} hit the {out_tokens}-token output cap", flush=True)
+            logger.warning("LLM hit the output token cap", extra={"model": model, "max_tokens": out_tokens})
         text = choice.message.content
         if not text:
             raise LLMError("Groq returned an empty response.")
@@ -225,15 +236,8 @@ class GroqLLM:
     def generate(
         self, prompt: str, max_attempts: int = 3, max_tokens: int | None = None
     ) -> str:
-        start = time.perf_counter()
-        try:
+        with stage("llm_generate", prompt_chars=len(prompt)):
             return self._generate(prompt, max_attempts, max_tokens)
-        finally:
-            print(
-                f"[timing] llm.generate {time.perf_counter() - start:.2f}s "
-                f"prompt_chars={len(prompt)}",
-                flush=True,
-            )
 
     def _generate(
         self, prompt: str, max_attempts: int = 3, max_tokens: int | None = None
@@ -257,11 +261,11 @@ class GroqLLM:
                         if _is_rate_limit(message):
                             waits.append(_retry_after_seconds(message))
 
-                        print(f"[llm:groq] {model} issue ({message[:160]}); trying next model...")
+                        logger.warning("groq model failed, trying next: %s", message[:160], extra={"model": model})
 
                 if round_number == 2 or not waits or min(waits) > max_wait:
                     break
-                print(f"[llm:groq] all models rate-limited; retrying in {min(waits):.1f}s")
+                logger.warning("all groq models rate-limited, retrying", extra={"wait_s": round(min(waits), 1)})
                 time.sleep(min(waits))
 
             # If all Groq models failed and Gemini key is available, attempt
@@ -272,11 +276,11 @@ class GroqLLM:
                     from google import genai
                     client = genai.Client(api_key=self.gemini_api_key)
                 except Exception as exc:  # noqa: BLE001
-                    print(f"[llm:gemini fallback unavailable]: {exc}")
+                    logger.warning("gemini fallback unavailable: %s", exc)
                 else:
                     for gemini_model in GEMINI_FALLBACK_MODELS:
                         try:
-                            print(f"[llm] Falling back to Gemini ({gemini_model})...")
+                            logger.warning("falling back to gemini", extra={"model": gemini_model})
                             resp = client.models.generate_content(
                                 model=gemini_model,
                                 contents=prompt,
@@ -286,7 +290,7 @@ class GroqLLM:
                                 return text.strip()
                         except Exception as exc:  # noqa: BLE001
                             last_error = exc
-                            print(f"[llm:gemini fallback] {gemini_model} failed: {str(exc)[:80]}")
+                            logger.warning("gemini fallback failed: %s", str(exc)[:80], extra={"model": gemini_model})
 
         else:
             # Provider is Gemini
@@ -302,7 +306,7 @@ class GroqLLM:
                             time.sleep(2 * attempt)
                             continue
 
-                        print(f"[llm:gemini] {model} failing ({message[:80]}); trying next model")
+                        logger.warning("gemini model failed, trying next: %s", message[:80], extra={"model": model})
                         break
 
         raise LLMError(

@@ -1,6 +1,10 @@
+import logging
+
 from sentence_transformers import SentenceTransformer
 
 import config
+
+logger = logging.getLogger(__name__)
 
 
 MODEL_NAME = config.EMBEDDING_MODEL_NAME
@@ -10,15 +14,13 @@ class EmbeddingModel:
 
     def __init__(self):
 
-        print(
-            f"Loading embedding model: {MODEL_NAME}"
-        )
+        logger.info("loading embedding model", extra={"model": MODEL_NAME})
 
         self.model = SentenceTransformer(
             MODEL_NAME
         )
 
-        print("Embedding model loaded!")
+        logger.info("embedding model loaded")
 
     def embed_text(
         self,

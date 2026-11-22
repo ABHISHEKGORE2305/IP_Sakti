@@ -17,11 +17,15 @@ Retrieval/LLM clients are process-wide singletons — each specialist
 would otherwise reload the embedding + reranker models on every call.
 """
 
-from final_retriever import AyurvedicIPRetriever
-from context_builder import ContextBuilder
-from llm import GeminiLLM, LLMError
+import logging
+
 from agents.citation_agent import verify_citations
+from context_builder import ContextBuilder
+from final_retriever import AyurvedicIPRetriever
+from llm import GeminiLLM, LLMError
 from prompt import SYSTEM_PROMPT, persona_guidance_text
+
+logger = logging.getLogger(__name__)
 
 
 _retriever = None
@@ -113,7 +117,7 @@ def _retrieve_and_draft(
         # citation-free answer, which the confidence gate then force-abstains
         # on. Regenerate once with an explicit reminder before giving up.
         if verify_citations(answer, results).get("total_citations", 0) == 0:
-            print("[specialists] draft has no citations; regenerating once", flush=True)
+            logger.info("draft has no citations, regenerating once")
             retry = _get_llm().generate(
                 prompt
                 + "\n\nREMINDER: every important legal claim must end with an inline "

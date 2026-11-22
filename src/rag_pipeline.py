@@ -8,12 +8,17 @@ Interactive demo:
     PYTHONPATH=src python src/rag_pipeline.py
 """
 
-from final_retriever import AyurvedicIPRetriever
+import logging
+
+import config
 from context_builder import ContextBuilder
+from final_retriever import AyurvedicIPRetriever
 from llm import GeminiLLM, LLMError
+from observability import stage
 from prompt import SYSTEM_PROMPT, history_block_text
 from query_expansion import QueryExpander
-import config
+
+logger = logging.getLogger(__name__)
 
 
 INSUFFICIENT_CONTEXT_MESSAGE = (
@@ -31,7 +36,7 @@ class AyurvedicIPRAG:
         max_context_chars: int = config.MAX_CONTEXT_CHARS,
     ):
 
-        print("\nInitializing RAG system...")
+        logger.info("initializing RAG system")
 
         self.top_k = top_k
         self.candidate_k = candidate_k
@@ -43,7 +48,7 @@ class AyurvedicIPRAG:
         self.llm = GeminiLLM()
         self.query_expander = QueryExpander(llm=self.llm)
 
-        print("\nRAG system ready!\n")
+        logger.info("RAG system ready")
 
     # ------------------------------------------------------------------
 
@@ -74,7 +79,8 @@ class AyurvedicIPRAG:
         # ---------------- retrieval ----------------
         # Retrieve on the statutory-vocabulary expansion, generate from the
         # user's own wording — see query_expansion.py.
-        retrieval_query = self.query_expander.expand(query)
+        with stage("query_expansion"):
+            retrieval_query = self.query_expander.expand(query)
 
         try:
             results = self.retriever.search(
@@ -86,6 +92,7 @@ class AyurvedicIPRAG:
                 reference_query=query,
             )
         except Exception as exc:  # noqa: BLE001
+            logger.exception("retrieval failed")
             return {
                 "query": query,
                 "answer": (
@@ -107,7 +114,8 @@ class AyurvedicIPRAG:
             }
 
         # ---------------- context ----------------
-        context_data = self.context_builder.build_context(results)
+        with stage("context_build", chunks=len(results)):
+            context_data = self.context_builder.build_context(results)
         context = context_data["context"]
         sources = context_data["sources"]
 
@@ -142,6 +150,7 @@ class AyurvedicIPRAG:
         try:
             answer_text = self.llm.generate(prompt)
         except LLMError as exc:
+            logger.error("generation failed: %s", exc)
             return {
                 "query": query,
                 "answer": (
@@ -209,6 +218,9 @@ def _print_answer(response: dict) -> None:
 
 def main() -> None:
 
+    from observability import configure_logging
+
+    configure_logging(fmt="text")
     rag = AyurvedicIPRAG()
 
     print("Ask a question about Indian patent law / Ayurvedic inventions.")
