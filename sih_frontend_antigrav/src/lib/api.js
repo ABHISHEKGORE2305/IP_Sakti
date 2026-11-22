@@ -227,8 +227,48 @@ export async function deleteMyData() {
 
 // ---- Corpus admin panel (winning_features.md item 20) ----
 
+// Admin routes require X-Admin-Key (backend: src/server/security.py). The
+// operator types the key into the panel; it lives in sessionStorage only and
+// is never baked into the bundle, which anyone can download and read.
+const ADMIN_KEY_STORAGE = 'ipsakti_admin_key';
+
+export function getAdminKey() {
+  try {
+    return sessionStorage.getItem(ADMIN_KEY_STORAGE) || '';
+  } catch {
+    return '';
+  }
+}
+
+export function setAdminKey(key) {
+  try {
+    if (key) sessionStorage.setItem(ADMIN_KEY_STORAGE, key);
+    else sessionStorage.removeItem(ADMIN_KEY_STORAGE);
+  } catch {
+    // Storage blocked (private window): the key just isn't remembered.
+  }
+}
+
+// FastAPI puts the reason in {"detail": ...}; surface it instead of a bare status.
+async function adminError(path, res) {
+  let detail = '';
+  try {
+    detail = (await res.json()).detail || '';
+  } catch {
+    // non-JSON body
+  }
+  const err = new Error(detail ? `${detail} (HTTP ${res.status})` : `${path} responded ${res.status}`);
+  err.status = res.status;
+  return err;
+}
+
 export async function getAdminCorpus() {
-  return getJson('/api/admin/corpus', { timeoutMs: 15000 });
+  const res = await fetch(`${API_BASE}/api/admin/corpus`, {
+    headers: withSessionHeaders({ 'X-Admin-Key': getAdminKey() }),
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!res.ok) throw await adminError('/api/admin/corpus', res);
+  return res.json();
 }
 
 export async function uploadCorpusDocument(file) {
@@ -236,11 +276,11 @@ export async function uploadCorpusDocument(file) {
   formData.append('file', file);
   const res = await fetch(`${API_BASE}/api/admin/corpus/upload`, {
     method: 'POST',
-    headers: withSessionHeaders(),
+    headers: withSessionHeaders({ 'X-Admin-Key': getAdminKey() }),
     body: formData,
     signal: AbortSignal.timeout(60000),
   });
-  if (!res.ok) throw new Error(`upload responded ${res.status}`);
+  if (!res.ok) throw await adminError('/api/admin/corpus/upload', res);
   return res.json();
 }
 

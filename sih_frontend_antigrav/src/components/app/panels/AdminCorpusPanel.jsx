@@ -2,11 +2,13 @@
 // document (PDF + web-sourced) with real chunk counts, and lets you
 // upload a new PDF. Upload only stages the file + registers it as
 // "pending_reindex" — it deliberately does NOT synchronously re-embed
-// (see api.py's POST /api/admin/corpus/upload docstring for why).
+// (see server/routers/admin.py's upload docstring for why). Both calls need
+// the operator's admin key (X-Admin-Key), entered below and kept for the
+// browser session only.
 
 import { Database } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { getAdminCorpus, uploadCorpusDocument } from '../../../lib/api';
+import { getAdminCorpus, getAdminKey, setAdminKey, uploadCorpusDocument } from '../../../lib/api';
 
 const STATUS_COLOR = {
   indexed: 'var(--risk-low)',
@@ -19,12 +21,25 @@ export default function AdminCorpusPanel() {
   const [error, setError] = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [keyDraft, setKeyDraft] = useState(getAdminKey());
   const fileInput = useRef(null);
 
   const refresh = () => {
+    if (!getAdminKey()) {
+      setDocuments(null);
+      setError('Enter the admin key to view and manage the corpus.');
+      return;
+    }
+    setError(null);
     getAdminCorpus()
       .then((data) => setDocuments(data.documents || []))
-      .catch((err) => setError(String(err)));
+      .catch((err) => setError(err.message || String(err)));
+  };
+
+  const handleKeySubmit = (e) => {
+    e.preventDefault();
+    setAdminKey(keyDraft.trim());
+    refresh();
   };
 
   useEffect(refresh, []);
@@ -39,7 +54,7 @@ export default function AdminCorpusPanel() {
       setUploadStatus(res);
       refresh();
     } catch (err) {
-      setUploadStatus({ saved: false, error: String(err) });
+      setUploadStatus({ saved: false, error: err.message || String(err) });
     } finally {
       setUploading(false);
       if (fileInput.current) fileInput.current.value = '';
@@ -59,6 +74,24 @@ export default function AdminCorpusPanel() {
         with real chunk counts from the actual ingested data.
       </p>
 
+      <form className="app-panel__section" onSubmit={handleKeySubmit}>
+        <label className="step__label" htmlFor="admin-key">Admin key</label>
+        <div className="step__field">
+          <input
+            id="admin-key"
+            className="step__input"
+            type="password"
+            autoComplete="off"
+            value={keyDraft}
+            onChange={(e) => setKeyDraft(e.target.value)}
+            placeholder="ADMIN_API_KEY from the server's .env"
+          />
+        </div>
+        <div className="step__actions">
+          <button type="submit" className="step__btn step__btn--primary">Unlock</button>
+        </div>
+      </form>
+
       <div className="app-panel__section">
         <label className="step__label">Upload a new PDF</label>
         <p className="step__subheading" style={{ marginTop: -4 }}>
@@ -66,7 +99,7 @@ export default function AdminCorpusPanel() {
           `PYTHONPATH=src python3 src/ingest.py` after adding it to document_config.DOCUMENTS to
           actually embed it (deliberately not automatic — see the backend endpoint's docstring).
         </p>
-        <input ref={fileInput} type="file" accept="application/pdf" onChange={handleUpload} disabled={uploading} />
+        <input ref={fileInput} type="file" accept="application/pdf" onChange={handleUpload} disabled={uploading || !documents} />
         {uploading && <p className="step__subheading">Uploading…</p>}
         {uploadStatus?.saved && (
           <div className="step__success">

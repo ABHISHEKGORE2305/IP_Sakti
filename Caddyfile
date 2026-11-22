@@ -1,9 +1,15 @@
 # Replace the site address with your hostname, e.g. api.example.com or
 # <elastic-ip-with-dashes>.nip.io. Caddy obtains the TLS certificate itself.
 ipsakti.duckdns.org {
-	# The admin upload route has no auth in api.py; never expose it publicly.
+	# Admin routes require X-Admin-Key in the app (src/server/security.py);
+	# they are also kept off the public internet here as a second layer.
 	@admin path /api/admin/*
 	respond @admin 403
+
+	# Matches MAX_UPLOAD_BYTES with headroom; rejects oversized bodies at the edge.
+	request_body {
+		max_size 30MB
+	}
 
 	reverse_proxy api:7860 {
 		transport http {

@@ -91,6 +91,23 @@ API_HOST = "0.0.0.0"
 API_PORT = 8000
 CORS_ALLOW_ORIGINS = ["*"]
 
+# Admin routes (/api/admin/*) require this value in the X-Admin-Key header.
+# Unset means admin routes are disabled (503), never open — fail closed.
+ADMIN_API_KEY = os.getenv("ADMIN_API_KEY") or None
+MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_BYTES", str(25 * 1024 * 1024)))
+
+# Per-client-IP request budgets (src/server/security.py). In-memory and
+# per-process: correct for the single-worker deployment, swap for Redis
+# before running more than one worker. 0 disables a limit.
+RATE_LIMIT_LLM_PER_MIN = int(os.getenv("RATE_LIMIT_LLM_PER_MIN", "30"))       # endpoints that spend LLM tokens
+RATE_LIMIT_ESCALATE_PER_HOUR = int(os.getenv("RATE_LIMIT_ESCALATE_PER_HOUR", "5"))  # sends real email
+RATE_LIMIT_ADMIN_PER_MIN = int(os.getenv("RATE_LIMIT_ADMIN_PER_MIN", "10"))
+
+# Logging (src/observability.py): "json" for one JSON object per line,
+# "text" for readable local output.
+LOG_FORMAT = os.getenv("LOG_FORMAT", "json")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+
 # --------------------------------------------------------------------
 # Persistence (src/db.py) — audit log, consent, corpus admin. No-login,
 # session-id-scoped SQLite. See db.py's module docstring.
