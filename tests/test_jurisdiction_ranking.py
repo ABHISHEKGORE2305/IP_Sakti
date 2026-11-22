@@ -9,19 +9,12 @@ international mechanisms (TKDL factsheet for "how does the USPTO use TKDL",
 Patents Act PCT provisions). It is now a pooled search with a score penalty
 on India sources; India scope is still a hard filter.
 
-Run directly:      python src/tests/test_jurisdiction_ranking.py
-Run with pytest:   pytest src/tests/test_jurisdiction_ranking.py
+Run: pytest tests/test_jurisdiction_ranking.py
 """
 
-import os
-import sys
 
-SRC_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if SRC_DIR not in sys.path:
-    sys.path.insert(0, SRC_DIR)
-
-import final_retriever  # noqa: E402
-from final_retriever import AyurvedicIPRetriever  # noqa: E402
+import final_retriever
+from final_retriever import AyurvedicIPRetriever
 
 
 def _chunk(cid, jurisdiction, text="", score=0.5):
@@ -126,34 +119,3 @@ def test_no_penalty_outside_international_scope():
 
 
 # ------------------------------------------------------------------
-
-
-def _run_standalone():
-    tests = [
-        (name, obj)
-        for name, obj in sorted(globals().items())
-        if name.startswith("test_") and callable(obj)
-    ]
-
-    passed = 0
-    failed = 0
-
-    for name, fn in tests:
-        try:
-            fn()
-        except AssertionError as exc:
-            failed += 1
-            print(f"FAIL  {name}\n      {exc}")
-        except Exception as exc:  # noqa: BLE001
-            failed += 1
-            print(f"ERROR {name}\n      {type(exc).__name__}: {exc}")
-        else:
-            passed += 1
-            print(f"ok    {name}")
-
-    print(f"\n{passed} passed, {failed} failed")
-    return 1 if failed else 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(_run_standalone())

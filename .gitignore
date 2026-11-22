@@ -38,3 +38,7 @@ Thumbs.db
 # Scratch output
 scratch_*.png
 brag-output/
+
+# Coverage
+.coverage
+coverage.xml

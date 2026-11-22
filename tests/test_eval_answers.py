@@ -4,22 +4,13 @@ Tests for the end-to-end grading harness (src/eval_answers.py).
 No LLM or API is called: the judge is a stub, and the question parsers run
 against the real benchmark_questions/ files and the hand-graded sprint data.
 
-Run directly:      python src/tests/test_eval_answers.py
-Run with pytest:   pytest src/tests/test_eval_answers.py
+Run: pytest tests/test_eval_answers.py
 """
 
 import json
 import os
-import sys
 
-SRC_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if SRC_DIR not in sys.path:
-    sys.path.insert(0, SRC_DIR)
-
-REPO_ROOT = os.path.dirname(SRC_DIR)
-os.chdir(REPO_ROOT)
-
-import eval_answers as ea  # noqa: E402
+import eval_answers as ea
 
 
 def _sprint_raw():
@@ -214,34 +205,3 @@ def test_agreement():
 
 
 # ------------------------------------------------------------------
-
-
-def _run_standalone():
-    tests = [
-        (name, obj)
-        for name, obj in sorted(globals().items())
-        if name.startswith("test_") and callable(obj)
-    ]
-
-    passed = 0
-    failed = 0
-
-    for name, fn in tests:
-        try:
-            fn()
-        except AssertionError as exc:
-            failed += 1
-            print(f"FAIL  {name}\n      {exc}")
-        except Exception as exc:  # noqa: BLE001
-            failed += 1
-            print(f"ERROR {name}\n      {type(exc).__name__}: {exc}")
-        else:
-            passed += 1
-            print(f"ok    {name}")
-
-    print(f"\n{passed} passed, {failed} failed")
-    return 1 if failed else 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(_run_standalone())

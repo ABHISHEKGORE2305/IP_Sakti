@@ -2,18 +2,11 @@
 Tests for explicit-reference detection and instrument scoping
 (src/legal_reference.py). Pure text, no models.
 
-Run directly:      python src/tests/test_legal_reference.py
-Run with pytest:   pytest src/tests/test_legal_reference.py
+Run: pytest tests/test_legal_reference.py
 """
 
-import os
-import sys
 
-SRC_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if SRC_DIR not in sys.path:
-    sys.path.insert(0, SRC_DIR)
-
-from legal_reference import extract_legal_references, instrument_families, match_reference  # noqa: E402
+from legal_reference import extract_legal_references, instrument_families, match_reference
 
 
 def _chunk(document, reference, document_type="statute"):
@@ -60,34 +53,3 @@ def test_no_named_instrument_matches_every_instrument():
 
 
 # ------------------------------------------------------------------
-
-
-def _run_standalone():
-    tests = [
-        (name, obj)
-        for name, obj in sorted(globals().items())
-        if name.startswith("test_") and callable(obj)
-    ]
-
-    passed = 0
-    failed = 0
-
-    for name, fn in tests:
-        try:
-            fn()
-        except AssertionError as exc:
-            failed += 1
-            print(f"FAIL  {name}\n      {exc}")
-        except Exception as exc:  # noqa: BLE001
-            failed += 1
-            print(f"ERROR {name}\n      {type(exc).__name__}: {exc}")
-        else:
-            passed += 1
-            print(f"ok    {name}")
-
-    print(f"\n{passed} passed, {failed} failed")
-    return 1 if failed else 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(_run_standalone())

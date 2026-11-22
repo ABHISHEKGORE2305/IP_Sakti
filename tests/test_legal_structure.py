@@ -1,8 +1,10 @@
 """
-Automated tests for legal-aware chunking.
+Line-level tests for the legal structure parser (src/legal_structure.py).
 
 Every test here corresponds to a concrete bug that was found in the
-legal parser / chunker while processing ``data/raw/patents_act_1970.pdf``:
+legal parser / chunker while processing ``data/raw/patents_act_1970.pdf``
+(the same bugs are checked end to end against the real PDF in
+tests/integration/test_patents_act_chunking.py):
 
     Bug #1  Table of Contents (pages 1-6) was parsed as if it were the
             statute, so the TOC line "3. What are not inventions." became
@@ -19,69 +21,10 @@ legal parser / chunker while processing ``data/raw/patents_act_1970.pdf``:
             "N[" ("6[(d) ...", "3[25. Opposition ..."). Without stripping
             it, Section 3(b)/(d)/(j) and the Section 25 heading were missed.
 
-Run directly:      python src/tests/test_legal_chunking.py
-Run with pytest:   pytest src/tests/test_legal_chunking.py
+Run: pytest tests/test_legal_structure.py
 """
 
-import os
-import sys
-
-SRC_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if SRC_DIR not in sys.path:
-    sys.path.insert(0, SRC_DIR)
-
-REPO_ROOT = os.path.dirname(SRC_DIR)
-PDF_PATH = os.path.join(REPO_ROOT, "data", "raw", "patents_act_1970.pdf")
-
-from legal_structure import (  # noqa: E402
-    classify_legal_line,
-    strip_amendment_marker,
-)
-from document_loader import load_pdf  # noqa: E402
-from chunker import create_chunks  # noqa: E402
-
-
-# ------------------------------------------------------------------
-# Shared fixture: chunk the real Patents Act PDF exactly once.
-# ------------------------------------------------------------------
-
-_CHUNK_CACHE = {}
-
-
-def patents_act_chunks():
-
-    if "chunks" not in _CHUNK_CACHE:
-
-        pages = load_pdf(
-            PDF_PATH,
-            metadata={
-                "document": "The Patents Act, 1970",
-                "document_type": "statute",
-                "jurisdiction": "India",
-                "language": "en",
-            },
-        )
-
-        _CHUNK_CACHE["chunks"] = create_chunks(pages)
-
-    return _CHUNK_CACHE["chunks"]
-
-
-def section_chunks(section):
-    return [
-        c
-        for c in patents_act_chunks()
-        if c.get("section") == section
-    ]
-
-
-def reference_chunks(legal_reference):
-    return [
-        c
-        for c in patents_act_chunks()
-        if c.get("legal_reference") == legal_reference
-    ]
-
+from legal_structure import classify_legal_line, strip_amendment_marker
 
 # ==================================================================
 # Pure parser tests (no PDF) - fast, target legal_structure.py
@@ -186,115 +129,3 @@ def test_amended_section_heading_behind_bracket_marker_is_detected():
         "for a patent has been published but a patent has not been "
         "granted ..."
     ) == {"type": "section", "section": "25"}
-
-
-# ==================================================================
-# Integration tests against the real Patents Act PDF
-# ==================================================================
-
-
-def test_toc_section_3_is_ignored():
-    # Bug #1 - pages 1-6 are the Table of Contents.
-    toc_section_3 = [
-        c for c in section_chunks("3") if c["page"] <= 6
-    ]
-    assert toc_section_3 == [], toc_section_3
-
-
-def test_actual_section_3_is_detected_on_page_9():
-    on_page_9 = [c for c in section_chunks("3") if c["page"] == 9]
-    assert on_page_9, "no Section 3 chunk found on page 9"
-
-    heading = on_page_9[0]
-    assert "what are not inventions" in heading["text"].lower()
-    assert heading["legal_reference"] == "Section 3"
-
-
-def test_section_3p_chunk_exists_with_tk_provision():
-    # The headline success condition from prompt.md.
-    matches = reference_chunks("Section 3(p)")
-    assert len(matches) >= 1, "no Section 3(p) chunk"
-
-    chunk = matches[0]
-    assert chunk["section"] == "3"
-    assert chunk["clause"] == "p"
-
-    text = chunk["text"].lower()
-    assert "traditional knowledge" in text
-    assert "known properties" in text
-
-
-def test_section_3_survives_page_9_to_10_boundary():
-    # Bug context F - state must not reset at the page boundary.
-    pages = {c["page"] for c in section_chunks("3")}
-    assert 9 in pages and 10 in pages, sorted(pages)
-
-
-def test_no_bogus_section_3_elsewhere_in_the_act():
-    # Bug #3 - amendment footnotes must not resurrect Section 3.
-    stray = sorted(
-        {c["page"] for c in section_chunks("3") if c["page"] not in (9, 10)}
-    )
-    assert stray == [], f"unexpected Section 3 chunks on pages {stray}"
-
-
-def test_section_4_6_7_start_after_the_statute_begins():
-    # Bug context G/H/I on the real document.
-    for number in ("4", "6", "7"):
-        chunks = section_chunks(number)
-        assert chunks, f"Section {number} not detected"
-        assert min(c["page"] for c in chunks) >= 7
-
-
-def test_important_section_3_clauses_are_present():
-    for clause in ("b", "d", "e", "i", "j", "p"):
-        ref = f"Section 3({clause})"
-        assert reference_chunks(ref), f"missing {ref}"
-
-
-def test_schedule_mode_suppresses_sections_in_the_real_schedule():
-    # Bug #2 - the REAL "THE SCHEDULE" (page 67) must still switch the
-    # chunker into schedule mode, so no section headings are emitted
-    # from the schedule pages.
-    tagged_pages = [
-        c["page"] for c in patents_act_chunks() if c.get("section")
-    ]
-    assert tagged_pages, "no section-tagged chunks at all"
-    assert max(tagged_pages) < 67, max(tagged_pages)
-
-
-# ==================================================================
-# Minimal runner so the file works without pytest installed.
-# ==================================================================
-
-
-def _run_standalone():
-
-    tests = [
-        (name, obj)
-        for name, obj in sorted(globals().items())
-        if name.startswith("test_") and callable(obj)
-    ]
-
-    passed = 0
-    failed = 0
-
-    for name, fn in tests:
-        try:
-            fn()
-        except AssertionError as exc:
-            failed += 1
-            print(f"FAIL  {name}\n      {exc}")
-        except Exception as exc:  # noqa: BLE001
-            failed += 1
-            print(f"ERROR {name}\n      {type(exc).__name__}: {exc}")
-        else:
-            passed += 1
-            print(f"ok    {name}")
-
-    print(f"\n{passed} passed, {failed} failed")
-    return 1 if failed else 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(_run_standalone())
