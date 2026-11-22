@@ -5,7 +5,13 @@ scoring with safe abstention, and citation verification.
 
 import pytest
 
-from agents.citation_agent import extract_citations, strip_unverified_citations, verify_citations
+from agents.citation_agent import (
+    CITATION_REMINDER,
+    extract_citations,
+    generate_with_citation_retry,
+    strip_unverified_citations,
+    verify_citations,
+)
 from agents.graph import input_sanitizer
 from guardrails.confidence import evaluate_confidence
 from guardrails.injection_filter import detect_prompt_injection
@@ -126,3 +132,34 @@ def test_uncited_answer_scores_zero_not_vacuous_pass():
     report = verify_citations("This answer cites nothing.", SOURCES)
     assert report["total_citations"] == 0
     assert report["citation_precision"] == 0.0
+
+
+CITED = "Barred [The Patents Act, 1970, Section 3(p), p.10]."
+UNCITED = "Traditional knowledge is not patentable."
+
+
+def _scripted_llm(*replies):
+    prompts = []
+
+    def generate(prompt):
+        prompts.append(prompt)
+        return replies[len(prompts) - 1]
+
+    return generate, prompts
+
+
+def test_cited_draft_is_kept_without_a_retry():
+    generate, prompts = _scripted_llm(CITED)
+    assert generate_with_citation_retry(generate, "PROMPT", SOURCES) == CITED
+    assert prompts == ["PROMPT"]
+
+
+def test_uncited_draft_is_regenerated_with_a_reminder():
+    generate, prompts = _scripted_llm(UNCITED, CITED)
+    assert generate_with_citation_retry(generate, "PROMPT", SOURCES) == CITED
+    assert prompts == ["PROMPT", "PROMPT" + CITATION_REMINDER]
+
+
+def test_uncited_retry_falls_back_to_the_first_draft():
+    generate, _ = _scripted_llm(UNCITED, "Still no citations.")
+    assert generate_with_citation_retry(generate, "PROMPT", SOURCES) == UNCITED

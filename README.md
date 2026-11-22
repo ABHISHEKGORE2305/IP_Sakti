@@ -44,7 +44,7 @@ query → PII sanitize → injection filter → query expansion
   Biological Diversity Act 2002 + Rules 2024, D&C Act 1940 & Rules 1945, FSSAI
   Ayurveda Aahara Regulations 2022, WIPO GRATK Treaty, TKDL guidance and more),
   ingested with PyMuPDF and legal-aware chunking that preserves Act / Chapter /
-  Section / Rule / page metadata → **3,078 indexed chunks** (`data/processed/chunks.json`),
+  Section / Rule / page metadata → **3,120 indexed chunks** (`data/processed/chunks.json`),
   plus 9 chunks from live web sources (`ingest_web.py`, staleness-tracked in
   `web_sources_manifest.json`).
 - **Dual retrieval** — `BAAI/bge-m3` dense vectors in Qdrant, combined with BM25
@@ -370,7 +370,7 @@ src/
 tests/                   pytest suite (fast tier) + tests/integration/
 sih_frontend_antigrav/   React 19 + Vite frontend (landing + /app product shell)
 data/raw/                21 source PDFs
-data/processed/          chunks.json (3,078), chunks_web.json, app.db, eval_results.json
+data/processed/          chunks.json (3,120), chunks_web.json, app.db, eval_results.json
 benchmark_questions/     400 authored test questions
 benchmark_results/       sprint reports, root-cause analysis, post-fix verification
 docs/                    implementation plan, problem statement, feature analysis, run notes

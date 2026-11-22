@@ -19,7 +19,17 @@ matches against — so they are extracted and verified the same way
 rather than being counted as zero citations and force-abstained.
 """
 
+import logging
 import re
+from collections.abc import Callable
+
+logger = logging.getLogger(__name__)
+
+CITATION_REMINDER = (
+    "\n\nREMINDER: every important legal claim must end with an inline "
+    "citation exactly like [Document, Section/Rule, p.N], using only the "
+    "sources above. Rewrite the answer with those citations."
+)
 
 _CITATION_RE = re.compile(r"\[([^\[\]]+?)\]")
 _SOURCE_REF_RE = re.compile(r"[\[【]?\s*SOURCE\s+(\d+)\s*[\]】]?", re.IGNORECASE)
@@ -162,6 +172,26 @@ def verify_citations(answer_text: str, retrieved_sources: list[dict]) -> dict:
         "citation_precision": precision,
         "has_unverified_citations": verified < total,
     }
+
+
+def generate_with_citation_retry(generate: Callable[[str], str], prompt: str, sources: list[dict]) -> str:
+    """
+    Generate an answer, regenerating once with an explicit reminder if the
+    draft has no citations at all.
+
+    Some models write a correct but citation-free answer (observed with
+    gpt-oss, and most often with the smaller fallback models Groq switches
+    to when the primary model is rate-limited), which the confidence gate
+    then force-abstains on. The retry is kept only if it does cite.
+    """
+
+    answer = generate(prompt)
+    if verify_citations(answer, sources)["total_citations"] == 0:
+        logger.info("draft has no citations, regenerating once")
+        retry = generate(prompt + CITATION_REMINDER)
+        if verify_citations(retry, sources)["total_citations"] > 0:
+            answer = retry
+    return answer
 
 
 def strip_unverified_citations(answer_text: str, report: dict) -> str:

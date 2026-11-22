@@ -19,7 +19,7 @@ would otherwise reload the embedding + reranker models on every call.
 
 import logging
 
-from agents.citation_agent import verify_citations
+from agents.citation_agent import generate_with_citation_retry
 from context_builder import ContextBuilder
 from final_retriever import AyurvedicIPRetriever
 from llm import GeminiLLM, LLMError
@@ -111,21 +111,7 @@ def _retrieve_and_draft(
     )
 
     try:
-        answer = _get_llm().generate(prompt)
-
-        # Some models (observed with gpt-oss) occasionally write a correct but
-        # citation-free answer, which the confidence gate then force-abstains
-        # on. Regenerate once with an explicit reminder before giving up.
-        if verify_citations(answer, results).get("total_citations", 0) == 0:
-            logger.info("draft has no citations, regenerating once")
-            retry = _get_llm().generate(
-                prompt
-                + "\n\nREMINDER: every important legal claim must end with an inline "
-                "citation exactly like [Document, Section/Rule, p.N], using only the "
-                "sources above. Rewrite the answer with those citations."
-            )
-            if verify_citations(retry, results).get("total_citations", 0) > 0:
-                answer = retry
+        answer = generate_with_citation_retry(_get_llm().generate, prompt, results)
     except LLMError as exc:
         return {"retrieved": results, "draft_answer": None, "error": str(exc)}
 

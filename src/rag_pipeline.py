@@ -11,6 +11,7 @@ Interactive demo:
 import logging
 
 import config
+from agents.citation_agent import generate_with_citation_retry
 from context_builder import ContextBuilder
 from final_retriever import AyurvedicIPRetriever
 from llm import GeminiLLM, LLMError
@@ -148,7 +149,7 @@ class AyurvedicIPRAG:
         )
 
         try:
-            answer_text = self.llm.generate(prompt)
+            answer_text = generate_with_citation_retry(self.llm.generate, prompt, results)
         except LLMError as exc:
             logger.error("generation failed: %s", exc)
             return {

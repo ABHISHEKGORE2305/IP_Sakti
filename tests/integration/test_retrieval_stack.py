@@ -152,7 +152,11 @@ def test_final_retriever_returns_the_governing_instrument(final_retriever, query
 
 def test_explicit_section_reference_is_ranked_first(final_retriever):
     results = final_retriever.search(query="What does Section 3(p) of the Patents Act say?", top_k=5)
-    assert results[0]["legal_reference"] == "Section 3(p)"
+    # Provisions are labelled at section level, so clause (p) lives in a
+    # "Section 3" chunk; the right one is the chunk that contains its text.
+    top = results[0]
+    assert (top.get("document_id"), top["legal_reference"]) == ("patents_act_1970", "Section 3")
+    assert "traditional knowledge" in top["text"].lower()
 
 
 def test_india_scope_is_a_hard_filter(final_retriever):
