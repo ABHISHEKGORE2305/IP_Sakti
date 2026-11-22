@@ -1,3 +1,5 @@
+from typing import Any
+
 import config
 
 # Authority weight by document_type, per the retrieval fusion
@@ -23,7 +25,7 @@ AUTHORITY_WEIGHTS = {
 DEFAULT_AUTHORITY_WEIGHT = config.DEFAULT_AUTHORITY_WEIGHT
 
 
-DOCUMENTS = [
+DOCUMENTS: list[dict[str, Any]] = [
     {
         "filename": "patents_act_1970.pdf",
         "document": "The Patents Act, 1970",
@@ -33,6 +35,9 @@ DOCUMENTS = [
         # Pages 1-6 of this specific PDF are the Arrangement of
         # Sections / Table of Contents - see chunker.py.
         "toc_skip_pages": 6,
+        # THE SCHEDULE (p.67 on) amends the 1911 Act and ends the
+        # document; its "3. Section 1—..." entries are not Sections.
+        "schedule_is_terminal": True,
     },
 
     {

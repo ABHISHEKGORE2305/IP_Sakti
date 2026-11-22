@@ -1,8 +1,8 @@
 import re
 
 from legal_structure import (
-    classify_legal_line,
     build_legal_reference,
+    classify_legal_line,
     heading_has_dash,
     is_form_or_schedule_banner,
 )
@@ -29,7 +29,7 @@ def split_into_paragraphs(text: str):
 
     paragraphs = []
 
-    current = []
+    current: list[str] = []
 
     for line in lines:
 
@@ -359,8 +359,12 @@ def create_chunks(
                     current_text.append(line)
                     continue
 
-            # A real dash-style heading means the Forms/Schedules run is over.
-            if dash_heading and in_schedule:
+            # A real dash-style heading means the Forms/Schedules run is over -
+            # unless the document's schedule is its final part. The Patents
+            # Act's amending Schedule numbers its entries with dashes too
+            # ("3. Section 1—In sub-section (1) omit ..."), and leaving
+            # schedule mode there labelled them Sections 1-12.
+            if dash_heading and in_schedule and not page.get("schedule_is_terminal"):
                 in_schedule = False
 
             if (
